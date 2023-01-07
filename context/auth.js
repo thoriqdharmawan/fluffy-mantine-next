@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 import { InitialUserState, useUser } from './user'
-import { Authentication } from '../services/firebase'
-import { Loader } from '@mantine/core'
+import { Authentication } from '../services/authentication'
 
 const AuthStateChangeProvider = ({ children }) => {
-  const [isLoading, setIsLoading] = useState(true)
   const user = useUser()
   const { SetUser } = user
 
@@ -18,17 +16,12 @@ const AuthStateChangeProvider = ({ children }) => {
         console.log('User is not authenticated')
         SetUser(InitialUserState)
       }
-      setIsLoading(false)
     })
   }
 
   useEffect(() => {
     InitiateAuthStateChange()
   }, [])
-
-  if (isLoading) {
-    return <Loader />
-  }
 
   return children
 }

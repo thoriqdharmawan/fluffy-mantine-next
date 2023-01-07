@@ -1,11 +1,11 @@
 import { TextInput, Checkbox, Button, Group, Box } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { SignIn } from '../../services/firebase';
+import { SignIn } from '../../services/authentication';
 import { useRouter } from 'next/router';
 
 type formLoginType = {
-  email: String,
-  password: String,
+  email: string,
+  password: string,
   termsOfService: Boolean
 }
 

@@ -1,11 +1,6 @@
 // Import the functions you need from the SDKs you need
-import { getApps, initializeApp } from 'firebase/app';
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-} from 'firebase/auth';
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
 
 export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
@@ -17,26 +12,6 @@ export const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID,
 };
 
-if (!getApps().length) {
-  initializeApp(firebaseConfig);
-}
+export const app = initializeApp(firebaseConfig)
 
-export const FirebaseApp = getApps();
-
-export const FirebaseAuth = getAuth();
-
-export const Authentication = () => {
-  return FirebaseAuth;
-};
-
-export const SignUp = async (email, password) => {
-  await createUserWithEmailAndPassword(FirebaseAuth, email, password);
-};
-
-export const SignIn = async (email, password) => {
-  await signInWithEmailAndPassword(FirebaseAuth, email, password);
-};
-
-export const SignOut = async () => {
-  await signOut(FirebaseAuth);
-};
+export const db = getFirestore(app)
