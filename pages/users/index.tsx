@@ -1,4 +1,4 @@
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc } from 'firebase/firestore';
 
 import { db } from '../../services/firebase';
 
@@ -26,6 +26,16 @@ export default function Users() {
     }
   };
 
+  const deleteCompany = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, 'companies', id));
+      console.log('Deleted');
+      refetch();
+    } catch (e) {
+      console.error('Error adding document: ', e);
+    }
+  };
+
   return (
     <MainLayout>
       <div>Users</div>
@@ -37,15 +47,20 @@ export default function Users() {
 
       {loading && <Progress />}
       {data.map((res) => (
-        <Demo key={res.id} name={res.name} address={res.address} />
+        <Demo
+          key={res.id}
+          name={res.name}
+          address={res.address}
+          onDelete={() => deleteCompany(res.id)}
+        />
       ))}
     </MainLayout>
   );
 }
 
-function Demo({ name, address }: any) {
+function Demo({ name, address, onDelete }: any) {
   return (
-    <Card shadow="sm" p="lg" radius="md" maw="500px" m={24}  withBorder>
+    <Card shadow="sm" p="lg" radius="md" maw="500px" m={24} withBorder>
       <Card.Section>
         <Image
           src="https://images.unsplash.com/photo-1527004013197-933c4bb611b3?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=720&q=80"
@@ -62,7 +77,7 @@ function Demo({ name, address }: any) {
         {address}
       </Text>
 
-      <Button variant="light" color="blue" fullWidth mt="md" radius="md">
+      <Button onClick={onDelete} variant="light" color="blue" fullWidth mt="md" radius="md">
         Delete
       </Button>
     </Card>
