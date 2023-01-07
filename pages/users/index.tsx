@@ -8,7 +8,7 @@ import { Button, Card, Group, Progress, Text, Image } from '@mantine/core';
 
 export default function Users() {
   const companiesCollectionRef = collection(db, 'companies');
-  const { data, loading, refetch } = useQuery(companiesCollectionRef);
+  const { data, loading, total, refetch } = useQuery(companiesCollectionRef);
 
   const handleAddCompany = async () => {
     const variables = {
@@ -16,7 +16,6 @@ export default function Users() {
       address: `Company Address ${data.length + 1}`,
     };
 
-    console.log(variables);
     try {
       const docRef = await addDoc(companiesCollectionRef, variables);
       console.log('Document written with ID: ', docRef.id);
@@ -29,7 +28,6 @@ export default function Users() {
   const deleteCompany = async (id: string) => {
     try {
       await deleteDoc(doc(db, 'companies', id));
-      console.log('Deleted');
       refetch();
     } catch (e) {
       console.error('Error adding document: ', e);
@@ -39,6 +37,7 @@ export default function Users() {
   return (
     <MainLayout>
       <div>Users</div>
+      <div>Total Data {total}</div>
       <br />
 
       <Button variant="filled" onClick={handleAddCompany}>

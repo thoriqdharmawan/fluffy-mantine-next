@@ -1,15 +1,27 @@
-import { DocumentData, Query, getDocs } from 'firebase/firestore';
+import { DocumentData, Query, getCountFromServer, getDocs, limit, orderBy, query as q} from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
 export default function useQuery(query: Query) {
   const [data, setData] = useState<any[]>([]);
+  const [total, setTotal] = useState<number>(0);
+  const [error, setError] = useState<any>();
   const [loading, setLoading] = useState<boolean>(false);
 
   const getData = async () => {
     setLoading(true);
-    const data = await getDocs(query);
-    setData(data.docs.map((doc: DocumentData) => ({ ...doc.data(), id: doc.id })));
-    setLoading(false);
+    try {
+      const query_ = q(query, orderBy('name','asc'))
+      const data = await getDocs(query_);
+      const aggregate = await getCountFromServer(query);
+
+      setData(data.docs.map((doc: DocumentData) => ({ ...doc.data(), id: doc.id })));
+      setTotal(aggregate.data().count);
+
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -19,6 +31,8 @@ export default function useQuery(query: Query) {
   return {
     data,
     loading,
+    error,
     refetch: getData,
+    total,
   };
 }
