@@ -5,10 +5,11 @@ import {
   Burger,
   useMantineTheme,
 } from "@mantine/core";
+import { Dispatch, SetStateAction } from "react";
 
 type HeaderType = {
   opened: boolean;
-  setOpened: (o: any) => any;
+  setOpened: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function Header(props: HeaderType) {
@@ -21,7 +22,7 @@ export default function Header(props: HeaderType) {
         <MediaQuery largerThan="sm" styles={{ display: "none" }}>
           <Burger
             opened={opened}
-            onClick={() => setOpened((o: boolean) => !o)}
+            onClick={() => setOpened((o: SetStateAction<boolean>) => !o)}
             size="sm"
             color={theme.colors.gray[6]}
             mr="xl"

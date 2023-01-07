@@ -58,7 +58,7 @@ export default function Users() {
   );
 }
 
-function Demo({ name, address, onDelete }: any) {
+function Demo({ name, address, onDelete }: { name: string; address: string; onDelete: any }) {
   return (
     <Card shadow="sm" p="lg" radius="md" maw="500px" m={24} withBorder>
       <Card.Section>
