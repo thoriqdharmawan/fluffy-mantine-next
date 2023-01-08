@@ -18,7 +18,7 @@ type ProductType = {
 
 export default function Products() {
   const productsRef = collection(db, 'products');
-  const {data, loading, refetch} = useQuery(productsRef)
+  const { data, refetch } = useQuery(productsRef);
 
   const form = useForm({
     initialValues: {
@@ -36,7 +36,6 @@ export default function Products() {
   });
 
   const handleSubmitProducts = async (values: ProductType) => {
-    
     try {
       const docRef = await addDoc(productsRef, values);
       console.log('Document written with ID: ', docRef.id);
@@ -45,12 +44,18 @@ export default function Products() {
         title: 'You did great',
         message: 'Successfully added product 🤥',
         icon: <IconCheck />,
-        color: 'green'
-      })
-      refetch()
+        color: 'green',
+      });
+      refetch();
     } catch (e) {
       console.error('Error adding document: ', e);
     }
+  };
+
+  const handleValidate = () => {
+    setTimeout(() => {
+      form.clearErrors();
+    }, 3000);
   };
 
   const rows = data.map((product) => (
@@ -67,7 +72,9 @@ export default function Products() {
       <div>Add Products</div>
 
       <Box sx={{ maxWidth: 300 }} mx="auto">
-        <form onSubmit={form.onSubmit((values: any) => handleSubmitProducts(values))}>
+        <form
+          onSubmit={form.onSubmit((values: any) => handleSubmitProducts(values), handleValidate)}
+        >
           <TextInput
             withAsterisk
             label="Product Name"
