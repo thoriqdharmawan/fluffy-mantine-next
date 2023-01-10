@@ -21,6 +21,7 @@ const data = [
     href: '/users',
   },
   { icon: IconBusinessplan, label: 'Products', href: '/products' },
+  { icon: IconBusinessplan, label: 'Products Test', href: '/products-test' },
   { icon: IconBuildingSkyscraper, label: 'Company', href: '/company' },
 ];
 

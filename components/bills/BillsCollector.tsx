@@ -15,6 +15,7 @@ const sx = {
   height: '100%',
   width: '100%',
   maxWidth: '320px',
+  marginLeft: '24px'
 };
 
 export default function BillsCollector() {

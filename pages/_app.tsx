@@ -8,7 +8,6 @@ import { NotificationsProvider } from '@mantine/notifications';
 import AuthStateChangeProvider from '../context/auth';
 import { UserProvider } from '../context/user';
 import { BillsProvider } from '../context/bills';
-
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);

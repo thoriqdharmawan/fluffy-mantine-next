@@ -3,7 +3,7 @@ import { AppShell, useMantineTheme, Box } from '@mantine/core';
 
 import Navbar from '../components/navbar';
 import Header from '../components/header';
-import BillsCollector from '../components/bills';
+import BillsCollector from '../components/bills/BillsCollector';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const theme = useMantineTheme();

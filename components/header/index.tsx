@@ -1,6 +1,8 @@
-import { Header as Head, Text, MediaQuery, Burger, useMantineTheme } from '@mantine/core';
+import { Header as Head, Text, MediaQuery, Burger, useMantineTheme, Group } from '@mantine/core';
 import { Dispatch, SetStateAction } from 'react';
 import { ColorSchemeToggle } from '../color-scheme-toggle';
+
+import BillsToggle from '../bills/BillsToggle';
 
 type HeaderType = {
   opened: boolean;
@@ -31,7 +33,10 @@ export default function Header(props: HeaderType) {
           />
         </MediaQuery>
         <Text>Application Head</Text>
-        <ColorSchemeToggle />
+        <Group position="center">
+          <BillsToggle />
+          <ColorSchemeToggle />
+        </Group>
       </div>
     </Head>
   );
