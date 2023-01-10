@@ -15,6 +15,9 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "services/firebase.js"],
-  "exclude": ["node_modules"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "services/firebase.js", "context/order-item.js"],
+  "exclude": ["node_modules"],
+  "paths": {
+    "@mantine/core": ["path/to/mantine/core/index"]
+  }
 }

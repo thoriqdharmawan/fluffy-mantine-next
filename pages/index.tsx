@@ -1,5 +1,4 @@
 import { Welcome } from '../components/Welcome/Welcome';
-import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeToggle';
 import { Button, Group } from '@mantine/core';
 import { SignOut } from '../services/authentication';
 import { useRouter } from 'next/router';
@@ -23,7 +22,6 @@ export default function HomePage() {
   return (
     <MainLayout>
       <Welcome />
-      <ColorSchemeToggle />
       <Group position="center" mt="xl">
         {!user.uid && <Button onClick={handleClickLogin}>Login</Button>}
         {user.uid && <Button onClick={handleLogout}>Logout</Button>}
