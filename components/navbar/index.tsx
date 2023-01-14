@@ -30,7 +30,8 @@ export default function Navbar(props: NabarProps) {
   const router = useRouter();
 
   const menus = data.map((item, index) => {
-    const isActive = router.pathname === item.href;
+    const url = `/${router.pathname.split('/')[1]}`
+    const isActive = url === item.href;
 
     return (
       <Link key={index} href={item.href}>

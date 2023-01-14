@@ -1,5 +1,6 @@
 import { IconHeart } from '@tabler/icons';
-import { Card, Image, Text, Group, Badge, Button, ActionIcon, createStyles } from '@mantine/core';
+import { Card, Image, Text, Group, Button, ActionIcon, createStyles } from '@mantine/core';
+import { ProductsCardProps } from '../../mock/products';
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -26,42 +27,20 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export interface ProductsCardProps {
-  image: string;
-  title: string;
-  country: string;
-  description: string;
-  badges: {
-    emoji: string;
-    label: string;
-  }[];
-}
-
-export default function ProductsCard({ image, title, description, country, badges }: ProductsCardProps) {
+export default function ProductsCard({ image, name, description }: ProductsCardProps) {
   const { classes, theme } = useStyles();
-
-  const features = badges.map((badge) => (
-    <Badge
-      color={theme.colorScheme === 'dark' ? 'dark' : 'gray'}
-      key={badge.label}
-      leftSection={badge.emoji}
-    >
-      {badge.label}
-    </Badge>
-  ));
 
   return (
     <Card withBorder radius="md" p="md" className={classes.card}>
       <Card.Section>
-        <Image src={image} alt={title} height={180} />
+        <Image src={image} alt={name} height={180} />
       </Card.Section>
 
       <Card.Section className={classes.section} mt="md">
         <Group position="apart">
           <Text size="lg" weight={500}>
-            {title}
+            {name}
           </Text>
-          <Badge size="sm">{country}</Badge>
         </Group>
         <Text size="sm" mt="xs">
           {description}
@@ -72,9 +51,6 @@ export default function ProductsCard({ image, title, description, country, badge
         <Text mt="md" className={classes.label} color="dimmed">
           Perfect for you, if you enjoy
         </Text>
-        <Group spacing={7} mt={5}>
-          {features}
-        </Group>
       </Card.Section>
 
       <Group mt="xs">

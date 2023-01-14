@@ -1,24 +1,25 @@
-import { Grid } from '@mantine/core';
-import { PRODUCTS } from '../../mock/products';
+import { useState } from 'react';
+import { Button, Box } from '@mantine/core';
 
 import MainLayout from '../../layouts/MainLayout';
 import SearchBar from '../../components/SearchBar';
-import ProductsCard from '../../components/cards/ProductsCard';
-import { useBills } from '../../context/bills';
+import ListProducts from '../../modules/products/ListProducts';
+import AddProduct from '../../modules/products/AddProduct';
 
 export default function Products() {
-  const bills = useBills()
+  const [opened, setOpened] = useState(false);
 
   return (
     <MainLayout>
       <SearchBar mb="24px" placeholder="Search Products" />
-      <Grid>
-        {PRODUCTS.map((product, idx) => (
-          <Grid.Col key={idx} sm={bills.open ? 12 : 6} md={bills.open ? 6 : 4}>
-            <ProductsCard {...product} />
-          </Grid.Col>
-        ))}
-      </Grid>
+
+      <Box mb={24}>
+        <Button onClick={() => setOpened(true)}>Add Products</Button>
+      </Box>
+
+      <ListProducts />
+
+      <AddProduct opened={opened} onClose={() => setOpened(false)} />
     </MainLayout>
   );
 }
