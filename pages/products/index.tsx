@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Button, Box } from '@mantine/core';
+import { Button, Flex } from '@mantine/core';
+
+import Link from 'next/link';
 
 import MainLayout from '../../layouts/MainLayout';
 import SearchBar from '../../components/SearchBar';
@@ -13,9 +15,12 @@ export default function Products() {
     <MainLayout>
       <SearchBar mb="24px" placeholder="Search Products" />
 
-      <Box mb={24}>
+      <Flex mb={24} gap="md">
         <Button onClick={() => setOpened(true)}>Add Products</Button>
-      </Box>
+        <Link href="/products/add">
+          <Button>Add Products New Page</Button>
+        </Link>
+      </Flex>
 
       <ListProducts />
 

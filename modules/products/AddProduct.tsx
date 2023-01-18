@@ -7,6 +7,7 @@ import {
   Button,
   Group,
   Box,
+  Divider,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 
@@ -148,6 +149,17 @@ export default function AddProduct(props: Props) {
           />
         ))}
 
+        <Divider my="xl" size="md" />
+
+        {fieldsList?.map((list) => (
+          <Box
+            key={list.field} // @ts-ignore
+            component={list.component}
+            labelProps={{ mb: 8 }}
+            mb={24}
+            {...list}
+          />
+        ))}
         <Group position="right" mt="md">
           <Button variant="subtle" onClick={handleSubmit}>
             Save and Add New
