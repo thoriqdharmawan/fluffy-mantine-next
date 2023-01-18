@@ -1,7 +1,8 @@
-import { Drawer, ScrollArea, useMantineTheme } from '@mantine/core';
+import { Drawer, ScrollArea, useMantineTheme, Text} from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 
 interface Props {
-  title: string;
+  title: string | React.ReactNode;
   opened: boolean;
   onClose: () => void;
   children: JSX.Element;
@@ -10,6 +11,7 @@ interface Props {
 export default function DrawerContainer(props: Props) {
   const { opened, onClose, title, children } = props;
 
+  const matches = useMediaQuery('(min-width: 800px)');
   const theme = useMantineTheme();
 
   return (
@@ -21,7 +23,7 @@ export default function DrawerContainer(props: Props) {
       overlayBlur={3}
       position="right"
       title={title}
-      padding="xl"
+      padding={matches ? 'lg' : 'xs'}
       size={800}
     >
       <ScrollArea offsetScrollbars style={{ height: 'calc(100vh - 88px)' }}>

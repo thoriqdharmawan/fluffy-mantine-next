@@ -4,6 +4,10 @@ import { AppShell, useMantineTheme, Box } from '@mantine/core';
 import Navbar from '../components/navbar';
 import Header from '../components/header';
 import BillsCollector from '../components/bills/BillsCollector';
+import FooterLayout from '../components/footer/FooterLayout';
+
+import { MOCK_FOOTER } from '../mock/footer';
+
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const theme = useMantineTheme();
@@ -21,6 +25,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       asideOffsetBreakpoint="sm"
       navbar={<Navbar opened={opened} />}
       header={<Header opened={opened} setOpened={setOpened} />}
+      footer={<FooterLayout data={MOCK_FOOTER.data} /> }
+      layout='alt'
     >
       <Box w="100%" component='div'>
         {children}
