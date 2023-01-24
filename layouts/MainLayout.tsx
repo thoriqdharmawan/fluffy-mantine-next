@@ -8,7 +8,6 @@ import FooterLayout from '../components/footer/FooterLayout';
 
 import { MOCK_FOOTER } from '../mock/footer';
 
-
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState<boolean>(false);
@@ -16,6 +15,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   return (
     <AppShell
       styles={{
+        root: {
+          background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
+        },
         main: {
           background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
           display: 'flex',
@@ -25,10 +27,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       asideOffsetBreakpoint="sm"
       navbar={<Navbar opened={opened} />}
       header={<Header opened={opened} setOpened={setOpened} />}
-      footer={<FooterLayout data={MOCK_FOOTER.data} /> }
-      layout='alt'
+      footer={<FooterLayout data={MOCK_FOOTER.data} />}
+      layout="alt"
     >
-      <Box w="100%" component='div'>
+      <Box w="100%" component="div">
         {children}
       </Box>
       <BillsCollector />

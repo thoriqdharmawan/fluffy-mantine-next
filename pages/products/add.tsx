@@ -5,10 +5,9 @@ import {
   Title,
   Textarea,
   SegmentedControl,
-  NumberInput,
-  Group,
-  Select,
   MultiSelect,
+  Group,
+  Button,
 } from '@mantine/core';
 import { useState } from 'react';
 import { useForm } from '@mantine/form';
@@ -16,20 +15,55 @@ import { useForm } from '@mantine/form';
 import MainLayout from '../../layouts/MainLayout';
 import DropzoneUpload from '../../components/dropzone/DropzoneUpload';
 
+import AddProductVariant from '../../modules/products/form-add-product/AddProductVariant';
+import AddProductNoVariant from '../../modules/products/form-add-product/AddProductNoVariant';
+
+import { ProductsCardProps, DEFAULT_PRODUCT_CATEGORIES } from '../../mock/products';
+import { GLOABL_STATUS } from '../../mock/global';
+
 type Props = {};
 
+export interface FormValues extends ProductsCardProps {}
+
 export default function AddProducts({}: Props) {
+  const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
   const [value, setValue] = useState('NOVARIANT');
-  const form = useForm({
+
+  const form = useForm<FormValues>({
     initialValues: {
-      name: '',
+      image: '',
+      name: 'Kopi Kapal Api',
       description: '',
+      category: ['Makanan', 'Minuman'],
+      hasVariants: false,
+      variants: undefined,
+      prioductVariants: [
+        {
+          coord: [0, 0],
+          sku: '123331',
+          price: 1000,
+          stock: 10,
+          status: GLOABL_STATUS.ACTIVE,
+          isPrimary: true,
+        },
+      ],
     },
 
     validate: {
       name: (value) => (!value ? 'This field is required' : null),
     },
   });
+
+
+  const handleSubmit = () => {
+    const { hasErrors } = form.validate();
+
+    if (!hasErrors) {
+      console.log(form.values)
+      form.clearErrors();
+      form.reset();
+    }
+  };
 
   return (
     <MainLayout>
@@ -48,16 +82,24 @@ export default function AddProducts({}: Props) {
           mb={24}
           {...form.getInputProps('name')}
         />
-        <TextInput
+        <MultiSelect
           label="Kategori"
           placeholder="Tambahkan Kategori"
           labelProps={{ mb: 8 }}
           mb={24}
+          data={categories}
+          searchable
+          creatable
+          getCreateLabel={(query) => `+ Tambah "${query}"`}
+          onCreate={(query) => {
+            setCategories((current) => [...current, query]);
+            return query;
+          }}
           {...form.getInputProps('category')}
         />
 
         <Textarea
-          label="Kategori"
+          label="Deskripsi"
           placeholder="Tambahkan Deskripsi Produk"
           labelProps={{ mb: 8 }}
           mb={24}
@@ -79,60 +121,15 @@ export default function AddProducts({}: Props) {
             { label: 'Peroduk Dengan Varian', value: 'VARIANT' },
           ]}
         />
-        {value === 'VARIANT' ? (
-          <Group sx={{ alignItems: 'end', flexWrap: 'nowrap' }}>
-            <Select
-              labelProps={{ mb: 8 }}
-              mb={24}
-              label="Tipe Varian"
-              placeholder="Pilih Tipe Varian"
-              data={[]}
-            />
-            <MultiSelect
-              labelProps={{ mb: 8 }}
-              mb={24}
-              maw={600}
-              w="100%"
-              placeholder="Ketik untuk menambahkan tipe varian"
-              data={[]}
-            />
-          </Group>
-        ) : (
-          <>
-            <NumberInput
-              label="Harga"
-              placeholder="Tambahkan Harga"
-              min={0}
-              icon="Rp"
-              labelProps={{ mb: 8 }}
-              mb={24}
-              parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
-              formatter={(value: any) =>
-                !Number.isNaN(parseFloat(value))
-                  ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                  : ''
-              }
-              {...form.getInputProps('price')}
-            />
-
-            <TextInput
-              label="SKU"
-              placeholder="Tambahkan SKU"
-              labelProps={{ mb: 8 }}
-              mb={24}
-              {...form.getInputProps('sku')}
-            />
-            
-            <NumberInput
-              label="Stok"
-              placeholder="Tambahkan Stok"
-              labelProps={{ mb: 8 }}
-              mb={24}
-              {...form.getInputProps('stock')}
-            />
-          </>
-        )}
+        {value === 'NOVARIANT' && <AddProductNoVariant form={form} />}
+        {value === 'VARIANT' && <AddProductVariant />}
       </Paper>
+      <Group position="right" mt="md">
+        <Button variant="subtle" onClick={handleSubmit}>
+          Simpan dan Tambah Baru
+        </Button>
+        <Button onClick={handleSubmit}>Simpan Product</Button>
+      </Group>
     </MainLayout>
   );
 }
