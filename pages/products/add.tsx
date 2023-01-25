@@ -8,9 +8,14 @@ import {
   MultiSelect,
   Group,
   Button,
+  Flex,
+  Grid,
+  Col,
+  useMantineTheme,
 } from '@mantine/core';
 import { useState } from 'react';
 import { useForm } from '@mantine/form';
+import { useRouter } from 'next/router';
 
 import MainLayout from '../../layouts/MainLayout';
 import DropzoneUpload from '../../components/dropzone/DropzoneUpload';
@@ -18,16 +23,18 @@ import DropzoneUpload from '../../components/dropzone/DropzoneUpload';
 import AddProductVariant from '../../modules/products/form-add-product/AddProductVariant';
 import AddProductNoVariant from '../../modules/products/form-add-product/AddProductNoVariant';
 
-import { ProductsCardProps, DEFAULT_PRODUCT_CATEGORIES } from '../../mock/products';
+import { ProductsCardProps, DEFAULT_PRODUCT_CATEGORIES, ProductType } from '../../mock/products';
 import { GLOABL_STATUS } from '../../mock/global';
+import { openConfirmModal } from '@mantine/modals';
 
 type Props = {};
 
 export interface FormValues extends ProductsCardProps {}
 
 export default function AddProducts({}: Props) {
+  const theme = useMantineTheme();
+  const router = useRouter();
   const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
-  const [value, setValue] = useState('NOVARIANT');
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -35,7 +42,7 @@ export default function AddProducts({}: Props) {
       name: 'Kopi Kapal Api',
       description: '',
       category: ['Makanan', 'Minuman'],
-      hasVariants: false,
+      type: 'NOVARIANT',
       variants: undefined,
       prioductVariants: [
         {
@@ -54,15 +61,41 @@ export default function AddProducts({}: Props) {
     },
   });
 
+  const { type } = form.values;
 
   const handleSubmit = () => {
     const { hasErrors } = form.validate();
 
     if (!hasErrors) {
-      console.log(form.values)
+      console.log(form.values);
       form.clearErrors();
       form.reset();
     }
+  };
+
+  const handleBack = () => {
+    router.back();
+  };
+
+  const handleOpenConfirmationVariants = (value: ProductType) => {
+    openConfirmModal({
+      title: 'Ubah Tipe Produk?',
+      centered: true,
+      overlayOpacity: 0.55,
+      overlayBlur: 3,
+      overlayColor: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
+      children: (
+        <Text size="sm">
+          Apakah Anda yakin mengubah tipe produk? Detail Produk yang telah anda isi sebelumnya akan
+          menghilang.
+        </Text>
+      ),
+      labels: { confirm: 'Ya, Ubah Tipe Produk', cancel: 'Batalkan' },
+      onCancel: () => console.log('Cancel'),
+      onConfirm: () => {
+        form.setFieldValue('type', value);
+      },
+    });
   };
 
   return (
@@ -72,40 +105,44 @@ export default function AddProducts({}: Props) {
         <Title order={4} mb="xl">
           Informasi Produk
         </Title>
+        <Grid align="center" gutter="xl">
+          <Col span="content">
+            <DropzoneUpload mb="md" multiple={false} />
+          </Col>
+          <Col span={12} lg="auto">
+            <TextInput
+              label="Nama Produk"
+              placeholder="Tambahkan Nama Produk"
+              labelProps={{ mb: 8 }}
+              mb={24}
+              {...form.getInputProps('name')}
+            />
+            <MultiSelect
+              label="Kategori"
+              placeholder="Tambahkan Kategori"
+              labelProps={{ mb: 8 }}
+              mb={24}
+              data={categories}
+              searchable
+              creatable
+              getCreateLabel={(query) => `+ Tambah "${query}"`}
+              onCreate={(query) => {
+                setCategories((current) => [...current, query]);
+                return query;
+              }}
+              {...form.getInputProps('category')}
+            />
 
-        <DropzoneUpload mb="md" />
-
-        <TextInput
-          label="Nama Produk"
-          placeholder="Tambahkan Nama Produk"
-          labelProps={{ mb: 8 }}
-          mb={24}
-          {...form.getInputProps('name')}
-        />
-        <MultiSelect
-          label="Kategori"
-          placeholder="Tambahkan Kategori"
-          labelProps={{ mb: 8 }}
-          mb={24}
-          data={categories}
-          searchable
-          creatable
-          getCreateLabel={(query) => `+ Tambah "${query}"`}
-          onCreate={(query) => {
-            setCategories((current) => [...current, query]);
-            return query;
-          }}
-          {...form.getInputProps('category')}
-        />
-
-        <Textarea
-          label="Deskripsi"
-          placeholder="Tambahkan Deskripsi Produk"
-          labelProps={{ mb: 8 }}
-          mb={24}
-          minRows={3}
-          {...form.getInputProps('description')}
-        />
+            <Textarea
+              label="Deskripsi"
+              placeholder="Tambahkan Deskripsi Produk"
+              labelProps={{ mb: 8 }}
+              mb={24}
+              minRows={4}
+              {...form.getInputProps('description')}
+            />
+          </Col>
+        </Grid>
       </Paper>
       <Paper shadow="sm" radius="md" p="xl" mb="xl">
         <Title order={4} mb="xl">
@@ -114,22 +151,27 @@ export default function AddProducts({}: Props) {
 
         <SegmentedControl
           mb="md"
-          onChange={setValue}
-          value={value}
+          onChange={handleOpenConfirmationVariants}
+          value={type}
           data={[
             { label: 'Produk Tanpa Varian', value: 'NOVARIANT' },
             { label: 'Peroduk Dengan Varian', value: 'VARIANT' },
           ]}
         />
-        {value === 'NOVARIANT' && <AddProductNoVariant form={form} />}
-        {value === 'VARIANT' && <AddProductVariant />}
+        {type === 'NOVARIANT' && <AddProductNoVariant form={form} />}
+        {type === 'VARIANT' && <AddProductVariant />}
       </Paper>
-      <Group position="right" mt="md">
-        <Button variant="subtle" onClick={handleSubmit}>
-          Simpan dan Tambah Baru
+      <Flex justify="space-between" align="center">
+        <Button variant="subtle" onClick={handleBack}>
+          Batalkan
         </Button>
-        <Button onClick={handleSubmit}>Simpan Product</Button>
-      </Group>
+        <Group position="right" mt="md">
+          <Button variant="subtle" onClick={handleSubmit}>
+            Simpan dan Tambah Baru
+          </Button>
+          <Button onClick={handleSubmit}>Simpan Product</Button>
+        </Group>
+      </Flex>
     </MainLayout>
   );
 }

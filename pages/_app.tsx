@@ -2,8 +2,10 @@ import { useState } from 'react';
 import NextApp, { AppProps, AppContext } from 'next/app';
 import { getCookie, setCookie } from 'cookies-next';
 import Head from 'next/head';
+
 import { MantineProvider, ColorScheme, ColorSchemeProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
+import { ModalsProvider } from '@mantine/modals';
 
 import AuthStateChangeProvider from '../context/auth';
 import { UserProvider } from '../context/user';
@@ -29,13 +31,15 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
       <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
         <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
           <NotificationsProvider>
-            <UserProvider>
-              <BillsProvider>
-                <AuthStateChangeProvider>
-                  <Component {...pageProps} />
-                </AuthStateChangeProvider>
-              </BillsProvider>
-            </UserProvider>
+            <ModalsProvider>
+              <UserProvider>
+                <BillsProvider>
+                  <AuthStateChangeProvider>
+                    <Component {...pageProps} />
+                  </AuthStateChangeProvider>
+                </BillsProvider>
+              </UserProvider>
+            </ModalsProvider>
           </NotificationsProvider>
         </MantineProvider>
       </ColorSchemeProvider>

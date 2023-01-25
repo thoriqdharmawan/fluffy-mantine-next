@@ -14,6 +14,8 @@ interface TableProductsVariants {
   isPrimary: boolean;
 }
 
+export declare type ProductType = 'VARIANT' | 'NOVARIANT';
+
 export interface ProductsCardProps {
   id?: string;
   image: string | undefined;
@@ -22,12 +24,12 @@ export interface ProductsCardProps {
   description?: string;
   category?: string[];
 
-  hasVariants: boolean;
+  type: ProductType;
   variants?: VariantInterface[];
   prioductVariants?: TableProductsVariants[];
 }
 
-export const DEFAULT_PRODUCT_CATEGORIES = ['Makanan', 'Minuman', 'Pakaian']
+export const DEFAULT_PRODUCT_CATEGORIES = ['Makanan', 'Minuman', 'Pakaian'];
 
 export const PRODUCTS: ProductsCardProps[] = [
   {
@@ -39,7 +41,7 @@ export const PRODUCTS: ProductsCardProps[] = [
     description: 'Completely renovated for the season 2020, Arena Verudela.',
     category: ['Makanan', 'Minuman'],
 
-    hasVariants: true,
+    type: 'VARIANT',
     variants: [
       {
         label: 'Ukuran',
@@ -109,6 +111,6 @@ export const PRODUCTS: ProductsCardProps[] = [
 
     description: 'Completely renovated for the season 2020, Arena Verudela.',
     category: ['Makanan', 'Minuman'],
-    hasVariants: false,
+    type: 'VARIANT',
   },
 ];
