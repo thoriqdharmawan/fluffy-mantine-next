@@ -8,9 +8,13 @@ import {
   MultiSelect,
   Group,
   Button,
+  Flex,
+  Grid,
+  Col,
 } from '@mantine/core';
 import { useState } from 'react';
 import { useForm } from '@mantine/form';
+import { useRouter } from 'next/router';
 
 import MainLayout from '../../layouts/MainLayout';
 import DropzoneUpload from '../../components/dropzone/DropzoneUpload';
@@ -26,6 +30,7 @@ type Props = {};
 export interface FormValues extends ProductsCardProps {}
 
 export default function AddProducts({}: Props) {
+  const router = useRouter();
   const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
   const [value, setValue] = useState('NOVARIANT');
 
@@ -54,15 +59,18 @@ export default function AddProducts({}: Props) {
     },
   });
 
-
   const handleSubmit = () => {
     const { hasErrors } = form.validate();
 
     if (!hasErrors) {
-      console.log(form.values)
+      console.log(form.values);
       form.clearErrors();
       form.reset();
     }
+  };
+
+  const handleBack = () => {
+    router.back();
   };
 
   return (
@@ -72,40 +80,44 @@ export default function AddProducts({}: Props) {
         <Title order={4} mb="xl">
           Informasi Produk
         </Title>
+        <Grid align="center" gutter="xl">
+          <Col span="content">
+            <DropzoneUpload mb="md" multiple={false} />
+          </Col>
+          <Col span={12} lg="auto">
+            <TextInput
+              label="Nama Produk"
+              placeholder="Tambahkan Nama Produk"
+              labelProps={{ mb: 8 }}
+              mb={24}
+              {...form.getInputProps('name')}
+            />
+            <MultiSelect
+              label="Kategori"
+              placeholder="Tambahkan Kategori"
+              labelProps={{ mb: 8 }}
+              mb={24}
+              data={categories}
+              searchable
+              creatable
+              getCreateLabel={(query) => `+ Tambah "${query}"`}
+              onCreate={(query) => {
+                setCategories((current) => [...current, query]);
+                return query;
+              }}
+              {...form.getInputProps('category')}
+            />
 
-        <DropzoneUpload mb="md" />
-
-        <TextInput
-          label="Nama Produk"
-          placeholder="Tambahkan Nama Produk"
-          labelProps={{ mb: 8 }}
-          mb={24}
-          {...form.getInputProps('name')}
-        />
-        <MultiSelect
-          label="Kategori"
-          placeholder="Tambahkan Kategori"
-          labelProps={{ mb: 8 }}
-          mb={24}
-          data={categories}
-          searchable
-          creatable
-          getCreateLabel={(query) => `+ Tambah "${query}"`}
-          onCreate={(query) => {
-            setCategories((current) => [...current, query]);
-            return query;
-          }}
-          {...form.getInputProps('category')}
-        />
-
-        <Textarea
-          label="Deskripsi"
-          placeholder="Tambahkan Deskripsi Produk"
-          labelProps={{ mb: 8 }}
-          mb={24}
-          minRows={3}
-          {...form.getInputProps('description')}
-        />
+            <Textarea
+              label="Deskripsi"
+              placeholder="Tambahkan Deskripsi Produk"
+              labelProps={{ mb: 8 }}
+              mb={24}
+              minRows={4}
+              {...form.getInputProps('description')}
+            />
+          </Col>
+        </Grid>
       </Paper>
       <Paper shadow="sm" radius="md" p="xl" mb="xl">
         <Title order={4} mb="xl">
@@ -124,12 +136,17 @@ export default function AddProducts({}: Props) {
         {value === 'NOVARIANT' && <AddProductNoVariant form={form} />}
         {value === 'VARIANT' && <AddProductVariant />}
       </Paper>
-      <Group position="right" mt="md">
-        <Button variant="subtle" onClick={handleSubmit}>
-          Simpan dan Tambah Baru
+      <Flex justify="space-between" align="center">
+        <Button variant="subtle" onClick={handleBack}>
+          Batalkan
         </Button>
-        <Button onClick={handleSubmit}>Simpan Product</Button>
-      </Group>
+        <Group position="right" mt="md">
+          <Button variant="subtle" onClick={handleSubmit}>
+            Simpan dan Tambah Baru
+          </Button>
+          <Button onClick={handleSubmit}>Simpan Product</Button>
+        </Group>
+      </Flex>
     </MainLayout>
   );
 }
