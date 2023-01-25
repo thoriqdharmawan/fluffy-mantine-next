@@ -11,6 +11,7 @@ import {
   Flex,
   Grid,
   Col,
+  useMantineTheme,
 } from '@mantine/core';
 import { useState } from 'react';
 import { useForm } from '@mantine/form';
@@ -24,12 +25,14 @@ import AddProductNoVariant from '../../modules/products/form-add-product/AddProd
 
 import { ProductsCardProps, DEFAULT_PRODUCT_CATEGORIES, ProductType } from '../../mock/products';
 import { GLOABL_STATUS } from '../../mock/global';
+import { openConfirmModal } from '@mantine/modals';
 
 type Props = {};
 
 export interface FormValues extends ProductsCardProps {}
 
 export default function AddProducts({}: Props) {
+  const theme = useMantineTheme();
   const router = useRouter();
   const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
 
@@ -39,7 +42,7 @@ export default function AddProducts({}: Props) {
       name: 'Kopi Kapal Api',
       description: '',
       category: ['Makanan', 'Minuman'],
-      type: 'VARIANT',
+      type: 'NOVARIANT',
       variants: undefined,
       prioductVariants: [
         {
@@ -72,6 +75,27 @@ export default function AddProducts({}: Props) {
 
   const handleBack = () => {
     router.back();
+  };
+
+  const handleOpenConfirmationVariants = (value: ProductType) => {
+    openConfirmModal({
+      title: 'Ubah Tipe Produk?',
+      centered: true,
+      overlayOpacity: 0.55,
+      overlayBlur: 3,
+      overlayColor: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
+      children: (
+        <Text size="sm">
+          Apakah Anda yakin mengubah tipe produk? Detail Produk yang telah anda isi sebelumnya akan
+          menghilang.
+        </Text>
+      ),
+      labels: { confirm: 'Ya, Ubah Tipe Produk', cancel: 'Batalkan' },
+      onCancel: () => console.log('Cancel'),
+      onConfirm: () => {
+        form.setFieldValue('type', value);
+      },
+    });
   };
 
   return (
@@ -127,7 +151,7 @@ export default function AddProducts({}: Props) {
 
         <SegmentedControl
           mb="md"
-          onChange={(value: ProductType) => form.setFieldValue('type', value)}
+          onChange={handleOpenConfirmationVariants}
           value={type}
           data={[
             { label: 'Produk Tanpa Varian', value: 'NOVARIANT' },
