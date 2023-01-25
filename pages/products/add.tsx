@@ -22,7 +22,7 @@ import DropzoneUpload from '../../components/dropzone/DropzoneUpload';
 import AddProductVariant from '../../modules/products/form-add-product/AddProductVariant';
 import AddProductNoVariant from '../../modules/products/form-add-product/AddProductNoVariant';
 
-import { ProductsCardProps, DEFAULT_PRODUCT_CATEGORIES } from '../../mock/products';
+import { ProductsCardProps, DEFAULT_PRODUCT_CATEGORIES, ProductType } from '../../mock/products';
 import { GLOABL_STATUS } from '../../mock/global';
 
 type Props = {};
@@ -32,7 +32,6 @@ export interface FormValues extends ProductsCardProps {}
 export default function AddProducts({}: Props) {
   const router = useRouter();
   const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
-  const [value, setValue] = useState('NOVARIANT');
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -40,7 +39,7 @@ export default function AddProducts({}: Props) {
       name: 'Kopi Kapal Api',
       description: '',
       category: ['Makanan', 'Minuman'],
-      hasVariants: false,
+      type: 'VARIANT',
       variants: undefined,
       prioductVariants: [
         {
@@ -58,6 +57,8 @@ export default function AddProducts({}: Props) {
       name: (value) => (!value ? 'This field is required' : null),
     },
   });
+
+  const { type } = form.values;
 
   const handleSubmit = () => {
     const { hasErrors } = form.validate();
@@ -126,15 +127,15 @@ export default function AddProducts({}: Props) {
 
         <SegmentedControl
           mb="md"
-          onChange={setValue}
-          value={value}
+          onChange={(value: ProductType) => form.setFieldValue('type', value)}
+          value={type}
           data={[
             { label: 'Produk Tanpa Varian', value: 'NOVARIANT' },
             { label: 'Peroduk Dengan Varian', value: 'VARIANT' },
           ]}
         />
-        {value === 'NOVARIANT' && <AddProductNoVariant form={form} />}
-        {value === 'VARIANT' && <AddProductVariant />}
+        {type === 'NOVARIANT' && <AddProductNoVariant form={form} />}
+        {type === 'VARIANT' && <AddProductVariant />}
       </Paper>
       <Flex justify="space-between" align="center">
         <Button variant="subtle" onClick={handleBack}>
