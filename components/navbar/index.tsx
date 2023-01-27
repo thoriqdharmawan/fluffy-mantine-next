@@ -1,5 +1,5 @@
 import { Navbar as Nav, NavLink } from '@mantine/core';
-import { IconHome2, IconBrandSuperhuman, IconBusinessplan, IconUsers, IconBuildingSkyscraper } from '@tabler/icons';
+import { IconHome2, IconBrandSuperhuman, IconBusinessplan, IconUsers, IconBuildingSkyscraper, IconReceiptRefund } from '@tabler/icons';
 import { useRouter } from 'next/router';
 
 import Link from 'next/link';
@@ -23,6 +23,7 @@ const data = [
   { icon: IconBusinessplan, label: 'Products', href: '/products' },
   { icon: IconBusinessplan, label: 'Products Test', href: '/products-test' },
   { icon: IconBuildingSkyscraper, label: 'Company', href: '/company' },
+  { icon: IconReceiptRefund, label: 'Riwayat Pesanan', href: '/orders-histories' },
 ];
 
 export default function Navbar(props: NabarProps) {
