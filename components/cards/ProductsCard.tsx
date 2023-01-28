@@ -28,7 +28,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export default function ProductsCard({ image, name, description }: ProductsCardProps) {
-  const { classes, theme } = useStyles();
+  const { classes } = useStyles();
 
   return (
     <Card withBorder radius="md" p="md" className={classes.card}>
