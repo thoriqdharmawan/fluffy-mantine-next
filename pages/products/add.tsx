@@ -53,7 +53,7 @@ export default function AddProducts({}: Props) {
       category: ['Makanan', 'Minuman'],
       type: 'NOVARIANT',
       variants: undefined,
-      prioductVariants: [
+      productVariants: [
         {
           coord: [0, 0],
           sku: '123331',
@@ -96,11 +96,11 @@ export default function AddProducts({}: Props) {
           const productId = docRef.id;
 
           const categoriesRef = collection(db, `/categories`);
-          const prodVariantsRef = collection(db, `/prioductVariants`);
+          const prodVariantsRef = collection(db, `/productVariants`);
 
           const promCategories = addDoc(categoriesRef, { category: values.category, productId });
           const promVariants = addDoc(prodVariantsRef, {
-            prioductVariants: values.prioductVariants,
+            productVariants: values.productVariants,
             productId,
           });
 

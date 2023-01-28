@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Grid } from '@mantine/core';
+import { Grid, Text } from '@mantine/core';
 
 import {
   DocumentData,
@@ -43,15 +43,20 @@ export default function ListProducts({}: Props) {
     getData();
   }, []);
 
+  console.log({data})
+
   return (
-    <Grid>
-      {data?.map((product) => {
-        return (
-          <Grid.Col key={product.id} sm={bills.open ? 12 : 6} md={bills.open ? 6 : 4}>
-            <ProductsCard {...product} />
-          </Grid.Col>
-        );
-      })}
-    </Grid>
+    <>
+      <Text mb={12}>Total Data : {total}</Text>
+      <Grid>
+        {data?.map((product) => {
+          return (
+            <Grid.Col key={product.id} sm={bills.open ? 12 : 6} md={bills.open ? 6 : 4}>
+              <ProductsCard {...product} />
+            </Grid.Col>
+          );
+        })}
+      </Grid>
+    </>
   );
 }

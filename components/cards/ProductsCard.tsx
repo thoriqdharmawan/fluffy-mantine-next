@@ -1,6 +1,11 @@
+import { useEffect, useState } from 'react';
+import { collection, getDocs, query, DocumentData, where } from 'firebase/firestore';
 import { IconHeart } from '@tabler/icons';
-import { Card, Image, Text, Group, Button, ActionIcon, createStyles } from '@mantine/core';
+import { Card, Image, Text, Group, Button, ActionIcon, createStyles, Spoiler } from '@mantine/core';
+
 import { ProductsCardProps } from '../../mock/products';
+
+import { db } from '../../services/firebase';
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -25,10 +30,38 @@ const useStyles = createStyles((theme) => ({
     fontSize: theme.fontSizes.xs,
     fontWeight: 700,
   },
+
+  spoilerLabel: {
+    fontSize: 12,
+    marginTop: 12,
+  },
 }));
 
-export default function ProductsCard({ image, name, description }: ProductsCardProps) {
+export default function ProductsCard({ id, image, name, description }: ProductsCardProps) {
   const { classes } = useStyles();
+  const [data, setData] = useState<any>();
+
+  const variantsRef = collection(db, 'productVariants');
+
+  const getVariants = async () => {
+    try {
+      console.log(id);
+      const q = query(variantsRef, where('productId', '==', id));
+      const data = await getDocs(q);
+
+      const result = data.docs.map((doc: DocumentData) => ({ ...doc.data(), id: doc.id }));
+
+      setData(result?.[0]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    getVariants();
+  }, []);
+
+  console.log({ data });
 
   return (
     <Card withBorder radius="md" p="md" className={classes.card}>
@@ -37,14 +70,25 @@ export default function ProductsCard({ image, name, description }: ProductsCardP
       </Card.Section>
 
       <Card.Section className={classes.section} mt="md">
+        <Text size="sm" variant="gradient">
+          {id}
+        </Text>
         <Group position="apart">
           <Text size="lg" weight={500}>
             {name}
           </Text>
+          <Text size="sm">{data?.productVariants?.[0].price}</Text>
         </Group>
-        <Text size="sm" mt="xs">
-          {description}
-        </Text>
+        <Spoiler
+          maxHeight={80}
+          classNames={{ control: classes.spoilerLabel }}
+          showLabel="Lihat Lebih Banyak"
+          hideLabel="Lihat Lebih Sedikit"
+        >
+          <Text size="sm" mt="xs">
+            {description}
+          </Text>
+        </Spoiler>
       </Card.Section>
 
       <Card.Section className={classes.section}>
