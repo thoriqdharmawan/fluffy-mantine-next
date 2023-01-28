@@ -3,19 +3,33 @@ import { useState } from 'react';
 import { Button, Flex, Group, Text, useMantineTheme, Image } from '@mantine/core';
 import { IconUpload, IconPhoto, IconX } from '@tabler/icons';
 import { Dropzone, DropzoneProps, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { type UseFormReturnType } from '@mantine/form';
 
-export default function DropzoneUpload(props: Partial<DropzoneProps>) {
+import { FormValues } from '../../pages/products/add';
+
+interface DropzoneInterface extends Partial<DropzoneProps> {
+  form: UseFormReturnType<FormValues>;
+}
+
+export default function DropzoneUpload(props: DropzoneInterface) {
+  const { form } = props;
   const theme = useMantineTheme();
   const [files, setFiles] = useState<FileWithPath[]>([]);
 
-  const handleDeleteFiles = () => setFiles([]);
+  const handleDeleteFiles = () => {
+    if (form?.values.image) {
+      form.setValues({ image: '' });
+    } else {
+      setFiles([]);
+    }
+  };
 
-  const preview = files.map((file, index) => {
-    const imageUrl = URL.createObjectURL(file);
+  if (form?.values.image || files[0]) {
+    const imageUrl = form?.values.image || URL.createObjectURL(files?.[0]);
+
     return (
       <Flex direction="column">
         <Image
-          key={index}
           src={imageUrl}
           imageProps={{ onLoad: () => URL.revokeObjectURL(imageUrl) }}
           radius="md"
@@ -28,10 +42,6 @@ export default function DropzoneUpload(props: Partial<DropzoneProps>) {
         </Button>
       </Flex>
     );
-  });
-
-  if (files[0]) {
-    return <>{preview}</>;
   }
 
   return (
