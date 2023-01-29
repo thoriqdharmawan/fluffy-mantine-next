@@ -26,7 +26,7 @@ export interface ProductsCardProps {
 
   type: ProductType;
   variants?: VariantInterface[];
-  prioductVariants?: TableProductsVariants[];
+  productVariants?: TableProductsVariants[];
 }
 
 export const DEFAULT_PRODUCT_CATEGORIES = ['Makanan', 'Minuman', 'Pakaian'];
@@ -52,7 +52,7 @@ export const PRODUCTS: ProductsCardProps[] = [
         values: ['Hitam', 'Biru'],
       },
     ],
-    prioductVariants: [
+    productVariants: [
       {
         coord: [0, 0],
         sku: 'PF21AS1',

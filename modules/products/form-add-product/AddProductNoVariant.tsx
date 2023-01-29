@@ -17,7 +17,7 @@ export default function AddProductNoVariant({ form }: { form: UseFormReturnType<
         formatter={(value: any) =>
           !Number.isNaN(parseFloat(value)) ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''
         }
-        {...form.getInputProps('prioductVariants.0.price')}
+        {...form.getInputProps('productVariants.0.price')}
       />
 
       <TextInput
@@ -25,7 +25,7 @@ export default function AddProductNoVariant({ form }: { form: UseFormReturnType<
         placeholder="Tambahkan SKU"
         labelProps={{ mb: 8 }}
         mb={24}
-        {...form.getInputProps('prioductVariants.0.sku')}
+        {...form.getInputProps('productVariants.0.sku')}
       />
 
       <NumberInput
@@ -33,7 +33,7 @@ export default function AddProductNoVariant({ form }: { form: UseFormReturnType<
         placeholder="Tambahkan Stok"
         labelProps={{ mb: 8 }}
         mb={24}
-        {...form.getInputProps('prioductVariants.0.stock')}
+        {...form.getInputProps('productVariants.0.stock')}
       />
     </>
   );

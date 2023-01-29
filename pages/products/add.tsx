@@ -13,9 +13,13 @@ import {
   Col,
   useMantineTheme,
 } from '@mantine/core';
-import { useState } from 'react';
+import { openConfirmModal } from '@mantine/modals';
+import { showNotification } from '@mantine/notifications';
 import { useForm } from '@mantine/form';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { addDoc, collection } from 'firebase/firestore';
+import { IconCheck } from '@tabler/icons';
 
 import MainLayout from '../../layouts/MainLayout';
 import DropzoneUpload from '../../components/dropzone/DropzoneUpload';
@@ -25,7 +29,8 @@ import AddProductNoVariant from '../../modules/products/form-add-product/AddProd
 
 import { ProductsCardProps, DEFAULT_PRODUCT_CATEGORIES, ProductType } from '../../mock/products';
 import { GLOABL_STATUS } from '../../mock/global';
-import { openConfirmModal } from '@mantine/modals';
+
+import { db } from '../../services/firebase';
 
 type Props = {};
 
@@ -34,17 +39,21 @@ export interface FormValues extends ProductsCardProps {}
 export default function AddProducts({}: Props) {
   const theme = useMantineTheme();
   const router = useRouter();
+
   const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
+
+  const productsRef = collection(db, 'products');
 
   const form = useForm<FormValues>({
     initialValues: {
-      image: '',
+      image:
+        'https://firebasestorage.googleapis.com/v0/b/fluffy-d91c4.appspot.com/o/A_small_cup_of_coffee.jpg?alt=media&token=7a03e4e8-a163-4f7a-9979-06546cb4d04d',
       name: 'Kopi Kapal Api',
       description: '',
       category: ['Makanan', 'Minuman'],
       type: 'NOVARIANT',
       variants: undefined,
-      prioductVariants: [
+      productVariants: [
         {
           coord: [0, 0],
           sku: '123331',
@@ -63,18 +72,67 @@ export default function AddProducts({}: Props) {
 
   const { type } = form.values;
 
-  const handleSubmit = () => {
+  const handleBack = () => {
+    router.push('/products');
+    form.clearErrors();
+    form.reset();
+  };
+
+  const handleSubmit = async () => {
     const { hasErrors } = form.validate();
 
     if (!hasErrors) {
-      console.log(form.values);
-      form.clearErrors();
-      form.reset();
-    }
-  };
+      const { values } = form;
 
-  const handleBack = () => {
-    router.back();
+      const variables = {
+        name: values.name,
+        image: values.image,
+        description: values.description,
+        type: values.type,
+      };
+
+      await addDoc(productsRef, variables)
+        .then((docRef) => {
+          const productId = docRef.id;
+
+          const categoriesRef = collection(db, `/categories`);
+          const prodVariantsRef = collection(db, `/productVariants`);
+
+          const promCategories = addDoc(categoriesRef, { category: values.category, productId });
+          const promVariants = addDoc(prodVariantsRef, {
+            productVariants: values.productVariants,
+            productId,
+          });
+
+          Promise.all([promCategories, promVariants])
+            .then(() => {
+              showNotification({
+                title: 'Yeayy, Sukses!!',
+                message: 'Produk berhasil dibuat 😊',
+                icon: <IconCheck />,
+                color: 'green',
+              });
+
+              handleBack();
+            })
+            .catch(() => {
+              showNotification({
+                title: 'Gagal Membuat Varian Produk',
+                message: 'Coba Lagi nanti 🤥',
+                icon: <IconCheck />,
+                color: 'red',
+              });
+            });
+        })
+        .catch(() => {
+          showNotification({
+            title: 'Gagal Membuat Produk',
+            message: 'Coba Lagi nanti 🤥',
+            icon: <IconCheck />,
+            color: 'red',
+          });
+        });
+    }
   };
 
   const handleOpenConfirmationVariants = (value: ProductType) => {
@@ -91,7 +149,7 @@ export default function AddProducts({}: Props) {
         </Text>
       ),
       labels: { confirm: 'Ya, Ubah Tipe Produk', cancel: 'Batalkan' },
-      onCancel: () => console.log('Cancel'),
+      // onCancel: () => console.log('Cancel'),
       onConfirm: () => {
         form.setFieldValue('type', value);
       },
@@ -107,7 +165,7 @@ export default function AddProducts({}: Props) {
         </Title>
         <Grid align="center" gutter="xl">
           <Col span="content">
-            <DropzoneUpload mb="md" multiple={false} />
+            <DropzoneUpload form={form} mb="md" multiple={false} />
           </Col>
           <Col span={12} lg="auto">
             <TextInput

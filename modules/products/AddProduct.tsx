@@ -20,6 +20,7 @@ interface Props {
   onClose: () => void;
 }
 
+
 export default function AddProduct(props: Props) {
   const { opened, onClose } = props;
 

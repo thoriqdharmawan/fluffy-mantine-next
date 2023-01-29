@@ -5,8 +5,10 @@ import Link from 'next/link';
 
 import MainLayout from '../../layouts/MainLayout';
 import SearchBar from '../../components/SearchBar';
-import ListProducts from '../../modules/products/ListProducts';
 import AddProduct from '../../modules/products/AddProduct';
+
+import ListProductTable from '../../modules/products/ListProductTable';
+import ListProducts from '../../modules/products/ListProducts';
 
 export default function Products() {
   const [opened, setOpened] = useState(false);
@@ -21,7 +23,9 @@ export default function Products() {
           <Button>Add Products New Page</Button>
         </Link>
       </Flex>
+      
 
+      <ListProductTable />
       <ListProducts />
 
       <AddProduct opened={opened} onClose={() => setOpened(false)} />
