@@ -11,7 +11,13 @@ const AuthStateChangeProvider = ({ children }) => {
     Authentication().onAuthStateChanged((user) => {
       if (user) {
         console.log('User is authenticated')
-        SetUser({ email: user.email, uid: user.uid })
+        SetUser({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || "Admin",
+          photoURL: user.photoURL,
+          emailVerified: user.emailVerified
+        })
       } else {
         console.log('User is not authenticated')
         SetUser(InitialUserState)

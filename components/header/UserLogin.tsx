@@ -12,6 +12,9 @@ import {
 } from '@mantine/core';
 
 import { IconChevronDown, IconLogout } from '@tabler/icons';
+import { SignOut } from '../../services/authentication';
+import { useUser } from '../../context/user';
+import { useRouter } from 'next/router';
 
 const useStyles = createStyles((theme) => ({
   user: {
@@ -34,16 +37,28 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-interface UserButtonProps extends UnstyledButtonProps {
-  image: string;
-  name: string;
-  email: string;
-}
+const getInitials = (str: string, photoURL: string) => {
+  if (photoURL) {
+    return str
+      .split(' ')
+      .slice(0, 2)
+      .map((word) => word[0])
+      .join('');
+  }
+};
 
-export function UserLogin({ image, name, email }: UserButtonProps) {
+export function UserLogin() {
   const { classes, cx } = useStyles();
+  const user = useUser();
+  const router = useRouter();
 
   const [userMenuOpened, setUserMenuOpened] = useState(false);
+
+  const handleLogout = async () => {
+    await SignOut();
+    user.ResetUser();
+    router.push('/login');
+  };
 
   return (
     <>
@@ -57,13 +72,15 @@ export function UserLogin({ image, name, email }: UserButtonProps) {
         <Menu.Target>
           <UnstyledButton className={cx(classes.user, { [classes.userActive]: userMenuOpened })}>
             <Group spacing={7}>
-              <Avatar src={image} alt={name} radius="xl" size={32} ml={3} />
+              <Avatar src={user.photoURL} alt={user.displayName} radius="xl" size={32}>
+                {getInitials(user.displayName, user.photoURL)}
+              </Avatar>
               <div>
-                <Text weight={500} size="sm">
-                  {name}
+                <Text weight={500} sx={{ lineHeight: 1 }} size="sm">
+                  {user.displayName}
                 </Text>
-                <Text color="dimmed" size="xs" mt={2}>
-                  {email}
+                <Text color="dimmed" sx={{ lineHeight: 1 }} size="xs" mt={2}>
+                  {user.email}
                 </Text>
               </div>
               <IconChevronDown size={12} stroke={1.5} />
@@ -71,7 +88,9 @@ export function UserLogin({ image, name, email }: UserButtonProps) {
           </UnstyledButton>
         </Menu.Target>
         <Menu.Dropdown>
-          <Menu.Item icon={<IconLogout size={14} stroke={1.5} />}>Logout</Menu.Item>
+          <Menu.Item onClick={handleLogout} icon={<IconLogout size={14} stroke={1.5} />}>
+            Logout
+          </Menu.Item>
         </Menu.Dropdown>
       </Menu>
     </>

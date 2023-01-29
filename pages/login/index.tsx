@@ -6,7 +6,6 @@ import { useRouter } from 'next/router';
 type formLoginType = {
   email: string;
   password: string;
-  termsOfService: Boolean;
 };
 
 export default function index() {
@@ -15,7 +14,6 @@ export default function index() {
     initialValues: {
       email: '',
       password: '',
-      termsOfService: false,
     },
 
     validate: {
@@ -50,12 +48,6 @@ export default function index() {
           type="password"
           placeholder="Input your password"
           {...form.getInputProps('password')}
-        />
-
-        <Checkbox
-          mt="md"
-          label="I agree to sell my privacy"
-          {...form.getInputProps('termsOfService', { type: 'checkbox' })}
         />
 
         <Group position="right" mt="md">
