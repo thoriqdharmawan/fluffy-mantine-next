@@ -1,12 +1,11 @@
-import { TextInput, Checkbox, Button, Group, Box } from '@mantine/core';
+import { TextInput, Button, Group, Box } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { SignIn } from '../../services/authentication';
+import { SignUp } from '../../services/authentication';
 import { useRouter } from 'next/router';
 
 type formLoginType = {
   email: string;
   password: string;
-  termsOfService: Boolean;
 };
 
 export default function index() {
@@ -26,10 +25,9 @@ export default function index() {
 
   const handleSubmit = async (values: formLoginType) => {
     const { email, password } = values;
-
     try {
-      SignIn(email, password);
-      router.push('/');
+      SignUp(email, password);
+      router.push('/login');
     } catch (error) {
       console.log(error);
     }
@@ -50,12 +48,6 @@ export default function index() {
           type="password"
           placeholder="Input your password"
           {...form.getInputProps('password')}
-        />
-
-        <Checkbox
-          mt="md"
-          label="I agree to sell my privacy"
-          {...form.getInputProps('termsOfService', { type: 'checkbox' })}
         />
 
         <Group position="right" mt="md">
