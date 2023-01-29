@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { collection, getDocs, query, DocumentData, where } from 'firebase/firestore';
-import { IconHeart } from '@tabler/icons';
+import { IconTrash } from '@tabler/icons';
 import { Card, Image, Text, Group, Button, ActionIcon, createStyles, Spoiler } from '@mantine/core';
 
 import { ProductsCardProps } from '../../mock/products';
@@ -45,7 +45,6 @@ export default function ProductsCard({ id, image, name, description }: ProductsC
 
   const getVariants = async () => {
     try {
-      console.log(id);
       const q = query(variantsRef, where('productId', '==', id));
       const data = await getDocs(q);
 
@@ -60,8 +59,6 @@ export default function ProductsCard({ id, image, name, description }: ProductsC
   useEffect(() => {
     getVariants();
   }, []);
-
-  console.log({ data });
 
   return (
     <Card withBorder radius="md" p="md" className={classes.card}>
@@ -99,10 +96,10 @@ export default function ProductsCard({ id, image, name, description }: ProductsC
 
       <Group mt="xs">
         <Button radius="md" style={{ flex: 1 }}>
-          Show details
+          Masukan ke Keranjang
         </Button>
         <ActionIcon variant="default" radius="md" size={36}>
-          <IconHeart size={18} className={classes.like} stroke={1.5} />
+          <IconTrash size={18} className={classes.like} stroke={1.5} />
         </ActionIcon>
       </Group>
     </Card>

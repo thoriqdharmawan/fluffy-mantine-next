@@ -11,7 +11,6 @@ import {
 } from 'firebase/firestore';
 
 import { useBills } from '../../context/bills';
-import { PRODUCTS } from '../../mock/products';
 
 import ProductsCard from '../../components/cards/ProductsCard';
 
@@ -42,8 +41,6 @@ export default function ListProducts({}: Props) {
   useEffect(() => {
     getData();
   }, []);
-
-  console.log({data})
 
   return (
     <>
