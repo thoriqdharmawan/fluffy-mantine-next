@@ -4,8 +4,21 @@ import { Table, Paper } from '@mantine/core';
 import { getProducts } from '../../services/products/getProducts';
 import ListProductTableRow from './ListProductTableRow';
 import { ProductsCardProps } from '../../mock/products';
+import { GET_LIST_PRODUCT } from './products.graphql';
+import client from '../../apollo-client';
 
 type Props = {};
+
+const getListProducts = async () => {
+  const { data, error, loading } = await client.query({
+    query: GET_LIST_PRODUCT,
+    variables: {
+      companyId: '90417dfc-06fc-47ca-92be-9603be775301',
+    },
+  });
+
+  return { data, error, loading }
+};
 
 function ListProductTable({}: Props) {
   const [result, setResult] = useState<{ data: any[]; total: number } | undefined>({
@@ -14,14 +27,17 @@ function ListProductTable({}: Props) {
   });
 
   useEffect(() => {
-    const promise: Promise<{ data: ProductsCardProps[]; total: any } | undefined> = getProducts();
+    // const promise: Promise<{ data: ProductsCardProps[]; total: any } | undefined> = getProducts();
 
-    promise.then((res) => {
-      setResult(res);
-    });
+    // promise.then((res) => {
+    //   setResult(res);
+    // });
+
+    getListProducts().then((res) => {
+      console.log("HASILNYA : ", res)
+    })
+
   }, []);
-
-  console.log(result);
 
   return (
     <Paper>

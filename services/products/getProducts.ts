@@ -31,7 +31,6 @@ export const getProducts = async () => {
             detail = { ...doc.data() };
           });
         });
-        console.log("OK : ", { ...doc.data(), id: doc.id, ...detail });
         return { ...doc.data(), id: doc.id, ...detail };
       }),
       total: aggregate.data().count,
