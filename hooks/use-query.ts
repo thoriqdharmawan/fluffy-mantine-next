@@ -1,3 +1,4 @@
+/** @deprecated */
 import {
   DocumentData,
   Query,
