@@ -1,59 +1,63 @@
 import { useState, useEffect } from 'react';
-import { Grid, Text } from '@mantine/core';
+import { Table, Paper, LoadingOverlay } from '@mantine/core';
 
-import {
-  DocumentData,
-  getCountFromServer,
-  getDocs,
-  orderBy,
-  query,
-  collection,
-} from 'firebase/firestore';
+import { getListProducts } from '../../services/products/getProducts';
+import ListProductTableRow from './ListProductTableRow';
 
-import { useBills } from '../../context/bills';
+type Props = {
+  search: string;
+};
 
-import ProductsCard from '../../components/cards/ProductsCard';
-
-import { db } from '../../services/firebase';
-
-type Props = {};
-
-export default function ListProducts({}: Props) {
-  const bills = useBills();
-  const [data, setData] = useState<any[]>([]);
-  const [total, setTotal] = useState<number>(0);
-
-  const productsRef = collection(db, 'products');
-
-  const getData = async () => {
-    try {
-      const query_ = query(productsRef, orderBy('name', 'asc'));
-      const data = await getDocs(query_);
-      const aggregate = await getCountFromServer(productsRef);
-
-      setData(data.docs.map((doc: DocumentData) => ({ ...doc.data(), id: doc.id })));
-      setTotal(aggregate.data().count);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+export default function ListProducts({ search }: Props) {
+  const [data, setData] = useState<any>(undefined);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    getData();
-  }, []);
+    setLoading(true);
+    getListProducts({
+      variables: { company_id: '90417dfc-06fc-47ca-92be-9603be775301', search: `%${search}%` },
+    }).then((result) => {
+      setData(result.data);
+      setLoading(result.loading);
+    });
+  }, [search]);
 
   return (
     <>
-      <Text mb={12}>Total Data : {total}</Text>
-      <Grid>
-        {data?.map((product) => {
-          return (
-            <Grid.Col key={product.id} sm={bills.open ? 12 : 6} md={bills.open ? 6 : 4}>
-              <ProductsCard {...product} />
-            </Grid.Col>
-          );
-        })}
-      </Grid>
+      <Paper>
+        <Table
+          sx={{ minWidth: 800 }}
+          horizontalSpacing="xl"
+          verticalSpacing="sm"
+          striped
+          withBorder
+        >
+          <thead>
+            <tr>
+              <th>Foto</th>
+              <th>SKU</th>
+              <th>Nama Produk</th>
+              <th>Harga</th>
+              <th>Total Stock</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+
+          <tbody style={{ position: 'relative' }}>
+            <LoadingOverlay visible={loading} overlayBlur={2} />
+            {data?.products?.map((res: any) => (
+              <ListProductTableRow
+                key={res.id}
+                name={res.name}
+                image={res.image}
+                sku={res.product_variants?.[0]?.sku}
+                price={res.product_variants?.[0]?.price}
+                stock={res.product_variants?.[0]?.stock}
+              />
+            ))}
+          </tbody>
+        </Table>
+      </Paper>
     </>
   );
 }

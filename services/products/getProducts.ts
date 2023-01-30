@@ -1,54 +1,16 @@
-import {
-  collection,
-  query,
-  getDocs,
-  DocumentData,
-  getCountFromServer,
-  where,
-} from 'firebase/firestore';
-import { db } from '../firebase';
+import client from '../../apollo-client';
 
-const productsRef = collection(db, 'products');
-const variantsRef = collection(db, 'productVariants');
+import { GET_LIST_PRODUCTS } from './product.graphql';
 
-export const getProducts = async () => {
-  try {
-    const query_ = query(productsRef);
-    const data = await getDocs(query_);
-    const aggregate = await getCountFromServer(productsRef);
+interface getListProduct {
+  variables: Record<string, any>
+}
 
-    return {
-      data: data.docs.map((doc: DocumentData) => {
-        
+export const getListProducts = async (props: getListProduct) => {
+  const result = await client.query({
+    query: GET_LIST_PRODUCTS,
+    variables: props.variables,
+  });
 
-        const detailRef = collection(db, `productVariants`);
-        const queryDetail = query(detailRef, where('productId', '==', doc.id));
-
-        const dataDetail = getDocs(queryDetail);
-        let detail = {};
-        dataDetail.then((res) => {
-          res.docs.map((doc: DocumentData) => {
-            detail = { ...doc.data() };
-          });
-        });
-        return { ...doc.data(), id: doc.id, ...detail };
-      }),
-      total: aggregate.data().count,
-    };
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-export const getDetailProduct = async (id: string) => {
-  try {
-    const q = query(variantsRef, where('productId', '==', id));
-    const data = await getDocs(q);
-
-    const result = data.docs.map((doc: DocumentData) => ({ ...doc.data(), id: doc.id }));
-
-    return await result?.[0];
-  } catch (err) {
-    console.error(err);
-  }
+  return result;
 };
