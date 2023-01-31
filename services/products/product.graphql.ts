@@ -26,7 +26,6 @@ export const GET_LIST_PRODUCTS = gql`
   }
 `;
 
-
 // {
 //   "name": "Nutrisari",
 //   "image": "https://firebasestorage.googleapis.com/v0/b/fluffy-d91c4.appspot.com/o/A_small_cup_of_coffee.jpg?alt=media&token=7a03e4e8-a163-4f7a-9979-06546cb4d04d",
@@ -71,6 +70,15 @@ export const ADD_PRODUCT = gql`
       }
     ) {
       affected_rows
+    }
+  }
+`;
+
+export const GET_ALL_CATEGORIES = gql`
+  query GetAllCategories($company_id: uuid!) {
+    categories(distinct_on: name, where: { companyId: { _eq: $company_id } }) {
+      id
+      name
     }
   }
 `;
