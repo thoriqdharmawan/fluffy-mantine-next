@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Table, Paper, LoadingOverlay } from '@mantine/core';
+import { useUser } from '../../context/user';
 
 import { getListProducts } from '../../services/products/getProducts';
 import ListProductTableRow from './ListProductTableRow';
@@ -9,19 +10,23 @@ type Props = {
 };
 
 export default function ListProducts({ search }: Props) {
+  const { companyId } = useUser();
+
   const [data, setData] = useState<any>(undefined);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    getListProducts({
-      variables: { company_id: '90417dfc-06fc-47ca-92be-9603be775301', search: `%${search}%` },
-      fetchPolicy: 'network-only',
-    }).then((result) => {
-      setData(result.data);
-      setLoading(result.loading);
-    });
-  }, [search]);
+    if (companyId) {
+      getListProducts({
+        variables: { company_id: companyId, search: `%${search}%` },
+        fetchPolicy: 'network-only',
+      }).then((result) => {
+        setData(result.data);
+        setLoading(result.loading);
+      });
+    }
+  }, [companyId, search]);
 
   return (
     <>
