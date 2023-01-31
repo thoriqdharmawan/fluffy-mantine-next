@@ -1,26 +1,69 @@
 import { useState, useEffect } from 'react';
 import { Table, Paper, LoadingOverlay } from '@mantine/core';
+import { useUser } from '../../context/user';
 
 import { getListProducts } from '../../services/products/getProducts';
 import ListProductTableRow from './ListProductTableRow';
+import client from '../../apollo-client';
+import { DELETE_PRODUCT } from '../../services/products/product.graphql';
+import { showNotification } from '@mantine/notifications';
+import { IconCheck, IconExclamationMark } from '@tabler/icons';
+import { Dispatch } from 'react';
+import { SetStateAction } from 'react';
 
 type Props = {
   search: string;
 };
 
 export default function ListProducts({ search }: Props) {
+  const { companyId } = useUser();
+
   const [data, setData] = useState<any>(undefined);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  const getData = () => {
     setLoading(true);
     getListProducts({
-      variables: { company_id: '90417dfc-06fc-47ca-92be-9603be775301', search: `%${search}%` },
+      variables: { company_id: companyId, search: `%${search}%` },
+      fetchPolicy: 'network-only',
     }).then((result) => {
       setData(result.data);
       setLoading(result.loading);
     });
-  }, [search]);
+  };
+
+  useEffect(() => {
+    if (companyId) {
+      getData();
+    }
+  }, [companyId, search]);
+
+  const handleDeleteProduct = async (setLoading: Dispatch<SetStateAction<boolean>>, id: string) => {
+    setLoading(true);
+    await client
+      .mutate({
+        mutation: DELETE_PRODUCT,
+        variables: { product_id: id },
+      })
+      .then(() => {
+        getData();
+        showNotification({
+          title: 'Yeayy, Berhasil Menghapus Produk!! 😊',
+          message: 'Produk berhasil dihapus',
+          icon: <IconCheck />,
+          color: 'green',
+        });
+      })
+      .catch(() => {
+        showNotification({
+          title: 'Gagal Menghapus Produk 🤥',
+          message: 'Coba Lagi nanti',
+          icon: <IconExclamationMark />,
+          color: 'red',
+        });
+      })
+      .finally(() => setLoading(false));
+  };
 
   return (
     <>
@@ -53,6 +96,7 @@ export default function ListProducts({ search }: Props) {
                 sku={res.product_variants?.[0]?.sku}
                 price={res.product_variants?.[0]?.price}
                 stock={res.product_variants?.[0]?.stock}
+                onDelete={(setLoading) => handleDeleteProduct(setLoading, res.id)}
               />
             ))}
           </tbody>
