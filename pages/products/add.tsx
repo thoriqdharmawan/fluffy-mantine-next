@@ -18,8 +18,7 @@ import { showNotification } from '@mantine/notifications';
 import { useForm } from '@mantine/form';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { addDoc, collection } from 'firebase/firestore';
-import { IconCheck } from '@tabler/icons';
+import { IconCheck, IconExclamationMark } from '@tabler/icons';
 
 import MainLayout from '../../layouts/MainLayout';
 import DropzoneUpload from '../../components/dropzone/DropzoneUpload';
@@ -30,7 +29,9 @@ import AddProductNoVariant from '../../modules/products/form-add-product/AddProd
 import { ProductsCardProps, DEFAULT_PRODUCT_CATEGORIES, ProductType } from '../../mock/products';
 import { GLOABL_STATUS } from '../../mock/global';
 
-import { db } from '../../services/firebase';
+import { useUser } from '../../context/user';
+import client from '../../apollo-client';
+import { ADD_PRODUCT } from '../../services/products/product.graphql';
 
 type Props = {};
 
@@ -39,10 +40,9 @@ export interface FormValues extends ProductsCardProps {}
 export default function AddProducts({}: Props) {
   const theme = useMantineTheme();
   const router = useRouter();
+  const user = useUser();
 
   const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
-
-  const productsRef = collection(db, 'products');
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -50,7 +50,7 @@ export default function AddProducts({}: Props) {
         'https://firebasestorage.googleapis.com/v0/b/fluffy-d91c4.appspot.com/o/A_small_cup_of_coffee.jpg?alt=media&token=7a03e4e8-a163-4f7a-9979-06546cb4d04d',
       name: 'Kopi Kapal Api',
       description: '',
-      category: ['Makanan', 'Minuman'],
+      categories: ['Makanan', 'Minuman'],
       type: 'NOVARIANT',
       variants: undefined,
       productVariants: [
@@ -87,48 +87,41 @@ export default function AddProducts({}: Props) {
       const variables = {
         name: values.name,
         image: values.image,
+        companyId: user.companyId,
         description: values.description,
         type: values.type,
+        categories: values.categories?.map((category) => ({
+          name: category,
+          companyId: user.companyId,
+        })),
+        product_variants: values.productVariants?.map((product_variant) => ({
+          coord: product_variant.coord,
+          is_primary: product_variant.isPrimary,
+          price: product_variant.price,
+          sku: product_variant.sku,
+          status: product_variant.status,
+          stock: product_variant.stock,
+        })),
       };
 
-      await addDoc(productsRef, variables)
-        .then((docRef) => {
-          const productId = docRef.id;
-
-          const categoriesRef = collection(db, `/categories`);
-          const prodVariantsRef = collection(db, `/productVariants`);
-
-          const promCategories = addDoc(categoriesRef, { category: values.category, productId });
-          const promVariants = addDoc(prodVariantsRef, {
-            productVariants: values.productVariants,
-            productId,
+      client
+        .mutate({
+          mutation: ADD_PRODUCT,
+          variables,
+        })
+        .then(() => {
+          showNotification({
+            title: 'Yeayy, Sukses!! 😊',
+            message: 'Produk berhasil dibuat',
+            icon: <IconCheck />,
+            color: 'green',
           });
-
-          Promise.all([promCategories, promVariants])
-            .then(() => {
-              showNotification({
-                title: 'Yeayy, Sukses!!',
-                message: 'Produk berhasil dibuat 😊',
-                icon: <IconCheck />,
-                color: 'green',
-              });
-
-              handleBack();
-            })
-            .catch(() => {
-              showNotification({
-                title: 'Gagal Membuat Varian Produk',
-                message: 'Coba Lagi nanti 🤥',
-                icon: <IconCheck />,
-                color: 'red',
-              });
-            });
         })
         .catch(() => {
           showNotification({
-            title: 'Gagal Membuat Produk',
-            message: 'Coba Lagi nanti 🤥',
-            icon: <IconCheck />,
+            title: 'Gagal Membuat Produk 🤥',
+            message: 'Coba Lagi nanti',
+            icon: <IconExclamationMark />,
             color: 'red',
           });
         });
@@ -188,7 +181,7 @@ export default function AddProducts({}: Props) {
                 setCategories((current) => [...current, query]);
                 return query;
               }}
-              {...form.getInputProps('category')}
+              {...form.getInputProps('categories')}
             />
 
             <Textarea
@@ -227,7 +220,7 @@ export default function AddProducts({}: Props) {
           <Button variant="subtle" onClick={handleSubmit}>
             Simpan dan Tambah Baru
           </Button>
-          <Button onClick={handleSubmit}>Simpan Product</Button>
+          <Button onClick={handleSubmit}>Tambahkan Produk</Button>
         </Group>
       </Flex>
     </MainLayout>

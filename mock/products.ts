@@ -22,7 +22,7 @@ export interface ProductsCardProps {
   name: string;
 
   description?: string;
-  category?: string[];
+  categories?: string[];
 
   type: ProductType;
   variants?: VariantInterface[];
@@ -39,7 +39,7 @@ export const PRODUCTS: ProductsCardProps[] = [
     name: 'Verudela Beach',
 
     description: 'Completely renovated for the season 2020, Arena Verudela.',
-    category: ['Makanan', 'Minuman'],
+    categories: ['Makanan', 'Minuman'],
 
     type: 'VARIANT',
     variants: [
@@ -110,9 +110,7 @@ export const PRODUCTS: ProductsCardProps[] = [
     name: 'Verudela Beach',
 
     description: 'Completely renovated for the season 2020, Arena Verudela.',
-    category: ['Makanan', 'Minuman'],
+    categories: ['Makanan', 'Minuman'],
     type: 'VARIANT',
   },
 ];
-
-

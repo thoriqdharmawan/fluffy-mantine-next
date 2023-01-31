@@ -16,6 +16,7 @@ export default function ListProducts({ search }: Props) {
     setLoading(true);
     getListProducts({
       variables: { company_id: '90417dfc-06fc-47ca-92be-9603be775301', search: `%${search}%` },
+      fetchPolicy: 'network-only',
     }).then((result) => {
       setData(result.data);
       setLoading(result.loading);
