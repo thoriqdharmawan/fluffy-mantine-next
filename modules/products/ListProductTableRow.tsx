@@ -1,8 +1,6 @@
-import { useState } from 'react';
-
-import { Image, AspectRatio } from '@mantine/core';
-
-import { ProductsCardProps } from '../../mock/products';
+import { useState, SetStateAction, Dispatch } from 'react';
+import { Image, AspectRatio, ActionIcon } from '@mantine/core';
+import { IconTrash } from '@tabler/icons';
 
 interface Props {
   name: string;
@@ -10,9 +8,12 @@ interface Props {
   sku: string;
   price: number;
   stock: number;
+  onDelete: (setLoading: Dispatch<SetStateAction<boolean>>) => void;
 }
 
-export default function ListProductTableRow({ name, image, sku, price, stock }: Props) {
+export default function ListProductTableRow({ name, image, sku, price, stock, onDelete }: Props) {
+  const [loading, setLoading] = useState<boolean>(false);
+
   return (
     <tr>
       <td>
@@ -24,7 +25,11 @@ export default function ListProductTableRow({ name, image, sku, price, stock }: 
       <td>{name}</td>
       <td>{price}</td>
       <td>{stock}</td>
-      <td>Aksi</td>
+      <td>
+        <ActionIcon loading={loading} onClick={() => onDelete(setLoading)}>
+          <IconTrash size={18} />
+        </ActionIcon>
+      </td>
     </tr>
   );
 }

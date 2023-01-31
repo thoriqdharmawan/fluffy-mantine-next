@@ -82,3 +82,11 @@ export const GET_ALL_CATEGORIES = gql`
     }
   }
 `;
+
+export const DELETE_PRODUCT = gql`
+  mutation DeleteProduct($product_id: uuid!) {
+    delete_products(where: { id: { _eq: $product_id } }) {
+      affected_rows
+    }
+  }
+`;
