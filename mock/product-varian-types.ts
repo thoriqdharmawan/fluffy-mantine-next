@@ -20,19 +20,11 @@ export const DEFAULT_VARIANTS_TYPE_NAME: VARIANTS_TYPE[] = [
     label: 'Warna',
     disabled: false,
   },
+  {
+    value: 'Rasa',
+    label: 'Rasa',
+    disabled: false,
+  },
 ];
 
-export const DEFAULT_VARIANTS_TYPE: VARIANTS_TYPE[] = [
-  {
-    value: 'S',
-    label: 'S',
-  },
-  {
-    value: 'M',
-    label: 'M',
-  },
-  {
-    value: 'L',
-    label: 'L',
-  },
-];
+export const DEFAULT_VARIANTS_TYPE: string[] = ['S', 'M', 'L', 'Manis', 'Pahit'];

@@ -5,7 +5,7 @@ export interface VariantInterface {
   values: string[];
 }
 
-interface TableProductsVariants {
+export interface TableProductsVariants {
   coord: [number, number];
   sku: string;
   price: number;

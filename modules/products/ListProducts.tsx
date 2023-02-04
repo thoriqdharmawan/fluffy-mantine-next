@@ -32,8 +32,6 @@ export default function ListProducts({ search }: Props) {
     });
   };
 
-  console.log(data);
-
   useEffect(() => {
     if (companyId) {
       getData();
