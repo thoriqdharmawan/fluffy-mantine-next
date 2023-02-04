@@ -1,6 +1,11 @@
 import { useState, SetStateAction, Dispatch } from 'react';
-import { Image, AspectRatio, ActionIcon } from '@mantine/core';
+import { Image, AspectRatio, ActionIcon, Badge } from '@mantine/core';
 import { IconTrash } from '@tabler/icons';
+
+interface CategoriesInterface {
+  id: number;
+  name: string;
+}
 
 interface Props {
   name: string;
@@ -8,10 +13,19 @@ interface Props {
   sku: string;
   price: number;
   stock: number;
+  categories: CategoriesInterface[] | void[];
   onDelete: (setLoading: Dispatch<SetStateAction<boolean>>) => void;
 }
 
-export default function ListProductTableRow({ name, image, sku, price, stock, onDelete }: Props) {
+export default function ListProductTableRow({
+  name,
+  image,
+  sku,
+  price,
+  stock,
+  categories,
+  onDelete,
+}: Props) {
   const [loading, setLoading] = useState<boolean>(false);
 
   return (
@@ -25,6 +39,15 @@ export default function ListProductTableRow({ name, image, sku, price, stock, on
       <td>{name}</td>
       <td>{price}</td>
       <td>{stock}</td>
+      <td>
+        {categories.map((category: any) => {
+          return (
+            <Badge sx={{ textTransform: 'none' }} color="teal" key={category.id}>
+              {category.name}
+            </Badge>
+          );
+        })}
+      </td>
       <td>
         <ActionIcon loading={loading} onClick={() => onDelete(setLoading)}>
           <IconTrash size={18} />

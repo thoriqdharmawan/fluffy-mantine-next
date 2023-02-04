@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Group, Select, MultiSelect, Button, Table, Title, SelectItem } from '@mantine/core';
 import { IconPlus } from '@tabler/icons';
 import {
@@ -6,19 +6,23 @@ import {
   DEFAULT_VARIANTS_TYPE_NAME,
   VARIANTS_TYPE,
 } from '../../../mock/product-varian-types';
+import { UseFormReturnType } from '@mantine/form';
+
+import { FormValues } from '../../../pages/products/add';
+import { getCoord } from './form-product-helper';
+import VariantTableRow from './VariantTableRow';
 
 type SelectVariantType = {
+  form: UseFormReturnType<FormValues>;
   variantNames: VARIANTS_TYPE[];
-  onVariantTypeSelect: () => void;
   onCreateVariantNames: (query: string) => SelectItem | string | null | undefined;
+  index: number;
 };
 
-const SelectVariant = ({
-  variantNames,
-  onCreateVariantNames,
-  onVariantTypeSelect,
-}: SelectVariantType) => {
-  const [variant, setVariant] = useState<VARIANTS_TYPE[]>(DEFAULT_VARIANTS_TYPE);
+const SelectVariant = (props: SelectVariantType) => {
+  const { form, index, variantNames, onCreateVariantNames } = props;
+
+  const [variant, setVariant] = useState<string[]>(DEFAULT_VARIANTS_TYPE);
 
   return (
     <Group sx={{ alignItems: 'end' }}>
@@ -32,7 +36,7 @@ const SelectVariant = ({
         creatable
         getCreateLabel={(query) => `+ Tambah "${query}"`}
         onCreate={onCreateVariantNames}
-        onChange={onVariantTypeSelect}
+        {...form.getInputProps(`variants.${index}.label`)}
       />
       <MultiSelect
         placeholder="Ketik untuk menambahkan tipe varian"
@@ -44,20 +48,22 @@ const SelectVariant = ({
         labelProps={{ mb: 8 }}
         getCreateLabel={(query) => `+ Tambah "${query}"`}
         onCreate={(query) => {
-          const item = { value: query, label: query };
-          setVariant((current) => [...current, item]);
+          setVariant((current) => [...current, query]);
           return query;
         }}
         data={variant}
+        {...form.getInputProps(`variants.${index}.values`)}
       />
     </Group>
   );
 };
 
-export default function AddProductVariant() {
-  const [variantNames, setVariantNames] = useState<VARIANTS_TYPE[]>(DEFAULT_VARIANTS_TYPE_NAME);
+export default function AddProductVariant({ form }: { form: UseFormReturnType<FormValues> }) {
+  const { variants } = form.values;
 
-  const handleSelectVariantType = () => {};
+  const [totalVariants, setTotalVariants] = useState(variants?.length || 0);
+
+  const [variantNames, setVariantNames] = useState<VARIANTS_TYPE[]>(DEFAULT_VARIANTS_TYPE_NAME);
 
   const handleCreateVariantNames = (query: string) => {
     const item = { value: query, label: query, disabled: false };
@@ -65,21 +71,36 @@ export default function AddProductVariant() {
     return query;
   };
 
+  const coords = useMemo(
+    () => getCoord(variants?.[0]?.values || [], variants?.[1]?.values || []),
+    [variants]
+  );
+
+  const rows = coords?.map((coord, idx) => {
+    return <VariantTableRow key={idx} coord={coord} form={form} />;
+  });
+
   return (
     <>
-      <SelectVariant
-        variantNames={variantNames}
-        onVariantTypeSelect={handleSelectVariantType}
-        onCreateVariantNames={handleCreateVariantNames}
-      />
+      {variants?.map((variant, idx) => {
+        return (
+          <SelectVariant
+            key={idx}
+            variantNames={variantNames}
+            onCreateVariantNames={handleCreateVariantNames}
+            index={idx}
+            form={form}
+          />
+        );
+      })}
 
-      <SelectVariant
-        variantNames={variantNames}
-        onVariantTypeSelect={handleSelectVariantType}
-        onCreateVariantNames={handleCreateVariantNames}
-      />
-
-      <Button leftIcon={<IconPlus size="16" />} variant="default" size="xs" mt="md">
+      <Button
+        onClick={() => setTotalVariants((prev) => prev + 1)}
+        leftIcon={<IconPlus size="16" />}
+        variant="default"
+        size="xs"
+        mt="md"
+      >
         Tambah Varian Baru
       </Button>
 
@@ -93,11 +114,11 @@ export default function AddProductVariant() {
             <th>Nama Varian</th>
             <th>Harga</th>
             <th>SKU</th>
-            <th>Stock</th>
-            <th>Action</th>
+            <th>Stock Awal</th>
+            <th>Produk Utama</th>
           </tr>
         </thead>
-        {/* <tbody>{rows}</tbody> */}
+        <tbody>{rows}</tbody>
       </Table>
     </>
   );

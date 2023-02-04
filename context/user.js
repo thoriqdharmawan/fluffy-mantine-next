@@ -31,14 +31,15 @@ export const UserProvider = (props) => {
   const [userState, setUserState] = useState(InitialUserState)
 
   useEffect(() => {
-    getDataUser(userState.uid).then(({ users }) => {
-      setUserState((prev) => ({
-        ...prev,
-        displayName: users?.[0].name,
-        companyId: users?.[0].companyId
-      }))
-    })
-
+    if (userState.uid) {
+      getDataUser(userState.uid).then(({ users }) => {
+        setUserState((prev) => ({
+          ...prev,
+          displayName: users?.[0].name,
+          companyId: users?.[0].companyId
+        }))
+      })
+    }
   }, [userState.uid])
 
 

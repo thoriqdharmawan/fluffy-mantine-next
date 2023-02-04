@@ -51,8 +51,17 @@ export default function AddProducts({}: Props) {
       name: 'Kopi Kapal Api',
       description: '',
       categories: ['Makanan', 'Minuman'],
-      type: 'NOVARIANT',
-      variants: undefined,
+      type: 'VARIANT',
+      variants: [
+        {
+          label: 'Ukuran',
+          values: ['S', 'M', 'L'],
+        },
+        {
+          label: 'Rasa',
+          values: ['Manis', 'Pahit'],
+        },
+      ],
       productVariants: [
         {
           coord: [0, 0],
@@ -116,6 +125,7 @@ export default function AddProducts({}: Props) {
             icon: <IconCheck />,
             color: 'green',
           });
+          handleBack();
         })
         .catch(() => {
           showNotification({
@@ -142,7 +152,6 @@ export default function AddProducts({}: Props) {
         </Text>
       ),
       labels: { confirm: 'Ya, Ubah Tipe Produk', cancel: 'Batalkan' },
-      // onCancel: () => console.log('Cancel'),
       onConfirm: () => {
         form.setFieldValue('type', value);
       },
@@ -210,7 +219,7 @@ export default function AddProducts({}: Props) {
           ]}
         />
         {type === 'NOVARIANT' && <AddProductNoVariant form={form} />}
-        {type === 'VARIANT' && <AddProductVariant />}
+        {type === 'VARIANT' && <AddProductVariant form={form} />}
       </Paper>
       <Flex justify="space-between" align="center">
         <Button variant="subtle" onClick={handleBack}>
