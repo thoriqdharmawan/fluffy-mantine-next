@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Paper, LoadingOverlay } from '@mantine/core';
+import { Table, Paper, LoadingOverlay, Box } from '@mantine/core';
 import { useUser } from '../../context/user';
 
 import { getListProducts } from '../../services/products/getProducts';
@@ -19,7 +19,9 @@ export default function ListProducts({ search }: Props) {
   const { companyId } = useUser();
 
   const [data, setData] = useState<any>(undefined);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  console.log({ search, companyId });
 
   const getData = () => {
     setLoading(true);
@@ -27,6 +29,7 @@ export default function ListProducts({ search }: Props) {
       variables: { company_id: companyId, search: `%${search}%` },
       fetchPolicy: 'network-only',
     }).then((result) => {
+      console.log(result);
       setData(result.data);
       setLoading(result.loading);
     });
@@ -68,39 +71,40 @@ export default function ListProducts({ search }: Props) {
   return (
     <>
       <Paper>
-        <Table
-          sx={{ minWidth: 800 }}
-          horizontalSpacing="xl"
-          verticalSpacing="sm"
-          striped
-          withBorder
-        >
-          <thead>
-            <tr>
-              <th>Foto</th>
-              <th>SKU</th>
-              <th>Nama Produk</th>
-              <th>Harga</th>
-              <th>Total Stock</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-
-          <tbody style={{ position: 'relative' }}>
-            <LoadingOverlay visible={loading} overlayBlur={2} />
-            {data?.products?.map((res: any) => (
-              <ListProductTableRow
-                key={res.id}
-                name={res.name}
-                image={res.image}
-                sku={res.product_variants?.[0]?.sku}
-                price={res.product_variants?.[0]?.price}
-                stock={res.product_variants?.[0]?.stock}
-                onDelete={(setLoading) => handleDeleteProduct(setLoading, res.id)}
-              />
-            ))}
-          </tbody>
-        </Table>
+        <Box sx={{ position: 'relative' }}>
+          <LoadingOverlay visible={!companyId || loading} overlayBlur={2} />
+          <Table
+            sx={{ minWidth: 800, position: 'relative' }}
+            horizontalSpacing="xl"
+            verticalSpacing="sm"
+            striped
+            withBorder
+          >
+            <thead>
+              <tr>
+                <th>Foto</th>
+                <th>SKU</th>
+                <th>Nama Produk</th>
+                <th>Harga</th>
+                <th>Total Stock</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data?.products?.map((res: any) => (
+                <ListProductTableRow
+                  key={res.id}
+                  name={res.name}
+                  image={res.image}
+                  sku={res.product_variants?.[0]?.sku}
+                  price={res.product_variants?.[0]?.price}
+                  stock={res.product_variants?.[0]?.stock}
+                  onDelete={(setLoading) => handleDeleteProduct(setLoading, res.id)}
+                />
+              ))}
+            </tbody>
+          </Table>
+        </Box>
       </Paper>
     </>
   );

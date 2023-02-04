@@ -116,6 +116,7 @@ export default function AddProducts({}: Props) {
             icon: <IconCheck />,
             color: 'green',
           });
+          handleBack()
         })
         .catch(() => {
           showNotification({

@@ -2,13 +2,11 @@ import { useState } from 'react';
 
 import {
   createStyles,
-  Container,
   Avatar,
   UnstyledButton,
   Group,
   Text,
   Menu,
-  UnstyledButtonProps,
 } from '@mantine/core';
 
 import { IconChevronDown, IconLogout } from '@tabler/icons';
