@@ -24,7 +24,7 @@ export default function Header(props: HeaderType) {
           height: '100%',
         }}
       >
-        <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+        <MediaQuery largerThan="md" styles={{ display: 'none' }}>
           <Burger
             opened={opened}
             onClick={() => setOpened((o: SetStateAction<boolean>) => !o)}

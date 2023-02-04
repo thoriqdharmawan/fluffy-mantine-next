@@ -1,4 +1,4 @@
-import { Drawer, ScrollArea, useMantineTheme, Text} from '@mantine/core';
+import { Drawer, ScrollArea, useMantineTheme} from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 
 interface Props {
