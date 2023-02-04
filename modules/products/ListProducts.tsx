@@ -21,19 +21,18 @@ export default function ListProducts({ search }: Props) {
   const [data, setData] = useState<any>(undefined);
   const [loading, setLoading] = useState(true);
 
-  console.log({ search, companyId });
-
   const getData = () => {
     setLoading(true);
     getListProducts({
       variables: { company_id: companyId, search: `%${search}%` },
       fetchPolicy: 'network-only',
     }).then((result) => {
-      console.log(result);
       setData(result.data);
       setLoading(result.loading);
     });
   };
+
+  console.log(data);
 
   useEffect(() => {
     if (companyId) {
@@ -87,6 +86,7 @@ export default function ListProducts({ search }: Props) {
                 <th>Nama Produk</th>
                 <th>Harga</th>
                 <th>Total Stock</th>
+                <th>Kategori</th>
                 <th>Aksi</th>
               </tr>
             </thead>
@@ -99,6 +99,7 @@ export default function ListProducts({ search }: Props) {
                   sku={res.product_variants?.[0]?.sku}
                   price={res.product_variants?.[0]?.price}
                   stock={res.product_variants?.[0]?.stock}
+                  categories={res.categories || []}
                   onDelete={(setLoading) => handleDeleteProduct(setLoading, res.id)}
                 />
               ))}
