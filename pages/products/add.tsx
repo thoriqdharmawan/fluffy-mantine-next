@@ -124,8 +124,6 @@ export default function AddProducts({}: Props) {
         })),
       };
 
-      console.log(JSON.stringify(variables, undefined, 4));
-
       client
         .mutate({
           mutation: ADD_PRODUCT,
