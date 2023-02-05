@@ -1,19 +1,21 @@
-import { NumberInput, Input, Switch, Text } from '@mantine/core';
+import { memo } from 'react';
+import { NumberInput, Input, Switch } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 
 import { FormValues } from '../../../pages/products/add';
 
 type Props = {
-  coord: number[];
+  coord?: number[];
   form: UseFormReturnType<FormValues>;
+  index: number;
 };
 
-export default function VariantTableRow(props: Props) {
-  const { coord, form } = props;
+const VariantTableRow = memo(function VariantTableRowMemo(props: Props) {
+  const { coord, form, index } = props;
   const { variants } = form.values;
 
-  const variant1 = variants?.[0]?.values?.[coord[0]];
-  const variant2 = variants?.[1]?.values?.[coord[1]];
+  const variant1 = variants?.[0]?.values?.[coord?.[0] || 0];
+  const variant2 = variants?.[1]?.values?.[coord?.[1] || 0];
 
   return (
     <tr>
@@ -29,13 +31,20 @@ export default function VariantTableRow(props: Props) {
           formatter={(value: any) =>
             !Number.isNaN(parseFloat(value)) ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''
           }
+          {...form.getInputProps(`productVariants.${index}.price`)}
         />
       </td>
       <td>
-        <Input placeholder="Tambahkan SKU" />
+        <Input
+          placeholder="Tambahkan SKU"
+          {...form.getInputProps(`productVariants.${index}.sku`)}
+        />
       </td>
       <td>
-        <Input placeholder="Tambahkan Stok" />
+        <NumberInput
+          placeholder="Tambahkan Stok"
+          {...form.getInputProps(`productVariants.${index}.stock`)}
+        />
       </td>
       <td>
         <Switch
@@ -43,8 +52,11 @@ export default function VariantTableRow(props: Props) {
           offLabel="Tidak"
           styles={{ trackLabel: { fontSize: 12 }, track: { cursor: 'pointer' } }}
           size="lg"
+          {...form.getInputProps(`productVariants.${index}.isPrimary`, { type: 'checkbox' })}
         />
       </td>
     </tr>
   );
-}
+});
+
+export default VariantTableRow;

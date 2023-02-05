@@ -26,7 +26,12 @@ import DropzoneUpload from '../../components/dropzone/DropzoneUpload';
 import AddProductVariant from '../../modules/products/form-add-product/AddProductVariant';
 import AddProductNoVariant from '../../modules/products/form-add-product/AddProductNoVariant';
 
-import { ProductsCardProps, DEFAULT_PRODUCT_CATEGORIES, ProductType } from '../../mock/products';
+import {
+  ProductsCardProps,
+  DEFAULT_PRODUCT_CATEGORIES,
+  ProductType,
+  VariantInterface,
+} from '../../mock/products';
 import { GLOABL_STATUS } from '../../mock/global';
 
 import { useUser } from '../../context/user';
@@ -49,29 +54,31 @@ export default function AddProducts({}: Props) {
       image:
         'https://firebasestorage.googleapis.com/v0/b/fluffy-d91c4.appspot.com/o/A_small_cup_of_coffee.jpg?alt=media&token=7a03e4e8-a163-4f7a-9979-06546cb4d04d',
       name: 'Kopi Kapal Api',
-      description: '',
+      description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Earum, molestias?',
       categories: ['Makanan', 'Minuman'],
-      type: 'VARIANT',
-      variants: [
-        {
-          label: 'Ukuran',
-          values: ['S', 'M', 'L'],
-        },
-        {
-          label: 'Rasa',
-          values: ['Manis', 'Pahit'],
-        },
-      ],
-      productVariants: [
-        {
-          coord: [0, 0],
-          sku: '123331',
-          price: 1000,
-          stock: 10,
-          status: GLOABL_STATUS.ACTIVE,
-          isPrimary: true,
-        },
-      ],
+      type: 'NOVARIANT',
+      variants: [],
+      // variants: [
+      //   {
+      //     label: 'Ukuran',
+      //     values: ['S', 'M', 'L'],
+      //   },
+      //   {
+      //     label: 'Rasa',
+      //     values: ['Manis', 'Pahit'],
+      //   },
+      // ],
+      productVariants: [],
+      // productVariants: [
+      //   {
+      //     coord: [0, 0],
+      //     sku: '123331',
+      //     price: 1000,
+      //     stock: 10,
+      //     status: GLOABL_STATUS.ACTIVE,
+      //     isPrimary: true,
+      //   },
+      // ],
     },
 
     validate: {
@@ -103,6 +110,10 @@ export default function AddProducts({}: Props) {
           name: category,
           companyId: user.companyId,
         })),
+        variants: values.variants?.map((variant) => ({
+          name: variant.label,
+          values: variant.values
+        })),
         product_variants: values.productVariants?.map((product_variant) => ({
           coord: product_variant.coord,
           is_primary: product_variant.isPrimary,
@@ -112,6 +123,8 @@ export default function AddProducts({}: Props) {
           stock: product_variant.stock,
         })),
       };
+
+      console.log(JSON.stringify(variables, undefined, 4));
 
       client
         .mutate({
@@ -138,7 +151,7 @@ export default function AddProducts({}: Props) {
     }
   };
 
-  const handleOpenConfirmationVariants = (value: ProductType) => {
+  const handleOpenConfirmationVariants = (type: ProductType) => {
     openConfirmModal({
       title: 'Ubah Tipe Produk?',
       centered: true,
@@ -153,7 +166,16 @@ export default function AddProducts({}: Props) {
       ),
       labels: { confirm: 'Ya, Ubah Tipe Produk', cancel: 'Batalkan' },
       onConfirm: () => {
-        form.setFieldValue('type', value);
+        form.setValues((prev: Partial<FormValues>) => {
+          const variants = type === 'VARIANT' ? [DEFAULT_VARIANT] : [];
+
+          return {
+            ...prev,
+            type,
+            variants: variants,
+            productVariants: [],
+          };
+        });
       },
     });
   };
@@ -215,9 +237,10 @@ export default function AddProducts({}: Props) {
           value={type}
           data={[
             { label: 'Produk Tanpa Varian', value: 'NOVARIANT' },
-            { label: 'Peroduk Dengan Varian', value: 'VARIANT' },
+            { label: 'Produk Dengan Varian', value: 'VARIANT' },
           ]}
         />
+
         {type === 'NOVARIANT' && <AddProductNoVariant form={form} />}
         {type === 'VARIANT' && <AddProductVariant form={form} />}
       </Paper>
@@ -235,3 +258,8 @@ export default function AddProducts({}: Props) {
     </MainLayout>
   );
 }
+
+export const DEFAULT_VARIANT: VariantInterface = {
+  label: undefined,
+  values: [],
+};
