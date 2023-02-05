@@ -26,6 +26,13 @@ export const GET_LIST_PRODUCTS = gql`
         status
         stock
       }
+      product_variants_aggregate {
+        aggregate {
+          sum {
+            stock
+          }
+        }
+      }
     }
   }
 `;
