@@ -8,9 +8,13 @@ export const GET_LIST_PRODUCTS = gql`
       image
       description
       type
-      variants
       categories {
         id
+        name
+      }
+      variants {
+        id
+        values
         name
       }
       product_variants {
@@ -21,6 +25,13 @@ export const GET_LIST_PRODUCTS = gql`
         sku
         status
         stock
+      }
+      product_variants_aggregate {
+        aggregate {
+          sum {
+            stock
+          }
+        }
       }
     }
   }
@@ -55,8 +66,9 @@ export const ADD_PRODUCT = gql`
     $companyId: uuid
     $description: String
     $type: String
+    $variants: [variants_insert_input!]!
     $categories: [categories_insert_input!]!
-    $product_variants: [product_variants_insert_input!] = {}
+    $product_variants: [product_variants_insert_input!]!
   ) {
     insert_products(
       objects: {
@@ -66,6 +78,7 @@ export const ADD_PRODUCT = gql`
         description: $description
         type: $type
         categories: { data: $categories }
+        variants: { data: $variants }
         product_variants: { data: $product_variants }
       }
     ) {

@@ -32,6 +32,8 @@ export default function ListProducts({ search }: Props) {
     });
   };
 
+  console.log(data)
+
   useEffect(() => {
     if (companyId) {
       getData();
@@ -96,7 +98,7 @@ export default function ListProducts({ search }: Props) {
                   image={res.image}
                   sku={res.product_variants?.[0]?.sku}
                   price={res.product_variants?.[0]?.price}
-                  stock={res.product_variants?.[0]?.stock}
+                  stock={res.product_variants_aggregate.aggregate.sum.stock}
                   categories={res.categories || []}
                   onDelete={(setLoading) => handleDeleteProduct(setLoading, res.id)}
                 />

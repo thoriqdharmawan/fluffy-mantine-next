@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { Group, Select, MultiSelect, Button, Table, Title, SelectItem } from '@mantine/core';
+import { useMemo, useState, useEffect } from 'react';
+import { Group, Select, MultiSelect, Button, Table, Title, SelectItem, Text } from '@mantine/core';
 import { IconPlus } from '@tabler/icons';
 import {
   DEFAULT_VARIANTS_TYPE,
@@ -8,9 +8,10 @@ import {
 } from '../../../mock/product-varian-types';
 import { UseFormReturnType } from '@mantine/form';
 
-import { FormValues } from '../../../pages/products/add';
+import { DEFAULT_VARIANT, FormValues } from '../../../pages/products/add';
 import { getCoord } from './form-product-helper';
 import VariantTableRow from './VariantTableRow';
+import { GLOABL_STATUS } from '../../../mock/global';
 
 type SelectVariantType = {
   form: UseFormReturnType<FormValues>;
@@ -23,6 +24,27 @@ const SelectVariant = (props: SelectVariantType) => {
   const { form, index, variantNames, onCreateVariantNames } = props;
 
   const [variant, setVariant] = useState<string[]>(DEFAULT_VARIANTS_TYPE);
+
+  const handleChangeVariantType = (value: string[]) => {
+    form.setFieldValue(`variants.${index}.values`, value);
+
+    form.setValues((prev: Partial<FormValues>) => {
+      const coords = getCoord(prev.variants?.[0]?.values || [], prev.variants?.[1]?.values || [])
+
+      return {
+        ...prev,
+        type: prev.type,
+        productVariants: coords?.map((coord) => ({
+          coord,
+          sku: '',
+          price: 0,
+          stock: 0,
+          status: GLOABL_STATUS.ACTIVE,
+          isPrimary: false,
+        })),
+      };
+    });
+  };
 
   return (
     <Group sx={{ alignItems: 'end' }}>
@@ -53,15 +75,14 @@ const SelectVariant = (props: SelectVariantType) => {
         }}
         data={variant}
         {...form.getInputProps(`variants.${index}.values`)}
+        onChange={handleChangeVariantType}
       />
     </Group>
   );
 };
 
 export default function AddProductVariant({ form }: { form: UseFormReturnType<FormValues> }) {
-  const { variants } = form.values;
-
-  const [totalVariants, setTotalVariants] = useState(variants?.length || 0);
+  const { variants, productVariants } = form.values;
 
   const [variantNames, setVariantNames] = useState<VARIANTS_TYPE[]>(DEFAULT_VARIANTS_TYPE_NAME);
 
@@ -71,38 +92,44 @@ export default function AddProductVariant({ form }: { form: UseFormReturnType<Fo
     return query;
   };
 
-  const coords = useMemo(
-    () => getCoord(variants?.[0]?.values || [], variants?.[1]?.values || []),
-    [variants]
-  );
-
-  const rows = coords?.map((coord, idx) => {
-    return <VariantTableRow key={idx} coord={coord} form={form} />;
+  const rows = productVariants?.map((productVariant, idx) => {
+    return <VariantTableRow key={idx} coord={productVariant.coord} form={form} index={idx} />;
   });
+
+  const handleAddVariants = () => {
+    form.setValues((prev) => ({ ...prev, variants: [...(prev.variants || []), DEFAULT_VARIANT] }));
+  };
 
   return (
     <>
-      {variants?.map((variant, idx) => {
-        return (
-          <SelectVariant
-            key={idx}
-            variantNames={variantNames}
-            onCreateVariantNames={handleCreateVariantNames}
-            index={idx}
-            form={form}
-          />
-        );
-      })}
+      <div>
+        {variants?.map((_, idx) => {
+          return (
+            <SelectVariant
+              key={idx}
+              variantNames={variantNames}
+              onCreateVariantNames={handleCreateVariantNames}
+              index={idx}
+              form={form}
+            />
+          );
+        })}
+      </div>
 
       <Button
-        onClick={() => setTotalVariants((prev) => prev + 1)}
+        onClick={handleAddVariants}
         leftIcon={<IconPlus size="16" />}
+        disabled={!!variants?.[1]}
         variant="default"
         size="xs"
         mt="md"
       >
         Tambah Varian Baru
       </Button>
+
+      <Text c="dimmed" size="xs" mt={12}>
+        Anda dapat menambahkan hingga 2 varian
+      </Text>
 
       <Title order={6} my="md">
         Tabel Varian
@@ -123,3 +150,8 @@ export default function AddProductVariant({ form }: { form: UseFormReturnType<Fo
     </>
   );
 }
+
+// const DEFAULT_VARIANT: VariantInterface = {
+//   label: undefined,
+//   values: [],
+// };

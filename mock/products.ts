@@ -1,17 +1,17 @@
 import { GLOABL_STATUS } from './global';
 
 export interface VariantInterface {
-  label: string;
-  values: string[];
+  label: string | undefined;
+  values: string[] | [];
 }
 
 export interface TableProductsVariants {
-  coord: [number, number];
-  sku: string;
-  price: number;
-  stock: number | undefined;
-  status: GLOABL_STATUS;
-  isPrimary: boolean;
+  coord?: number[];
+  sku?: string;
+  price?: number;
+  stock?: number | undefined;
+  status?: GLOABL_STATUS;
+  isPrimary?: boolean;
 }
 
 export declare type ProductType = 'VARIANT' | 'NOVARIANT';
@@ -25,8 +25,8 @@ export interface ProductsCardProps {
   categories?: string[];
 
   type: ProductType;
-  variants?: VariantInterface[];
-  productVariants?: TableProductsVariants[];
+  variants?: VariantInterface[] | [];
+  productVariants?: TableProductsVariants[] | undefined;
 }
 
 export const DEFAULT_PRODUCT_CATEGORIES = ['Makanan', 'Minuman', 'Pakaian'];
