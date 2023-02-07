@@ -54,31 +54,20 @@ export default function AddProducts({}: Props) {
       image:
         'https://firebasestorage.googleapis.com/v0/b/fluffy-d91c4.appspot.com/o/A_small_cup_of_coffee.jpg?alt=media&token=7a03e4e8-a163-4f7a-9979-06546cb4d04d',
       name: 'Kopi Kapal Api',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Earum, molestias?',
+      description: '',
       categories: ['Makanan', 'Minuman'],
       type: 'NOVARIANT',
       variants: [],
-      // variants: [
-      //   {
-      //     label: 'Ukuran',
-      //     values: ['S', 'M', 'L'],
-      //   },
-      //   {
-      //     label: 'Rasa',
-      //     values: ['Manis', 'Pahit'],
-      //   },
-      // ],
-      productVariants: [],
-      // productVariants: [
-      //   {
-      //     coord: [0, 0],
-      //     sku: '123331',
-      //     price: 1000,
-      //     stock: 10,
-      //     status: GLOABL_STATUS.ACTIVE,
-      //     isPrimary: true,
-      //   },
-      // ],
+      productVariants: [
+        {
+          coord: [0],
+          sku: undefined,
+          price: undefined,
+          stock: undefined,
+          status: GLOABL_STATUS.ACTIVE,
+          isPrimary: true,
+        },
+      ],
     },
 
     validate: {
@@ -112,7 +101,7 @@ export default function AddProducts({}: Props) {
         })),
         variants: values.variants?.map((variant) => ({
           name: variant.label,
-          values: variant.values
+          values: variant.values,
         })),
         product_variants: values.productVariants?.map((product_variant) => ({
           coord: product_variant.coord,

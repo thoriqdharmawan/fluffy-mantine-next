@@ -7,7 +7,7 @@ import Link from 'next/link';
 import MainLayout from '../../layouts/MainLayout';
 import SearchBar from '../../components/SearchBar';
 
-import ListProducts from '../../modules/products/ListProducts';
+import ListProducts from '../../modules/products/list/ListProduct';
 
 export default function Products() {
   const [search, setSearch] = useState('');
