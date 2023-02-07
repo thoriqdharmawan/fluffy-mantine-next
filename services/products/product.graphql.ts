@@ -12,12 +12,7 @@ export const GET_LIST_PRODUCTS = gql`
         id
         name
       }
-      variants {
-        id
-        values
-        name
-      }
-      product_variants {
+      product_variants(limit: 1) {
         id
         coord
         is_primary
@@ -25,6 +20,12 @@ export const GET_LIST_PRODUCTS = gql`
         sku
         status
         stock
+        productId
+      }
+      variants {
+        id
+        values
+        name
       }
       product_variants_aggregate {
         aggregate {
@@ -33,6 +34,26 @@ export const GET_LIST_PRODUCTS = gql`
           }
         }
       }
+    }
+  }
+`;
+
+export const GET_LIST_PRODUCT_VARIANTS = gql`
+  query GetProductVariants($productId: uuid!) {
+    variants(where: { productId: { _eq: $productId } }) {
+      id
+      values
+      name
+    }
+    product_variants(where: { productId: { _eq: $productId } }) {
+      id
+      coord
+      is_primary
+      price
+      sku
+      status
+      stock
+      productId
     }
   }
 `;

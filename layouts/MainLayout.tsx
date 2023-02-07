@@ -31,6 +31,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       navbar={<Navbar opened={opened} />}
       header={<Header opened={opened} setOpened={setOpened} />}
       footer={<FooterLayout data={MOCK_FOOTER.data} />}
+      padding={!matches ? 0 : 'md'}
     >
       <Box w="100%" component="div">
         {children}
