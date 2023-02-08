@@ -1,11 +1,7 @@
-import { useState } from 'react';
-
 import { Button, Flex, Group, Text, useMantineTheme, Image } from '@mantine/core';
 import { Dropzone, DropzoneProps, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { type UseFormReturnType } from '@mantine/form';
 import { IconUpload, IconPhoto, IconX } from '@tabler/icons';
-
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 
 import { FormValues } from '../../pages/products/add';
 
@@ -16,32 +12,11 @@ interface DropzoneInterface extends Partial<DropzoneProps> {
   dropzoneProps: any;
 }
 
+const IMG_PLACEHOLDER_SIZE = 300;
+
 export default function DropzoneUpload(props: DropzoneInterface) {
   const { form, files, onDelete, dropzoneProps } = props;
   const theme = useMantineTheme();
-
-  const productId = '7bef37ac-d14b-4b51-8576-faecd752bf02';
-
-  const handleUpload = () => {
-    const storage = getStorage();
-
-    const path = 'products/' + productId;
-
-    const storageRef = ref(storage, path);
-    console.log('File : ', files[0]);
-
-    console.log('START UPLOAD');
-
-    uploadBytes(storageRef, files[0]).then((snapshot) => {
-      console.log(snapshot);
-
-      getDownloadURL(ref(storage, path)).then((url: string) => {
-        console.log({ result: url });
-      });
-    });
-
-    console.log('FINISH');
-  };
 
   if (form?.values.image || files[0]) {
     const imageUrl = form?.values.image || URL.createObjectURL(files?.[0]);
@@ -52,8 +27,8 @@ export default function DropzoneUpload(props: DropzoneInterface) {
           src={imageUrl}
           imageProps={{ onLoad: () => URL.revokeObjectURL(imageUrl) }}
           radius="md"
-          width={250}
-          height={250}
+          width={IMG_PLACEHOLDER_SIZE}
+          height={IMG_PLACEHOLDER_SIZE}
           withPlaceholder
         />
         <Button onClick={onDelete} mt={12}>
@@ -68,8 +43,8 @@ export default function DropzoneUpload(props: DropzoneInterface) {
       onReject={(files) => console.log('rejected files', files)}
       maxSize={2 * 1024 ** 2} // 2mb
       accept={IMAGE_MIME_TYPE}
-      w={250}
-      h={250}
+      w={IMG_PLACEHOLDER_SIZE}
+      h={IMG_PLACEHOLDER_SIZE}
       sx={{
         alignItems: 'center',
         display: 'flex',
@@ -99,7 +74,7 @@ export default function DropzoneUpload(props: DropzoneInterface) {
             Tambahkan Foto Produk
           </Text>
           <Text size="sm" align="center" color="dimmed" mt={8}>
-            Foto Produk tidak boleh melebihi 5MB
+            Foto Produk tidak boleh melebihi 2MB
           </Text>
         </div>
       </Group>
