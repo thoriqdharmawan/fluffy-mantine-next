@@ -1,27 +1,46 @@
 import { useState } from 'react';
 
 import { Button, Flex, Group, Text, useMantineTheme, Image } from '@mantine/core';
-import { IconUpload, IconPhoto, IconX } from '@tabler/icons';
 import { Dropzone, DropzoneProps, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { type UseFormReturnType } from '@mantine/form';
+import { IconUpload, IconPhoto, IconX } from '@tabler/icons';
+
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 
 import { FormValues } from '../../pages/products/add';
 
 interface DropzoneInterface extends Partial<DropzoneProps> {
   form: UseFormReturnType<FormValues>;
+  files: FileWithPath[];
+  onDelete: () => void;
+  dropzoneProps: any;
 }
 
 export default function DropzoneUpload(props: DropzoneInterface) {
-  const { form } = props;
+  const { form, files, onDelete, dropzoneProps } = props;
   const theme = useMantineTheme();
-  const [files, setFiles] = useState<FileWithPath[]>([]);
 
-  const handleDeleteFiles = () => {
-    if (form?.values.image) {
-      form.setValues({ image: '' });
-    } else {
-      setFiles([]);
-    }
+  const productId = '7bef37ac-d14b-4b51-8576-faecd752bf02';
+
+  const handleUpload = () => {
+    const storage = getStorage();
+
+    const path = 'products/' + productId;
+
+    const storageRef = ref(storage, path);
+    console.log('File : ', files[0]);
+
+    console.log('START UPLOAD');
+
+    uploadBytes(storageRef, files[0]).then((snapshot) => {
+      console.log(snapshot);
+
+      getDownloadURL(ref(storage, path)).then((url: string) => {
+        console.log({ result: url });
+      });
+    });
+
+    console.log('FINISH');
   };
 
   if (form?.values.image || files[0]) {
@@ -37,7 +56,7 @@ export default function DropzoneUpload(props: DropzoneInterface) {
           height={250}
           withPlaceholder
         />
-        <Button onClick={handleDeleteFiles} mt={12}>
+        <Button onClick={onDelete} mt={12}>
           Hapus Foto Produk
         </Button>
       </Flex>
@@ -46,9 +65,8 @@ export default function DropzoneUpload(props: DropzoneInterface) {
 
   return (
     <Dropzone
-      onDrop={setFiles}
       onReject={(files) => console.log('rejected files', files)}
-      maxSize={3 * 1024 ** 2}
+      maxSize={3 * 1024 ** 2} // 3mb
       accept={IMAGE_MIME_TYPE}
       w={250}
       h={250}
@@ -56,7 +74,7 @@ export default function DropzoneUpload(props: DropzoneInterface) {
         alignItems: 'center',
         display: 'flex',
       }}
-      {...props}
+      {...dropzoneProps}
     >
       <Group position="center" align="center" spacing="xl" style={{ pointerEvents: 'none' }}>
         <Dropzone.Accept>

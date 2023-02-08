@@ -104,6 +104,17 @@ export const ADD_PRODUCT = gql`
       }
     ) {
       affected_rows
+      returning {
+        id
+      }
+    }
+  }
+`;
+
+export const UPDATE_IMAGE_PRODUCT = gql`
+  mutation InsertProduct($id: uuid!, $image: String!) {
+    update_products(where: { id: { _eq: $id } }, _set: { image: $image }) {
+      affected_rows
     }
   }
 `;

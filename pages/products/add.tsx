@@ -16,6 +16,8 @@ import {
 import { openConfirmModal } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { useForm } from '@mantine/form';
+import { FileWithPath } from '@mantine/dropzone';
+
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { IconCheck, IconExclamationMark } from '@tabler/icons';
@@ -36,26 +38,25 @@ import { GLOABL_STATUS } from '../../mock/global';
 
 import { useUser } from '../../context/user';
 import client from '../../apollo-client';
-import { ADD_PRODUCT } from '../../services/products/product.graphql';
-
-type Props = {};
+import { ADD_PRODUCT, UPDATE_IMAGE_PRODUCT } from '../../services/products/product.graphql';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 
 export interface FormValues extends ProductsCardProps {}
 
-export default function AddProducts({}: Props) {
+export default function AddProducts() {
   const theme = useMantineTheme();
   const router = useRouter();
   const user = useUser();
 
   const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
+  const [files, setFiles] = useState<FileWithPath[]>([]);
 
   const form = useForm<FormValues>({
     initialValues: {
-      image:
-        'https://firebasestorage.googleapis.com/v0/b/fluffy-d91c4.appspot.com/o/A_small_cup_of_coffee.jpg?alt=media&token=7a03e4e8-a163-4f7a-9979-06546cb4d04d',
-      name: 'Kopi Kapal Api',
+      image: '',
+      name: '',
       description: '',
-      categories: ['Makanan', 'Minuman'],
+      categories: [],
       type: 'NOVARIANT',
       variants: [],
       productVariants: [
@@ -81,6 +82,53 @@ export default function AddProducts({}: Props) {
     router.push('/products');
     form.clearErrors();
     form.reset();
+  };
+
+  const handleDeleteFiles = () => {
+    if (form?.values.image) {
+      form.setValues({ image: '' });
+    } else {
+      setFiles([]);
+    }
+  };
+
+  const showError = (title: string) => {
+    showNotification({
+      title: title,
+      message: 'Coba Lagi nanti',
+      icon: <IconExclamationMark />,
+      color: 'red',
+    });
+  };
+
+  const handleUploadImage = (productId: string) => {
+    const storage = getStorage();
+    const storageRef = ref(storage, 'products/' + productId);
+
+    uploadBytes(storageRef, files[0])
+      .then(() => {
+        getDownloadURL(storageRef).then((url: string) => {
+          client
+            .mutate({
+              mutation: UPDATE_IMAGE_PRODUCT,
+              variables: {
+                id: productId,
+                image: url,
+              },
+            })
+            .then(() => {
+              showNotification({
+                title: 'Yeayy, Sukses!! 😊',
+                message: 'Produk berhasil dibuat',
+                icon: <IconCheck />,
+                color: 'green',
+              });
+            })
+            .catch(() => showError('Gagal Menambahkan Foto Produk 🤥'))
+            .finally(() => handleBack());
+        });
+      })
+      .catch(() => showError('Gagal Menambahkan Foto Produk 🤥'));
   };
 
   const handleSubmit = async () => {
@@ -118,23 +166,10 @@ export default function AddProducts({}: Props) {
           mutation: ADD_PRODUCT,
           variables,
         })
-        .then(() => {
-          showNotification({
-            title: 'Yeayy, Sukses!! 😊',
-            message: 'Produk berhasil dibuat',
-            icon: <IconCheck />,
-            color: 'green',
-          });
-          handleBack();
+        .then((res) => {
+          handleUploadImage(res.data?.insert_products?.returning?.[0].id);
         })
-        .catch(() => {
-          showNotification({
-            title: 'Gagal Membuat Produk 🤥',
-            message: 'Coba Lagi nanti',
-            icon: <IconExclamationMark />,
-            color: 'red',
-          });
-        });
+        .catch(() => showError('Gagal Membuat Produk 🤥'));
     }
   };
 
@@ -176,7 +211,16 @@ export default function AddProducts({}: Props) {
         </Title>
         <Grid align="center" gutter="xl">
           <Col span="content">
-            <DropzoneUpload form={form} mb="md" multiple={false} />
+            <DropzoneUpload
+              form={form}
+              files={files}
+              onDelete={handleDeleteFiles}
+              dropzoneProps={{
+                onDrop: setFiles,
+                multiple: false,
+                mb: 'md',
+              }}
+            />
           </Col>
           <Col span={12} lg="auto">
             <TextInput
