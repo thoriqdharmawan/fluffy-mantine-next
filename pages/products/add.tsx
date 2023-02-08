@@ -11,6 +11,7 @@ import {
   Flex,
   Grid,
   Col,
+  LoadingOverlay,
   useMantineTheme,
 } from '@mantine/core';
 import { openConfirmModal } from '@mantine/modals';
@@ -50,6 +51,7 @@ export default function AddProducts() {
 
   const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
   const [files, setFiles] = useState<FileWithPath[]>([]);
+  const [loadingAddProduct, setLoadingAddProduct] = useState<boolean>(false);
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -125,13 +127,20 @@ export default function AddProducts() {
               });
             })
             .catch(() => showError('Gagal Menambahkan Foto Produk 🤥'))
-            .finally(() => handleBack());
+            .finally(() => {
+              setLoadingAddProduct(false);
+              handleBack();
+            });
         });
       })
-      .catch(() => showError('Gagal Menambahkan Foto Produk 🤥'));
+      .catch(() => {
+        setLoadingAddProduct(false);
+        showError('Gagal Menambahkan Foto Produk 🤥');
+      });
   };
 
   const handleSubmit = async () => {
+    setLoadingAddProduct(true);
     const { hasErrors } = form.validate();
 
     if (!hasErrors) {
@@ -169,7 +178,10 @@ export default function AddProducts() {
         .then((res) => {
           handleUploadImage(res.data?.insert_products?.returning?.[0].id);
         })
-        .catch(() => showError('Gagal Membuat Produk 🤥'));
+        .catch(() => {
+          showError('Gagal Membuat Produk 🤥');
+          setLoadingAddProduct(false);
+        });
     }
   };
 
@@ -204,6 +216,7 @@ export default function AddProducts() {
 
   return (
     <MainLayout>
+      <LoadingOverlay visible={loadingAddProduct} overlayBlur={2} />
       <Text mb="lg">AddProducts</Text>
       <Paper shadow="sm" radius="md" p="xl" mb="xl">
         <Title order={4} mb="xl">
@@ -228,6 +241,7 @@ export default function AddProducts() {
               placeholder="Tambahkan Nama Produk"
               labelProps={{ mb: 8 }}
               mb={24}
+              withAsterisk
               {...form.getInputProps('name')}
             />
             <MultiSelect

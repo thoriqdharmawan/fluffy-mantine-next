@@ -1,5 +1,6 @@
 import { Button, Flex, Group, Text, useMantineTheme, Image } from '@mantine/core';
 import { Dropzone, DropzoneProps, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { showNotification } from '@mantine/notifications';
 import { type UseFormReturnType } from '@mantine/form';
 import { IconUpload, IconPhoto, IconX } from '@tabler/icons';
 
@@ -38,9 +39,21 @@ export default function DropzoneUpload(props: DropzoneInterface) {
     );
   }
 
+  const handleRejectFiles = () => {
+    showNotification({
+      id: 'reject-upload',
+      disallowClose: false,
+      autoClose: 5000,
+      title: 'Foto produk tidak boleh melebihi 2MB',
+      message: '',
+      color: 'red',
+      icon: <IconX />,
+    });
+  };
+
   return (
     <Dropzone
-      onReject={(files) => console.log('rejected files', files)}
+      onReject={handleRejectFiles}
       maxSize={2 * 1024 ** 2} // 2mb
       accept={IMAGE_MIME_TYPE}
       w={IMG_PLACEHOLDER_SIZE}
