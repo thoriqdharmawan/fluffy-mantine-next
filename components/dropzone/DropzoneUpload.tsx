@@ -1,28 +1,23 @@
-import { useState } from 'react';
-
 import { Button, Flex, Group, Text, useMantineTheme, Image } from '@mantine/core';
-import { IconUpload, IconPhoto, IconX } from '@tabler/icons';
 import { Dropzone, DropzoneProps, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { showNotification } from '@mantine/notifications';
 import { type UseFormReturnType } from '@mantine/form';
+import { IconUpload, IconPhoto, IconX } from '@tabler/icons';
 
 import { FormValues } from '../../pages/products/add';
 
 interface DropzoneInterface extends Partial<DropzoneProps> {
   form: UseFormReturnType<FormValues>;
+  files: FileWithPath[];
+  onDelete: () => void;
+  dropzoneProps: any;
 }
 
-export default function DropzoneUpload(props: DropzoneInterface) {
-  const { form } = props;
-  const theme = useMantineTheme();
-  const [files, setFiles] = useState<FileWithPath[]>([]);
+const IMG_PLACEHOLDER_SIZE = 300;
 
-  const handleDeleteFiles = () => {
-    if (form?.values.image) {
-      form.setValues({ image: '' });
-    } else {
-      setFiles([]);
-    }
-  };
+export default function DropzoneUpload(props: DropzoneInterface) {
+  const { form, files, onDelete, dropzoneProps } = props;
+  const theme = useMantineTheme();
 
   if (form?.values.image || files[0]) {
     const imageUrl = form?.values.image || URL.createObjectURL(files?.[0]);
@@ -33,30 +28,41 @@ export default function DropzoneUpload(props: DropzoneInterface) {
           src={imageUrl}
           imageProps={{ onLoad: () => URL.revokeObjectURL(imageUrl) }}
           radius="md"
-          width={250}
-          height={250}
+          width={IMG_PLACEHOLDER_SIZE}
+          height={IMG_PLACEHOLDER_SIZE}
           withPlaceholder
         />
-        <Button onClick={handleDeleteFiles} mt={12}>
+        <Button onClick={onDelete} mt={12}>
           Hapus Foto Produk
         </Button>
       </Flex>
     );
   }
 
+  const handleRejectFiles = () => {
+    showNotification({
+      id: 'reject-upload',
+      disallowClose: false,
+      autoClose: 5000,
+      title: 'Foto produk tidak boleh melebihi 2MB',
+      message: '',
+      color: 'red',
+      icon: <IconX />,
+    });
+  };
+
   return (
     <Dropzone
-      onDrop={setFiles}
-      onReject={(files) => console.log('rejected files', files)}
-      maxSize={3 * 1024 ** 2}
+      onReject={handleRejectFiles}
+      maxSize={2 * 1024 ** 2} // 2mb
       accept={IMAGE_MIME_TYPE}
-      w={250}
-      h={250}
+      w={IMG_PLACEHOLDER_SIZE}
+      h={IMG_PLACEHOLDER_SIZE}
       sx={{
         alignItems: 'center',
         display: 'flex',
       }}
-      {...props}
+      {...dropzoneProps}
     >
       <Group position="center" align="center" spacing="xl" style={{ pointerEvents: 'none' }}>
         <Dropzone.Accept>
@@ -81,7 +87,7 @@ export default function DropzoneUpload(props: DropzoneInterface) {
             Tambahkan Foto Produk
           </Text>
           <Text size="sm" align="center" color="dimmed" mt={8}>
-            Foto Produk tidak boleh melebihi 5MB
+            Foto Produk tidak boleh melebihi 2MB
           </Text>
         </div>
       </Group>

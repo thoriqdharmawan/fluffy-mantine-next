@@ -18,7 +18,12 @@ const Header = () => {
         pos="sticky"
         top={matches ? 70 : 0}
         bg="#fff"
-        sx={{ zIndex: 4, borderBottom: '2px solid #E5E7E9' }}
+        sx={(theme) => ({
+          zIndex: 4,
+          borderBottom: '2px solid #E5E7E9',
+          borderTopRightRadius: theme.fontSizes.md,
+          borderTopLeftRadius: theme.fontSizes.md,
+        })}
       >
         <Box fw={600} w="35%">
           Info Produk

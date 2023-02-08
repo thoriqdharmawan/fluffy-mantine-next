@@ -35,6 +35,7 @@ export default function ListProduct(props: Props) {
   };
 
   useEffect(() => {
+    setLoading(true);
     if (companyId) {
       getData();
     }
@@ -70,7 +71,7 @@ export default function ListProduct(props: Props) {
   return (
     <Paper shadow="md" radius="md">
       <Header />
-      <Box pos="relative">
+      <Box pos="relative" mih={300}>
         <LoadingOverlay visible={!companyId || loading} overlayBlur={2} />
         {data?.products.map((product: any) => {
           return (
