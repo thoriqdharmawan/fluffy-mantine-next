@@ -66,7 +66,7 @@ export default function DropzoneUpload(props: DropzoneInterface) {
   return (
     <Dropzone
       onReject={(files) => console.log('rejected files', files)}
-      maxSize={3 * 1024 ** 2} // 3mb
+      maxSize={2 * 1024 ** 2} // 2mb
       accept={IMAGE_MIME_TYPE}
       w={250}
       h={250}
