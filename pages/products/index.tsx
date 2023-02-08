@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Button, Flex } from '@mantine/core';
+import { Button } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
+import { IconPlus } from '@tabler/icons';
 
 import Link from 'next/link';
 
@@ -8,6 +9,7 @@ import MainLayout from '../../layouts/MainLayout';
 import SearchBar from '../../components/SearchBar';
 
 import ListProducts from '../../modules/products/list/ListProduct';
+import HeaderSection from '../../components/header/HeaderSection';
 
 export default function Products() {
   const [search, setSearch] = useState('');
@@ -15,18 +17,22 @@ export default function Products() {
 
   return (
     <MainLayout>
+      <HeaderSection
+        title="Daftar Produk"
+        label="Anda dapat melihat daftar produk yang telah Anda tambahkan ke dalam aplikasi kami. Anda dapat mengedit atau menghapus produk yang ada sesuai kebutuhan."
+        action={
+          <Link href="/products/add">
+            <Button leftIcon={<IconPlus size={16} />}>Tambah Produk</Button>
+          </Link>
+        }
+      />
+
       <SearchBar
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         mb="24px"
         placeholder="Search Products"
       />
-
-      <Flex mb={24} gap="md">
-        <Link href="/products/add">
-          <Button>Tambahkan Produk</Button>
-        </Link>
-      </Flex>
 
       <ListProducts search={debounce} />
     </MainLayout>

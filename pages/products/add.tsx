@@ -41,6 +41,7 @@ import { useUser } from '../../context/user';
 import client from '../../apollo-client';
 import { ADD_PRODUCT, UPDATE_IMAGE_PRODUCT } from '../../services/products/product.graphql';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import HeaderSection from '../../components/header/HeaderSection';
 
 export interface FormValues extends ProductsCardProps {}
 
@@ -217,7 +218,15 @@ export default function AddProducts() {
   return (
     <MainLayout>
       <LoadingOverlay visible={loadingAddProduct} overlayBlur={2} />
-      <Text mb="lg">AddProducts</Text>
+
+      <HeaderSection
+        title="Tambah Produk"
+        label="Anda dapat menambahkan produk baru ke dalam aplikasi kami dengan mudah dan cepat. Silakan
+        isi informasi produk dengan benar dan tekan tombol Tambahkan Produk untuk menyimpan produk
+        baru Anda."
+        onBack={handleBack}
+      />
+
       <Paper shadow="sm" radius="md" p="xl" mb="xl">
         <Title order={4} mb="xl">
           Informasi Produk

@@ -54,6 +54,7 @@ const ProductItem = (props: ListProps) => {
 
   return (
     <>
+      <Divider />
       <Flex gap="md" justify="flex-start" align="center" direction="row" wrap="nowrap" px="24px">
         <Box w="35%" display="flex" py={12}>
           <AspectRatio ratio={1 / 1} w={100}>
@@ -136,7 +137,6 @@ const ProductItem = (props: ListProps) => {
             })}
         </Box>
       )}
-      <Divider />
     </>
   );
 };
