@@ -9,11 +9,16 @@ import {
   UnstyledButton,
   Badge,
   Loader,
+  Switch,
 } from '@mantine/core';
-import { IconSelector, IconTrash } from '@tabler/icons';
+import { IconCheck, IconDots, IconExclamationMark, IconSelector, IconTrash } from '@tabler/icons';
 import { Dispatch, SetStateAction, useState } from 'react';
+
 import ListProductVariant from './variant/ListProductVariant';
 import { getListProductVariants } from '../../../services/products/getProducts';
+import client from '../../../apollo-client';
+import { UPDATE_STATUS_PRODUCT } from '../../../services/products/product.graphql';
+import { showNotification } from '@mantine/notifications';
 
 interface CategoriesInterface {
   id: number;
@@ -24,25 +29,45 @@ interface ListProps {
   id: string;
   name: string;
   image: string;
-  sku: string;
-  price: number;
+  product_variants: any[];
   stock: number;
   categories: CategoriesInterface[] | void[];
-  type: string;
+  type: 'VARIANT' | 'NOVARIANT';
   onDelete: (setLoading: Dispatch<SetStateAction<boolean>>) => void;
+  onCompleteUpdate: () => void;
+}
+
+interface HandleChangeStatus {
+  id: number;
+  status: 'ACTIVE' | 'INACTIVE';
+  type: 'VARIANT' | 'NOVARIANT';
 }
 
 const ProductItem = (props: ListProps) => {
-  const { id, name, image, sku, price, stock, categories, type, onDelete } = props;
+  const {
+    id: productId,
+    name,
+    image,
+    product_variants,
+    stock,
+    categories,
+    type,
+    onDelete,
+    onCompleteUpdate,
+  } = props;
 
   const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
+  const [loadingUpdateStatus, setLoadingUpdateStatus] = useState<boolean>(false);
   const [loadingVariants, setLoadingVariants] = useState<boolean>(false);
+
   const [isOpenVariant, setIsOpenVariant] = useState<boolean>(false);
   const [dataVariants, setDataVariants] = useState<any>({});
 
-  const getVariants = (productId: string) => {
-    setIsOpenVariant((prev: boolean) => !prev);
-    setLoadingVariants(true);
+  const getVariants = (productId: string, withLoading: boolean | undefined) => {
+    if (withLoading) {
+      setIsOpenVariant((prev: boolean) => !prev);
+      setLoadingVariants(true);
+    }
     getListProductVariants({
       variables: { productId },
       fetchPolicy: 'network-only',
@@ -50,6 +75,37 @@ const ProductItem = (props: ListProps) => {
       setDataVariants(result.data);
       setLoadingVariants(result.loading);
     });
+  };
+
+  const handleChangeStatus = ({ id, status, type }: HandleChangeStatus) => {
+    setLoadingUpdateStatus(true);
+    client
+      .mutate({
+        mutation: UPDATE_STATUS_PRODUCT,
+        variables: { id, status: status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' },
+      })
+      .then(() => {
+        if (type === 'VARIANT') {
+          getVariants(productId, false);
+        } else {
+          onCompleteUpdate();
+        }
+        showNotification({
+          title: 'Yeayy, Berhasil Mengubah Status Produk!! 😊',
+          message: 'Status Produk Berhasil Diubah',
+          icon: <IconCheck />,
+          color: 'green',
+        });
+      })
+      .catch(() => {
+        showNotification({
+          title: 'Gagal Menghapus Produk 🤥',
+          message: 'Status Produk Gagal Diubah',
+          icon: <IconExclamationMark />,
+          color: 'red',
+        });
+      })
+      .finally(() => setLoadingUpdateStatus(false));
   };
 
   return (
@@ -65,7 +121,7 @@ const ProductItem = (props: ListProps) => {
               {name}
             </Text>
             <Text color="dimmed" mb="xs" size="xs">
-              SKU: {sku || '-'}
+              SKU: {product_variants?.[0]?.sku || '-'}
             </Text>
             <Flex gap="md" wrap="wrap">
               {categories.map((category: any) => {
@@ -78,14 +134,34 @@ const ProductItem = (props: ListProps) => {
             </Flex>
           </Flex>
         </Box>
-        <Box w="15%">{price}</Box>
+        <Box w="15%">{product_variants?.[0]?.price}</Box>
         <Box w="20%">123</Box>
         <Box w="15%">{stock}</Box>
-        <Box w="6%">Aktif</Box>
+        <Box w="6%">
+          {type === 'NOVARIANT' && (
+            <Switch
+              disabled={loadingUpdateStatus}
+              checked={product_variants?.[0]?.status === 'ACTIVE'}
+              styles={{ root: { display: 'flex' }, track: { cursor: 'pointer' } }}
+              onChange={() =>
+                handleChangeStatus({
+                  id: product_variants?.[0]?.id,
+                  status: product_variants?.[0]?.status,
+                  type,
+                })
+              }
+            />
+          )}
+        </Box>
         <Box w="9%">
-          <ActionIcon loading={loadingDelete} onClick={() => onDelete(setLoadingDelete)}>
-            <IconTrash size={18} />
-          </ActionIcon>
+          <Flex gap="sm">
+            <ActionIcon loading={loadingDelete} onClick={() => onDelete(setLoadingDelete)}>
+              <IconTrash size={18} />
+            </ActionIcon>
+            <ActionIcon>
+              <IconDots size={18} />
+            </ActionIcon>
+          </Flex>
         </Box>
       </Flex>
       {type === 'VARIANT' && (
@@ -96,7 +172,7 @@ const ProductItem = (props: ListProps) => {
             w="100%"
             display="flex"
             sx={{ alignItems: 'center', justifyContent: 'space-between' }}
-            onClick={() => getVariants(id)}
+            onClick={() => getVariants(productId, true)}
           >
             <Text size="sm" fw={700} color="dimmed">
               Lihat varian produk
@@ -132,6 +208,14 @@ const ProductItem = (props: ListProps) => {
                   purchased={10}
                   stock={productVariant.stock}
                   status={productVariant.status}
+                  loadingUpdateStatus={loadingUpdateStatus}
+                  onChangeStatus={() =>
+                    handleChangeStatus({
+                      id: productVariant.id,
+                      status: productVariant.status,
+                      type: 'VARIANT',
+                    })
+                  }
                 />
               );
             })}

@@ -1,4 +1,4 @@
-import { Box, Divider, Flex, Text } from '@mantine/core';
+import { Box, Divider, Flex, Text, Switch } from '@mantine/core';
 
 type Props = {
   name: string;
@@ -6,11 +6,13 @@ type Props = {
   price: number;
   purchased: number;
   stock: number;
-  status: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  onChangeStatus: () => void;
+  loadingUpdateStatus: boolean;
 };
 
 export default function ListProductVariant(props: Props) {
-  const { name, sku, price, purchased, stock, status } = props;
+  const { name, sku, price, purchased, stock, status, loadingUpdateStatus, onChangeStatus } = props;
 
   return (
     <>
@@ -25,7 +27,9 @@ export default function ListProductVariant(props: Props) {
         py="md"
       >
         <Box w="33%">
-          <Text mb="4px" fw={600}>{name}</Text>
+          <Text mb="4px" fw={600}>
+            {name}
+          </Text>
           <Text color="dimmed" size="xs">
             SKU: {sku}
           </Text>
@@ -33,7 +37,14 @@ export default function ListProductVariant(props: Props) {
         <Box w="15.6%">{price}</Box>
         <Box w="21.6%">{purchased}</Box>
         <Box w="16%">{stock}</Box>
-        <Box w="6%">{status}</Box>
+        <Box w="6%">
+          <Switch
+            disabled={loadingUpdateStatus}
+            checked={status === 'ACTIVE'}
+            onChange={onChangeStatus}
+            styles={{ root: { display: 'flex' }, track: { cursor: 'pointer' } }}
+          />
+        </Box>
         <Box w="5%"></Box>
       </Flex>
     </>
