@@ -23,8 +23,10 @@ export default function ListProduct(props: Props) {
   const [data, setData] = useState<any>(undefined);
   const [loading, setLoading] = useState(true);
 
-  const getData = () => {
-    setLoading(true);
+  const getData = (withLoading: boolean) => {
+    if (withLoading) {
+      setLoading(true);
+    }
     getListProducts({
       variables: { company_id: companyId, search: `%${search}%` },
       fetchPolicy: 'network-only',
@@ -37,7 +39,7 @@ export default function ListProduct(props: Props) {
   useEffect(() => {
     setLoading(true);
     if (companyId) {
-      getData();
+      getData(true);
     }
   }, [companyId, search]);
 
@@ -49,7 +51,7 @@ export default function ListProduct(props: Props) {
         variables: { product_id: id },
       })
       .then(() => {
-        getData();
+        getData(true);
         showNotification({
           title: 'Yeayy, Berhasil Menghapus Produk!! 😊',
           message: 'Produk berhasil dihapus',
@@ -80,12 +82,12 @@ export default function ListProduct(props: Props) {
               id={product.id}
               name={product.name}
               image={product.image}
-              sku={product.product_variants?.[0]?.sku}
-              price={product.product_variants?.[0]?.price}
+              product_variants={product.product_variants}
               stock={product.product_variants_aggregate.aggregate.sum.stock}
               categories={product.categories || []}
               type={product.type}
               onDelete={(setLoading) => handleDeleteProduct(setLoading, product.id)}
+              onCompleteUpdate={() => getData(false)}
             />
           );
         })}

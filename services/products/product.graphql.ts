@@ -40,12 +40,12 @@ export const GET_LIST_PRODUCTS = gql`
 
 export const GET_LIST_PRODUCT_VARIANTS = gql`
   query GetProductVariants($productId: uuid!) {
-    variants(where: { productId: { _eq: $productId } }) {
+    variants(where: { productId: { _eq: $productId } }, order_by: { id: asc }) {
       id
       values
       name
     }
-    product_variants(where: { productId: { _eq: $productId } }) {
+    product_variants(where: { productId: { _eq: $productId } }, order_by: { id: asc }) {
       id
       coord
       is_primary
@@ -131,6 +131,14 @@ export const GET_ALL_CATEGORIES = gql`
 export const DELETE_PRODUCT = gql`
   mutation DeleteProduct($product_id: uuid!) {
     delete_products(where: { id: { _eq: $product_id } }) {
+      affected_rows
+    }
+  }
+`;
+
+export const UPDATE_STATUS_PRODUCT = gql`
+  mutation UpdateStatusProduct($id: Int!, $status: String!) {
+    update_product_variants(where: { id: { _eq: $id } }, _set: { status: $status }) {
       affected_rows
     }
   }
