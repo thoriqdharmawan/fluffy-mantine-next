@@ -10,6 +10,7 @@ import { DELETE_PRODUCT } from '../../../services/products/product.graphql';
 import Header from './Header';
 import ProductItem from './ProductItem';
 import client from '../../../apollo-client';
+import { deleteImage } from '../../../services/products/product.mutatoin';
 
 type Props = {
   search: string;
@@ -37,7 +38,6 @@ export default function ListProduct(props: Props) {
   };
 
   useEffect(() => {
-    setLoading(true);
     if (companyId) {
       getData(true);
     }
@@ -45,11 +45,14 @@ export default function ListProduct(props: Props) {
 
   const handleDeleteProduct = async (setLoading: Dispatch<SetStateAction<boolean>>, id: string) => {
     setLoading(true);
-    await client
-      .mutate({
-        mutation: DELETE_PRODUCT,
-        variables: { product_id: id },
-      })
+
+    const promise1 = deleteImage(id);
+    const promise2 = client.mutate({
+      mutation: DELETE_PRODUCT,
+      variables: { product_id: id },
+    });
+
+    Promise.all([promise1, promise2])
       .then(() => {
         getData(true);
         showNotification({

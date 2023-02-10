@@ -28,11 +28,11 @@ const Header = () => {
         <Box fw={600} w="35%">
           Info Produk
         </Box>
-        <Box fw={600} w="15%">
-          Harga
-        </Box>
         <Box fw={600} w="20%">
           Total Pembelian
+        </Box>
+        <Box fw={600} w="15%">
+          Harga
         </Box>
         <Box fw={600} w="15%">
           Stock
