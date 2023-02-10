@@ -11,14 +11,25 @@ import {
   Loader,
   Switch,
 } from '@mantine/core';
-import { IconCheck, IconDots, IconExclamationMark, IconSelector, IconTrash } from '@tabler/icons';
+import {
+  IconCheck,
+  IconDots,
+  IconEdit,
+  IconEye,
+  IconExclamationMark,
+  IconSelector,
+  IconTrash,
+} from '@tabler/icons';
 import { Dispatch, SetStateAction, useState } from 'react';
 
+import MenuDropdown from '../../../components/menu/MenuDropdown';
+
 import ListProductVariant from './variant/ListProductVariant';
-import { getListProductVariants } from '../../../services/products/getProducts';
+import { getListProductVariants } from '../../../services/products';
 import client from '../../../apollo-client';
 import { UPDATE_STATUS_PRODUCT } from '../../../services/products/product.graphql';
 import { showNotification } from '@mantine/notifications';
+import { useRouter } from 'next/router';
 
 interface CategoriesInterface {
   id: number;
@@ -44,6 +55,7 @@ interface HandleChangeStatus {
 }
 
 const ProductItem = (props: ListProps) => {
+  const router = useRouter();
   const {
     id: productId,
     name,
@@ -108,6 +120,33 @@ const ProductItem = (props: ListProps) => {
       .finally(() => setLoadingUpdateStatus(false));
   };
 
+  const PRODUCT_ACTION_MENUS = [
+    {
+      label: 'Produk',
+      items: [
+        {
+          icon: <IconEye size={14} />,
+          children: 'Rincian',
+        },
+        {
+          icon: <IconEdit size={14} />,
+          children: 'Ubah',
+          onClick: () => router.push(`/products/edit/${productId}`),
+        },
+      ],
+    },
+    {
+      items: [
+        {
+          icon: <IconTrash size={14} />,
+          color: 'red',
+          children: 'Hapus',
+          onClick: () => onDelete(setLoadingDelete),
+        },
+      ],
+    },
+  ];
+
   return (
     <>
       <Divider />
@@ -134,8 +173,8 @@ const ProductItem = (props: ListProps) => {
             </Flex>
           </Flex>
         </Box>
-        <Box w="15%">{product_variants?.[0]?.price}</Box>
         <Box w="20%">123</Box>
+        <Box w="15%">{product_variants?.[0]?.price}</Box>
         <Box w="15%">{stock}</Box>
         <Box w="6%">
           {type === 'NOVARIANT' && (
@@ -154,13 +193,14 @@ const ProductItem = (props: ListProps) => {
           )}
         </Box>
         <Box w="9%">
-          <Flex gap="sm">
-            <ActionIcon loading={loadingDelete} onClick={() => onDelete(setLoadingDelete)}>
-              <IconTrash size={18} />
-            </ActionIcon>
-            <ActionIcon>
-              <IconDots size={18} />
-            </ActionIcon>
+          <Flex gap="sm" align="center">
+            <MenuDropdown sections={PRODUCT_ACTION_MENUS}>
+              <ActionIcon>
+                <IconDots size={18} />
+              </ActionIcon>
+            </MenuDropdown>
+
+            {loadingDelete && <Loader size="xs" color="gray" />}
           </Flex>
         </Box>
       </Flex>

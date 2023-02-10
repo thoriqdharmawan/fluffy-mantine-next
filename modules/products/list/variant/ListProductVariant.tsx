@@ -34,8 +34,8 @@ export default function ListProductVariant(props: Props) {
             SKU: {sku}
           </Text>
         </Box>
-        <Box w="15.6%">{price}</Box>
         <Box w="21.6%">{purchased}</Box>
+        <Box w="15.6%">{price}</Box>
         <Box w="16%">{stock}</Box>
         <Box w="6%">
           <Switch

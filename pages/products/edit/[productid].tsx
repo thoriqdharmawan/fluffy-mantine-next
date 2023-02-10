@@ -23,32 +23,34 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { IconCheck, IconExclamationMark } from '@tabler/icons';
 
-import MainLayout from '../../layouts/MainLayout';
-import DropzoneUpload from '../../components/dropzone/DropzoneUpload';
+import MainLayout from '../../../layouts/MainLayout';
+import DropzoneUpload from '../../../components/dropzone/DropzoneUpload';
 
-import AddProductVariant from '../../modules/products/form-add-product/AddProductVariant';
-import AddProductNoVariant from '../../modules/products/form-add-product/AddProductNoVariant';
+import AddProductVariant from '../../../modules/products/form-add-product/AddProductVariant';
+import AddProductNoVariant from '../../../modules/products/form-add-product/AddProductNoVariant';
 
 import {
   ProductsCardProps,
   DEFAULT_PRODUCT_CATEGORIES,
   ProductType,
   VariantInterface,
-} from '../../mock/products';
-import { GLOABL_STATUS } from '../../mock/global';
+} from '../../../mock/products';
+import { GLOABL_STATUS } from '../../../mock/global';
 
-import { useUser } from '../../context/user';
-import client from '../../apollo-client';
-import { ADD_PRODUCT, UPDATE_IMAGE_PRODUCT } from '../../services/products/product.graphql';
+import { useUser } from '../../../context/user';
+import client from '../../../apollo-client';
+import { ADD_PRODUCT, UPDATE_IMAGE_PRODUCT } from '../../../services/products/product.graphql';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-import HeaderSection from '../../components/header/HeaderSection';
+import HeaderSection from '../../../components/header/HeaderSection';
 
 export interface FormValues extends ProductsCardProps {}
 
-export default function AddProducts() {
+export default function EditProducts() {
   const theme = useMantineTheme();
   const router = useRouter();
   const user = useUser();
+
+  const { productId } = router.query;
 
   const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
   const [files, setFiles] = useState<FileWithPath[]>([]);
@@ -220,8 +222,8 @@ export default function AddProducts() {
       <LoadingOverlay visible={loadingAddProduct} overlayBlur={2} />
 
       <HeaderSection
-        title="Tambah Produk"
-        label="Anda dapat menambahkan produk baru ke dalam aplikasi kami dengan mudah dan cepat. Silakan
+        title="Ubah Produk"
+        label="Anda dapat mengubah produk yang telah anda tambahkan sebelumnya dengan mudah dan cepat. Silakan
         isi informasi produk dengan benar dan tekan tombol Tambahkan Produk untuk menyimpan produk
         baru Anda."
         onBack={handleBack}
