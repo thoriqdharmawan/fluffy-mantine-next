@@ -29,6 +29,7 @@ import { getListProductVariants } from '../../../services/products/getProducts';
 import client from '../../../apollo-client';
 import { UPDATE_STATUS_PRODUCT } from '../../../services/products/product.graphql';
 import { showNotification } from '@mantine/notifications';
+import { useRouter } from 'next/router';
 
 interface CategoriesInterface {
   id: number;
@@ -54,6 +55,7 @@ interface HandleChangeStatus {
 }
 
 const ProductItem = (props: ListProps) => {
+  const router = useRouter()
   const {
     id: productId,
     name,
@@ -124,11 +126,12 @@ const ProductItem = (props: ListProps) => {
       items: [
         {
           icon: <IconEye size={14} />,
-          children: 'Detail',
+          children: 'Rincian',
         },
         {
           icon: <IconEdit size={14} />,
-          children: 'Edit',
+          children: 'Ubah',
+          onClick: () => router.push(`/products/edit/${productId}`)
         },
       ],
     },
