@@ -25,7 +25,7 @@ import { Dispatch, SetStateAction, useState } from 'react';
 import MenuDropdown from '../../../components/menu/MenuDropdown';
 
 import ListProductVariant from './variant/ListProductVariant';
-import { getListProductVariants } from '../../../services/products/getProducts';
+import { getListProductVariants } from '../../../services/products';
 import client from '../../../apollo-client';
 import { UPDATE_STATUS_PRODUCT } from '../../../services/products/product.graphql';
 import { showNotification } from '@mantine/notifications';
@@ -55,7 +55,7 @@ interface HandleChangeStatus {
 }
 
 const ProductItem = (props: ListProps) => {
-  const router = useRouter()
+  const router = useRouter();
   const {
     id: productId,
     name,
@@ -131,7 +131,7 @@ const ProductItem = (props: ListProps) => {
         {
           icon: <IconEdit size={14} />,
           children: 'Ubah',
-          onClick: () => router.push(`/products/edit/${productId}`)
+          onClick: () => router.push(`/products/edit/${productId}`),
         },
       ],
     },
