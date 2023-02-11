@@ -13,6 +13,7 @@ export default function AddProductNoVariant({ form }: { form: UseFormReturnType<
         icon="Rp"
         labelProps={{ mb: 8 }}
         mb={24}
+        withAsterisk
         parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
         formatter={(value: any) =>
           !Number.isNaN(parseFloat(value)) ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''
@@ -25,11 +26,13 @@ export default function AddProductNoVariant({ form }: { form: UseFormReturnType<
         placeholder="Tambahkan SKU"
         labelProps={{ mb: 8 }}
         mb={24}
+        withAsterisk
         {...form.getInputProps('productVariants.0.sku')}
       />
 
       <NumberInput
         label="Stok"
+        withAsterisk
         placeholder="Tambahkan Stok"
         labelProps={{ mb: 8 }}
         mb={24}

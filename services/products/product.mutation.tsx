@@ -1,8 +1,9 @@
-import { deleteObject, getStorage, ref } from 'firebase/storage';
+import { deleteObject, getStorage, ref, uploadBytes } from 'firebase/storage';
+import { FileWithPath } from '@mantine/dropzone';
 
 import client from '../../apollo-client';
 
-import { DELETE_PRODUCT } from './product.graphql';
+import { ADD_PRODUCT, DELETE_PRODUCT } from './product.graphql';
 
 const deleteProductImage = (productId: string) => {
   const storage = getStorage();
@@ -22,4 +23,18 @@ const deleteProduct = (productId: string) => {
   return Promise.all([promise1, promise2]);
 };
 
-export { deleteProductImage, deleteProduct };
+const addProduct = ({ variables }: { variables: any }) => {
+  return client.mutate({
+    mutation: ADD_PRODUCT,
+    variables,
+  });
+};
+
+const uploadImage = (productId: string, files: FileWithPath[]) => {
+  const storage = getStorage();
+  const storageRef = ref(storage, 'products/' + productId);
+
+  return uploadBytes(storageRef, files[0]);
+};
+
+export { deleteProductImage, deleteProduct, addProduct, uploadImage };

@@ -22,9 +22,12 @@ import { FileWithPath } from '@mantine/dropzone';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { IconCheck, IconExclamationMark } from '@tabler/icons';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import client from '../../../apollo-client';
 
 import MainLayout from '../../../layouts/MainLayout';
 import DropzoneUpload from '../../../components/dropzone/DropzoneUpload';
+import HeaderSection from '../../../components/header/HeaderSection';
 
 import AddProductVariant from '../../../modules/products/form-add-product/AddProductVariant';
 import AddProductNoVariant from '../../../modules/products/form-add-product/AddProductNoVariant';
@@ -38,10 +41,7 @@ import {
 import { GLOABL_STATUS } from '../../../mock/global';
 
 import { useUser } from '../../../context/user';
-import client from '../../../apollo-client';
-import { ADD_PRODUCT, UPDATE_IMAGE_PRODUCT } from '../../../services/products/product.graphql';
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-import HeaderSection from '../../../components/header/HeaderSection';
+import { addProduct, UPDATE_IMAGE_PRODUCT } from '../../../services/products';
 
 export interface FormValues extends ProductsCardProps {}
 
@@ -75,7 +75,19 @@ export default function AddProducts() {
     },
 
     validate: {
-      name: (value) => (!value ? 'This field is required' : null),
+      name: (value) => (!value ? 'Bagian ini diperlukan' : null),
+      categories: (values: string[] | undefined) => {
+        return !values || values?.length === 0 ? 'Bagian ini diperlukan' : null;
+      },
+      variants: {
+        label: (value) => (!value ? 'Bagian ini diperlukan' : null),
+        values: (values) => (values.length === 0 ? 'Bagian ini diperlukan' : null),
+      },
+      productVariants: {
+        price: (value) => (!value ? 'Bagian ini diperlukan' : null),
+        sku: (value) => (!value ? 'Bagian ini diperlukan' : null),
+        stock: (value) => (!value ? 'Bagian ini diperlukan' : null),
+      },
     },
   });
 
@@ -141,10 +153,11 @@ export default function AddProducts() {
   };
 
   const handleSubmit = async () => {
-    setLoadingAddProduct(true);
     const { hasErrors } = form.validate();
 
     if (!hasErrors) {
+      setLoadingAddProduct(true);
+
       const { values } = form;
 
       const variables = {
@@ -171,11 +184,7 @@ export default function AddProducts() {
         })),
       };
 
-      client
-        .mutate({
-          mutation: ADD_PRODUCT,
-          variables,
-        })
+      addProduct({ variables })
         .then((res) => {
           handleUploadImage(res.data?.insert_products?.returning?.[0].id);
         })
@@ -261,6 +270,7 @@ export default function AddProducts() {
               data={categories}
               searchable
               creatable
+              withAsterisk
               getCreateLabel={(query) => `+ Tambah "${query}"`}
               onCreate={(query) => {
                 setCategories((current) => [...current, query]);
