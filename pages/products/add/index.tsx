@@ -236,7 +236,7 @@ export default function AddProducts() {
         onBack={handleBack}
       />
 
-      <Box xs={{ position: 'relative' }}>
+      <Box sx={{ position: 'relative' }}>
         <LoadingOverlay visible={loading} overlayBlur={2} />
 
         <Paper shadow="sm" radius="md" p="xl" mb="xl">
