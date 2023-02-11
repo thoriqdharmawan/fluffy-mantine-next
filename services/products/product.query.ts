@@ -8,7 +8,7 @@ interface ProductActionInterface {
   fetchPolicy?: FetchPolicy;
 }
 
-export const getListProducts = async (props: ProductActionInterface) => {
+const getListProducts = async (props: ProductActionInterface) => {
   const result = await client.query({
     query: GET_LIST_PRODUCTS,
     variables: props.variables,
@@ -18,7 +18,7 @@ export const getListProducts = async (props: ProductActionInterface) => {
   return result;
 };
 
-export const getListProductVariants = async (props: ProductActionInterface) => {
+const getListProductVariants = async (props: ProductActionInterface) => {
   const result = await client.query({
     query: GET_LIST_PRODUCT_VARIANTS,
     variables: props.variables,
@@ -27,3 +27,5 @@ export const getListProductVariants = async (props: ProductActionInterface) => {
 
   return result;
 };
+
+export { getListProducts, getListProductVariants };

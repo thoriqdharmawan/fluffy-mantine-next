@@ -4,12 +4,10 @@ import { showNotification } from '@mantine/notifications';
 import { IconCheck, IconExclamationMark } from '@tabler/icons';
 
 import { useUser } from '../../../context/user';
-import { getListProducts, DELETE_PRODUCT } from '../../../services/products';
+import { getListProducts, deleteProduct } from '../../../services/products';
 
 import Header from './Header';
 import ProductItem from './ProductItem';
-import client from '../../../apollo-client';
-import { deleteProductImage } from '../../../services/products';
 
 type Props = {
   search: string;
@@ -42,16 +40,13 @@ export default function ListProduct(props: Props) {
     }
   }, [companyId, search]);
 
-  const handleDeleteProduct = async (setLoading: Dispatch<SetStateAction<boolean>>, id: string) => {
+  const handleDeleteProduct = (
+    setLoading: Dispatch<SetStateAction<boolean>>,
+    productId: string
+  ) => {
     setLoading(true);
 
-    const promise1 = deleteProductImage(id);
-    const promise2 = client.mutate({
-      mutation: DELETE_PRODUCT,
-      variables: { product_id: id },
-    });
-
-    Promise.all([promise1, promise2])
+    deleteProduct(productId)
       .then(() => {
         getData(true);
         showNotification({
