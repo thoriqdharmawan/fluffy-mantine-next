@@ -31,7 +31,7 @@ export default function Products() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         mb="24px"
-        placeholder="Search Products"
+        placeholder="Cari Produk"
       />
 
       <ListProducts search={debounce} />
