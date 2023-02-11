@@ -23,6 +23,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { IconCheck, IconExclamationMark } from '@tabler/icons';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+
 import client from '../../../apollo-client';
 
 import MainLayout from '../../../layouts/MainLayout';
