@@ -19,6 +19,7 @@ import {
   IconExclamationMark,
   IconSelector,
   IconTrash,
+  IconCopy,
 } from '@tabler/icons';
 import { Dispatch, SetStateAction, useState } from 'react';
 
@@ -132,6 +133,10 @@ const ProductItem = (props: ListProps) => {
           icon: <IconEdit size={14} />,
           children: 'Ubah',
           onClick: () => router.push(`/products/edit/${productId}`),
+        },
+        {
+          icon: <IconCopy size={14} />,
+          children: 'Duplikat',
         },
       ],
     },

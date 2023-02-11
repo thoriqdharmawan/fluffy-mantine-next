@@ -38,6 +38,37 @@ export const GET_LIST_PRODUCTS = gql`
   }
 `;
 
+export const GET_PRODUCT_BY_ID = gql`
+  query GetProductById($product_id: uuid!) {
+    products(where: { id: { _eq: $product_id } }) {
+      id
+      name
+      image
+      description
+      type
+      categories {
+        id
+        name
+      }
+      product_variants {
+        id
+        coord
+        is_primary
+        price
+        sku
+        status
+        stock
+        productId
+      }
+      variants {
+        id
+        values
+        name
+      }
+    }
+  }
+`;
+
 export const GET_LIST_PRODUCT_VARIANTS = gql`
   query GetProductVariants($productId: uuid!) {
     variants(where: { productId: { _eq: $productId } }, order_by: { id: asc }) {

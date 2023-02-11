@@ -3,12 +3,12 @@ interface Categories {
   companyId: string;
 }
 
-interface Variants {
+export interface Variants {
   name: string;
   values: any[];
 }
 
-interface ProductVariants {
+export interface ProductVariants {
   coord: number[];
   is_primary: boolean;
   price?: number;
