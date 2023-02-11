@@ -1,4 +1,5 @@
 import {
+  Box,
   TextInput,
   Text,
   Paper,
@@ -19,12 +20,16 @@ import { showNotification } from '@mantine/notifications';
 import { useForm } from '@mantine/form';
 import { FileWithPath } from '@mantine/dropzone';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { IconCheck, IconExclamationMark } from '@tabler/icons';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+
+import client from '../../../apollo-client';
 
 import MainLayout from '../../../layouts/MainLayout';
 import DropzoneUpload from '../../../components/dropzone/DropzoneUpload';
+import HeaderSection from '../../../components/header/HeaderSection';
 
 import AddProductVariant from '../../../modules/products/form-add-product/AddProductVariant';
 import AddProductNoVariant from '../../../modules/products/form-add-product/AddProductNoVariant';
@@ -38,10 +43,8 @@ import {
 import { GLOABL_STATUS } from '../../../mock/global';
 
 import { useUser } from '../../../context/user';
-import client from '../../../apollo-client';
-import { ADD_PRODUCT, UPDATE_IMAGE_PRODUCT } from '../../../services/products/product.graphql';
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
-import HeaderSection from '../../../components/header/HeaderSection';
+import { addProduct, getProductById, UPDATE_IMAGE_PRODUCT } from '../../../services/products';
+import { ProductVariants, Variants } from '../../../services/products/product.interface';
 
 export interface FormValues extends ProductsCardProps {}
 
@@ -50,11 +53,13 @@ export default function EditProducts() {
   const router = useRouter();
   const user = useUser();
 
-  const { productId } = router.query;
+  const { product_id } = router.query;
+
+  console.log(product_id);
 
   const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
   const [files, setFiles] = useState<FileWithPath[]>([]);
-  const [loadingAddProduct, setLoadingAddProduct] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -77,16 +82,60 @@ export default function EditProducts() {
     },
 
     validate: {
-      name: (value) => (!value ? 'This field is required' : null),
+      name: (value) => (!value ? 'Bagian ini diperlukan' : null),
+      categories: (values: string[] | undefined) => {
+        return !values || values?.length === 0 ? 'Bagian ini diperlukan' : null;
+      },
+      variants: {
+        label: (value) => (!value ? 'Bagian ini diperlukan' : null),
+        values: (values) => (values.length === 0 ? 'Bagian ini diperlukan' : null),
+      },
+      productVariants: {
+        price: (value) => (!value ? 'Bagian ini diperlukan' : null),
+        sku: (value) => (!value ? 'Bagian ini diperlukan' : null),
+        stock: (value) => (!value ? 'Bagian ini diperlukan' : null),
+      },
     },
   });
+
+  useEffect(() => {
+    setLoading(true);
+    getProductById({
+      variables: {
+        product_id,
+      },
+    })
+      .then(({ data }) => {
+        const { name, image, description, categories, type, variants, product_variants } =
+          data.products?.[0] || {};
+        form.setValues({
+          image,
+          name,
+          description,
+          categories: categories?.map(({ name }: { name: string }) => name) || [],
+          type,
+          variants: variants.map((variant: Variants) => ({
+            label: variant.name,
+            values: variant.values,
+          })),
+          productVariants: product_variants?.map((product: ProductVariants) => ({
+            coord: product.coord,
+            sku: product.sku,
+            price: product.price,
+            stock: product.stock,
+            status: product.status,
+            isPrimary: product.is_primary,
+          })),
+        });
+      })
+      .finally(() => setLoading(false));
+  }, [product_id]);
 
   const { type } = form.values;
 
   const handleBack = () => {
     router.push('/products');
     form.clearErrors();
-    form.reset();
   };
 
   const handleDeleteFiles = () => {
@@ -131,22 +180,23 @@ export default function EditProducts() {
             })
             .catch(() => showError('Gagal Menambahkan Foto Produk 🤥'))
             .finally(() => {
-              setLoadingAddProduct(false);
+              setLoading(false);
               handleBack();
             });
         });
       })
       .catch(() => {
-        setLoadingAddProduct(false);
+        setLoading(false);
         showError('Gagal Menambahkan Foto Produk 🤥');
       });
   };
 
   const handleSubmit = async () => {
-    setLoadingAddProduct(true);
     const { hasErrors } = form.validate();
 
     if (!hasErrors) {
+      setLoading(true);
+
       const { values } = form;
 
       const variables = {
@@ -173,17 +223,13 @@ export default function EditProducts() {
         })),
       };
 
-      client
-        .mutate({
-          mutation: ADD_PRODUCT,
-          variables,
-        })
+      addProduct({ variables })
         .then((res) => {
           handleUploadImage(res.data?.insert_products?.returning?.[0].id);
         })
         .catch(() => {
           showError('Gagal Membuat Produk 🤥');
-          setLoadingAddProduct(false);
+          setLoading(false);
         });
     }
   };
@@ -219,8 +265,6 @@ export default function EditProducts() {
 
   return (
     <MainLayout>
-      <LoadingOverlay visible={loadingAddProduct} overlayBlur={2} />
-
       <HeaderSection
         title="Ubah Produk"
         label="Anda dapat mengubah produk yang telah anda tambahkan sebelumnya dengan mudah dan cepat. Silakan
@@ -229,88 +273,93 @@ export default function EditProducts() {
         onBack={handleBack}
       />
 
-      <Paper shadow="sm" radius="md" p="xl" mb="xl">
-        <Title order={4} mb="xl">
-          Informasi Produk
-        </Title>
-        <Grid align="center" gutter="xl">
-          <Col span="content">
-            <DropzoneUpload
-              form={form}
-              files={files}
-              onDelete={handleDeleteFiles}
-              dropzoneProps={{
-                onDrop: setFiles,
-                multiple: false,
-                mb: 'md',
-              }}
-            />
-          </Col>
-          <Col span={12} lg="auto">
-            <TextInput
-              label="Nama Produk"
-              placeholder="Tambahkan Nama Produk"
-              labelProps={{ mb: 8 }}
-              mb={24}
-              withAsterisk
-              {...form.getInputProps('name')}
-            />
-            <MultiSelect
-              label="Kategori"
-              placeholder="Tambahkan Kategori"
-              labelProps={{ mb: 8 }}
-              mb={24}
-              data={categories}
-              searchable
-              creatable
-              getCreateLabel={(query) => `+ Tambah "${query}"`}
-              onCreate={(query) => {
-                setCategories((current) => [...current, query]);
-                return query;
-              }}
-              {...form.getInputProps('categories')}
-            />
+      <Box sx={{ position: 'relative' }}>
+        <LoadingOverlay visible={loading} overlayBlur={2} />
 
-            <Textarea
-              label="Deskripsi"
-              placeholder="Tambahkan Deskripsi Produk"
-              labelProps={{ mb: 8 }}
-              mb={24}
-              minRows={4}
-              {...form.getInputProps('description')}
-            />
-          </Col>
-        </Grid>
-      </Paper>
-      <Paper shadow="sm" radius="md" p="xl" mb="xl">
-        <Title order={4} mb="xl">
-          Detail Produk
-        </Title>
+        <Paper shadow="sm" radius="md" p="xl" mb="xl">
+          <Title order={4} mb="xl">
+            Informasi Produk
+          </Title>
+          <Grid align="center" gutter="xl">
+            <Col span="content">
+              <DropzoneUpload
+                form={form}
+                files={files}
+                onDelete={handleDeleteFiles}
+                dropzoneProps={{
+                  onDrop: setFiles,
+                  multiple: false,
+                  mb: 'md',
+                }}
+              />
+            </Col>
+            <Col span={12} lg="auto">
+              <TextInput
+                label="Nama Produk"
+                placeholder="Tambahkan Nama Produk"
+                labelProps={{ mb: 8 }}
+                mb={24}
+                withAsterisk
+                {...form.getInputProps('name')}
+              />
+              <MultiSelect
+                label="Kategori"
+                placeholder="Tambahkan Kategori"
+                labelProps={{ mb: 8 }}
+                mb={24}
+                data={categories}
+                searchable
+                creatable
+                withAsterisk
+                getCreateLabel={(query) => `+ Tambah "${query}"`}
+                onCreate={(query) => {
+                  setCategories((current) => [...current, query]);
+                  return query;
+                }}
+                {...form.getInputProps('categories')}
+              />
 
-        <SegmentedControl
-          mb="md"
-          onChange={handleOpenConfirmationVariants}
-          value={type}
-          data={[
-            { label: 'Produk Tanpa Varian', value: 'NOVARIANT' },
-            { label: 'Produk Dengan Varian', value: 'VARIANT' },
-          ]}
-        />
+              <Textarea
+                label="Deskripsi"
+                placeholder="Tambahkan Deskripsi Produk"
+                labelProps={{ mb: 8 }}
+                mb={24}
+                minRows={4}
+                {...form.getInputProps('description')}
+              />
+            </Col>
+          </Grid>
+        </Paper>
+        <Paper shadow="sm" radius="md" p="xl" mb="xl">
+          <Title order={4} mb="xl">
+            Detail Produk
+          </Title>
 
-        {type === 'NOVARIANT' && <AddProductNoVariant form={form} />}
-        {type === 'VARIANT' && <AddProductVariant form={form} />}
-      </Paper>
-      <Flex justify="space-between" align="center">
-        <Button variant="subtle" onClick={handleBack}>
-          Batalkan
-        </Button>
-        <Group position="right" mt="md">
-          <Button variant="subtle" onClick={handleSubmit}>
-            Simpan dan Tambah Baru
+          <SegmentedControl
+            mb="md"
+            onChange={handleOpenConfirmationVariants}
+            value={type}
+            data={[
+              { label: 'Produk Tanpa Varian', value: 'NOVARIANT' },
+              { label: 'Produk Dengan Varian', value: 'VARIANT' },
+            ]}
+          />
+
+          {type === 'NOVARIANT' && <AddProductNoVariant form={form} />}
+          {type === 'VARIANT' && <AddProductVariant form={form} />}
+        </Paper>
+        <Flex justify="space-between" align="center">
+          <Button variant="subtle" onClick={handleBack}>
+            Batalkan
           </Button>
-          <Button onClick={handleSubmit}>Tambahkan Produk</Button>
-        </Group>
-      </Flex>
+          <Group position="right" mt="md">
+            <Button variant="subtle" onClick={handleSubmit}>
+              Simpan dan Tambah Baru
+            </Button>
+            <Button onClick={handleSubmit}>Tambahkan Produk</Button>
+          </Group>
+        </Flex>
+      </Box>
     </MainLayout>
   );
 }

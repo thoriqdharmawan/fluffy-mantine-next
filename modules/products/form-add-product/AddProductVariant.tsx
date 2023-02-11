@@ -56,6 +56,7 @@ const SelectVariant = (props: SelectVariantType) => {
         data={variantNames}
         searchable
         creatable
+        withAsterisk
         getCreateLabel={(query) => `+ Tambah "${query}"`}
         onCreate={onCreateVariantNames}
         {...form.getInputProps(`variants.${index}.label`)}
@@ -67,6 +68,7 @@ const SelectVariant = (props: SelectVariantType) => {
         w="100%"
         searchable
         creatable
+        withAsterisk
         labelProps={{ mb: 8 }}
         getCreateLabel={(query) => `+ Tambah "${query}"`}
         onCreate={(query) => {

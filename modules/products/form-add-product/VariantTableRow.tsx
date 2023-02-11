@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { NumberInput, Input, Switch } from '@mantine/core';
+import { NumberInput, TextInput, Switch } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 
 import { FormValues } from '../../../pages/products/add';
@@ -24,9 +24,10 @@ const VariantTableRow = memo(function VariantTableRowMemo(props: Props) {
       </td>
       <td>
         <NumberInput
-          placeholder="Tambahkan Harga"
           min={0}
           icon="Rp"
+          withAsterisk
+          placeholder="Tambahkan Harga"
           parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
           formatter={(value: any) =>
             !Number.isNaN(parseFloat(value)) ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''
@@ -35,13 +36,15 @@ const VariantTableRow = memo(function VariantTableRowMemo(props: Props) {
         />
       </td>
       <td>
-        <Input
+        <TextInput
+          withAsterisk
           placeholder="Tambahkan SKU"
           {...form.getInputProps(`productVariants.${index}.sku`)}
         />
       </td>
       <td>
         <NumberInput
+          withAsterisk
           placeholder="Tambahkan Stok"
           {...form.getInputProps(`productVariants.${index}.stock`)}
         />
