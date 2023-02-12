@@ -1,13 +1,15 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Box, Paper, LoadingOverlay } from '@mantine/core';
+import { Box, Paper, LoadingOverlay, Button } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
-import { IconCheck, IconExclamationMark } from '@tabler/icons';
+import { IconCheck, IconExclamationMark, IconPlus } from '@tabler/icons';
 
 import { useUser } from '../../../context/user';
 import { getListProducts, deleteProduct } from '../../../services/products';
 
 import Header from './Header';
 import ProductItem from './ProductItem';
+import { Empty } from '../../../components/empty-state';
+import Link from 'next/link';
 
 type Props = {
   search: string;
@@ -67,11 +69,27 @@ export default function ListProduct(props: Props) {
       .finally(() => setLoading(false));
   };
 
+  const loadingData = !companyId || loading;
+
   return (
     <Paper shadow="md" radius="md">
       <Header />
-      <Box pos="relative" mih={300}>
-        <LoadingOverlay visible={!companyId || loading} overlayBlur={2} />
+      <Box pos="relative" mih={120}>
+        <LoadingOverlay visible={loadingData} overlayBlur={2} />
+        {data?.total.aggregate.count === 0 && (
+          <Empty
+            title="Tidak Ada Produk"
+            label="Anda belum menambahkan produk apapun. Mulai dengan menekan tombol Tambah Produk."
+            action={
+              <Link href="/products/add">
+                <Button leftIcon={<IconPlus size={16} />} mt="xl">
+                  Tambah Produk
+                </Button>
+              </Link>
+            }
+          />
+        )}
+
         {data?.products.map((product: any) => {
           return (
             <ProductItem

@@ -218,7 +218,14 @@ const ProductItem = (props: ListProps) => {
           </Box>
         </Flex>
         {type === 'VARIANT' && (
-          <Box mx={36} mb={24} bg="#F3F4F5" sx={{ borderRadius: 5 }}>
+          <Box
+            mx={36}
+            mb={24}
+            sx={(theme) => ({
+              borderRadius: 5,
+              backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : '#F3F4F5',
+            })}
+          >
             <UnstyledButton
               px={16}
               py={8}

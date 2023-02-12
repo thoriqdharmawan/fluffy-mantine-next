@@ -2,6 +2,13 @@ import { gql } from '@apollo/client';
 
 export const GET_LIST_PRODUCTS = gql`
   query GetListProduct($company_id: uuid!, $search: String) {
+    total: products_aggregate(
+      where: { company: { id: { _eq: $company_id } }, name: { _ilike: $search } }
+    ) {
+      aggregate {
+        count
+      }
+    }
     products(where: { company: { id: { _eq: $company_id } }, name: { _ilike: $search } }) {
       id
       name
@@ -161,7 +168,7 @@ export const EDIT_PRODUCT = gql`
     delete_variants(where: { productId: { _eq: $id } }) {
       affected_rows
     }
-    
+
     delete_product_variants(where: { productId: { _eq: $id } }) {
       affected_rows
     }
