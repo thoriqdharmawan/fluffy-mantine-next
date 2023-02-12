@@ -12,6 +12,7 @@ import { DEFAULT_VARIANT, FormValues } from '../../../pages/products/add';
 import { getCoord } from './form-product-helper';
 import VariantTableRow from './VariantTableRow';
 import { GLOABL_STATUS } from '../../../mock/global';
+import { Empty } from '../../../components/empty-state';
 
 type SelectVariantType = {
   form: UseFormReturnType<FormValues>;
@@ -29,7 +30,7 @@ const SelectVariant = (props: SelectVariantType) => {
     form.setFieldValue(`variants.${index}.values`, value);
 
     form.setValues((prev: Partial<FormValues>) => {
-      const coords = getCoord(prev.variants?.[0]?.values || [], prev.variants?.[1]?.values || [])
+      const coords = getCoord(prev.variants?.[0]?.values || [], prev.variants?.[1]?.values || []);
 
       return {
         ...prev,
@@ -147,7 +148,19 @@ export default function AddProductVariant({ form }: { form: UseFormReturnType<Fo
             <th>Produk Utama</th>
           </tr>
         </thead>
-        <tbody>{rows}</tbody>
+        <tbody>
+          {rows}
+          <tr>
+            <td colSpan={5}>
+              {rows?.length === 0 && (
+                <Empty
+                  title="Tidak Ada Varian"
+                  label="Anda belum menambahkan Tipe Varian produk."
+                />
+              )}
+            </td>
+          </tr>
+        </tbody>
       </Table>
     </>
   );
