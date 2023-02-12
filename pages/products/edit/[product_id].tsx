@@ -39,11 +39,13 @@ import {
   DEFAULT_PRODUCT_CATEGORIES,
   ProductType,
   VariantInterface,
+  Categories,
+  TableProductsVariants,
 } from '../../../mock/products';
 import { GLOABL_STATUS } from '../../../mock/global';
 
 import { useUser } from '../../../context/user';
-import { addProduct, getProductById, UPDATE_IMAGE_PRODUCT } from '../../../services/products';
+import { editProduct, getProductById, UPDATE_IMAGE_PRODUCT } from '../../../services/products';
 import { ProductVariants, Variants } from '../../../services/products/product.interface';
 
 export interface FormValues extends ProductsCardProps {}
@@ -55,11 +57,9 @@ export default function EditProducts() {
 
   const { product_id } = router.query;
 
-  console.log(product_id);
-
   const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
   const [files, setFiles] = useState<FileWithPath[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -101,9 +101,8 @@ export default function EditProducts() {
   useEffect(() => {
     setLoading(true);
     getProductById({
-      variables: {
-        product_id,
-      },
+      variables: { product_id },
+      fetchPolicy: 'network-only',
     })
       .then(({ data }) => {
         const { name, image, description, categories, type, variants, product_variants } =
@@ -115,10 +114,12 @@ export default function EditProducts() {
           categories: categories?.map(({ name }: { name: string }) => name) || [],
           type,
           variants: variants.map((variant: Variants) => ({
+            id: variant.id,
             label: variant.name,
             values: variant.values,
           })),
           productVariants: product_variants?.map((product: ProductVariants) => ({
+            id: product.id,
             coord: product.coord,
             sku: product.sku,
             price: product.price,
@@ -200,32 +201,36 @@ export default function EditProducts() {
       const { values } = form;
 
       const variables = {
+        id: product_id,
         name: values.name,
         image: values.image,
-        companyId: user.companyId,
         description: values.description,
         type: values.type,
         categories: values.categories?.map((category) => ({
           name: category,
+          productId: product_id,
           companyId: user.companyId,
         })),
         variants: values.variants?.map((variant) => ({
           name: variant.label,
           values: variant.values,
+          productId: product_id,
         })),
         product_variants: values.productVariants?.map((product_variant) => ({
+          id: product_variant.id,
           coord: product_variant.coord,
           is_primary: product_variant.isPrimary,
           price: product_variant.price,
           sku: product_variant.sku,
           status: product_variant.status,
           stock: product_variant.stock,
+          productId: product_id,
         })),
       };
 
-      addProduct({ variables })
+      editProduct({ variables })
         .then((res) => {
-          handleUploadImage(res.data?.insert_products?.returning?.[0].id);
+          handleUploadImage(res.data?.update_products?.returning?.[0].id);
         })
         .catch(() => {
           showError('Gagal Membuat Produk 🤥');
@@ -250,13 +255,15 @@ export default function EditProducts() {
       labels: { confirm: 'Ya, Ubah Tipe Produk', cancel: 'Batalkan' },
       onConfirm: () => {
         form.setValues((prev: Partial<FormValues>) => {
-          const variants = type === 'VARIANT' ? [DEFAULT_VARIANT] : [];
+          const isVariant = type === 'VARIANT';
+          const variants = isVariant ? [DEFAULT_VARIANT] : [];
+          const productVariants = isVariant ? [] : [DEFAULT_PRODUCT_VARIANT];
 
           return {
             ...prev,
             type,
             variants: variants,
-            productVariants: [],
+            productVariants: productVariants,
           };
         });
       },
@@ -352,12 +359,7 @@ export default function EditProducts() {
           <Button variant="subtle" onClick={handleBack}>
             Batalkan
           </Button>
-          <Group position="right" mt="md">
-            <Button variant="subtle" onClick={handleSubmit}>
-              Simpan dan Tambah Baru
-            </Button>
-            <Button onClick={handleSubmit}>Tambahkan Produk</Button>
-          </Group>
+          <Button onClick={handleSubmit}>Ubah Produk</Button>
         </Flex>
       </Box>
     </MainLayout>
@@ -367,4 +369,13 @@ export default function EditProducts() {
 export const DEFAULT_VARIANT: VariantInterface = {
   label: undefined,
   values: [],
+};
+
+const DEFAULT_PRODUCT_VARIANT: TableProductsVariants = {
+  coord: [0],
+  sku: undefined,
+  price: undefined,
+  stock: undefined,
+  status: GLOABL_STATUS.ACTIVE,
+  isPrimary: true,
 };

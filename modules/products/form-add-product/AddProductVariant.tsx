@@ -152,8 +152,3 @@ export default function AddProductVariant({ form }: { form: UseFormReturnType<Fo
     </>
   );
 }
-
-// const DEFAULT_VARIANT: VariantInterface = {
-//   label: undefined,
-//   values: [],
-// };
