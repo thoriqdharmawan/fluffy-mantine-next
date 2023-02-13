@@ -3,7 +3,7 @@ import { FileWithPath } from '@mantine/dropzone';
 
 import client from '../../apollo-client';
 
-import { ADD_PRODUCT, DELETE_PRODUCT } from './product.graphql';
+import { ADD_PRODUCT, DELETE_PRODUCT, EDIT_PRODUCT } from './product.graphql';
 
 const deleteProductImage = (productId: string) => {
   const storage = getStorage();
@@ -30,6 +30,13 @@ const addProduct = ({ variables }: { variables: any }) => {
   });
 };
 
+const editProduct = ({ variables }: { variables: any }) => {
+  return client.mutate({
+    mutation: EDIT_PRODUCT,
+    variables,
+  });
+};
+
 const uploadImage = (productId: string, files: FileWithPath[]) => {
   const storage = getStorage();
   const storageRef = ref(storage, 'products/' + productId);
@@ -37,4 +44,4 @@ const uploadImage = (productId: string, files: FileWithPath[]) => {
   return uploadBytes(storageRef, files[0]);
 };
 
-export { deleteProductImage, deleteProduct, addProduct, uploadImage };
+export { deleteProductImage, deleteProduct, addProduct, editProduct, uploadImage };

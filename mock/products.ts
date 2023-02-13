@@ -1,17 +1,25 @@
 import { GLOABL_STATUS } from './global';
 
 export interface VariantInterface {
+  id?: number;
   label: string | undefined;
   values: string[] | [];
 }
 
 export interface TableProductsVariants {
+  id?: number;
   coord?: number[];
   sku?: string;
   price?: number;
   stock?: number | undefined;
   status?: GLOABL_STATUS;
   isPrimary?: boolean;
+}
+
+export interface Categories {
+  id?: string;
+  name: string;
+  companyId?: string;
 }
 
 export declare type ProductType = 'VARIANT' | 'NOVARIANT';
@@ -39,7 +47,7 @@ export const PRODUCTS: ProductsCardProps[] = [
     name: 'Verudela Beach',
 
     description: 'Completely renovated for the season 2020, Arena Verudela.',
-    categories: ['Makanan', 'Minuman'],
+    // categories: ['Makanan', 'Minuman'],
 
     type: 'VARIANT',
     variants: [
@@ -110,7 +118,7 @@ export const PRODUCTS: ProductsCardProps[] = [
     name: 'Verudela Beach',
 
     description: 'Completely renovated for the season 2020, Arena Verudela.',
-    categories: ['Makanan', 'Minuman'],
+    // categories: ['Makanan', 'Minuman'],
     type: 'VARIANT',
   },
 ];

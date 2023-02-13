@@ -28,17 +28,17 @@ const Header = () => {
           borderTopLeftRadius: theme.fontSizes.md,
         })}
       >
-        <Box fw={600} w="35%">
-          Info Produk
+        <Box fw={600} w="10%">
+          Foto
+        </Box>
+        <Box fw={600} w="40%">
+          Nama Karyawan
+        </Box>
+        <Box fw={600} w="15%">
+          Jabatan
         </Box>
         <Box fw={600} w="20%">
-          Total Pembelian
-        </Box>
-        <Box fw={600} w="15%">
-          Harga
-        </Box>
-        <Box fw={600} w="15%">
-          Stok
+          E-mail
         </Box>
         <Box fw={600} w="6%">
           Aktif

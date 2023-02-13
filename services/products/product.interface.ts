@@ -1,14 +1,17 @@
 interface Categories {
+  id?: string;
   name: string;
   companyId: string;
 }
 
 export interface Variants {
+  id?: number;
   name: string;
   values: any[];
 }
 
 export interface ProductVariants {
+  id?: number;
   coord: number[];
   is_primary: boolean;
   price?: number;

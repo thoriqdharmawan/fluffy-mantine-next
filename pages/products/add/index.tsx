@@ -39,6 +39,7 @@ import {
   DEFAULT_PRODUCT_CATEGORIES,
   ProductType,
   VariantInterface,
+  TableProductsVariants,
 } from '../../../mock/products';
 import { GLOABL_STATUS } from '../../../mock/global';
 
@@ -199,27 +200,29 @@ export default function AddProducts() {
 
   const handleOpenConfirmationVariants = (type: ProductType) => {
     openConfirmModal({
-      title: 'Ubah Tipe Produk?',
+      title: 'Ubah Varian Produk?',
       centered: true,
       overlayOpacity: 0.55,
       overlayBlur: 3,
       overlayColor: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
       children: (
         <Text size="sm">
-          Apakah Anda yakin mengubah tipe produk? Detail Produk yang telah anda isi sebelumnya akan
+          Apakah Anda yakin mengubah varian produk? Varian produk yang telah anda isi sebelumnya akan
           menghilang.
         </Text>
       ),
-      labels: { confirm: 'Ya, Ubah Tipe Produk', cancel: 'Batalkan' },
+      labels: { confirm: 'Ya, Ubah Varian Produk', cancel: 'Batalkan' },
       onConfirm: () => {
         form.setValues((prev: Partial<FormValues>) => {
-          const variants = type === 'VARIANT' ? [DEFAULT_VARIANT] : [];
+          const isVariant = type === 'VARIANT';
+          const variants = isVariant ? [DEFAULT_VARIANT] : [];
+          const productVariants = isVariant ? [] : [DEFAULT_PRODUCT_VARIANT];
 
           return {
             ...prev,
             type,
             variants: variants,
-            productVariants: [],
+            productVariants: productVariants,
           };
         });
       },
@@ -295,7 +298,7 @@ export default function AddProducts() {
         </Paper>
         <Paper shadow="sm" radius="md" p="xl" mb="xl">
           <Title order={4} mb="xl">
-            Detail Produk
+            Varian Produk
           </Title>
 
           <SegmentedControl
@@ -330,4 +333,13 @@ export default function AddProducts() {
 export const DEFAULT_VARIANT: VariantInterface = {
   label: undefined,
   values: [],
+};
+
+const DEFAULT_PRODUCT_VARIANT: TableProductsVariants = {
+  coord: [0],
+  sku: undefined,
+  price: undefined,
+  stock: undefined,
+  status: GLOABL_STATUS.ACTIVE,
+  isPrimary: true,
 };

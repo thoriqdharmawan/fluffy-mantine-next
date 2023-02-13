@@ -2,12 +2,20 @@ import { gql } from '@apollo/client';
 
 export const GET_LIST_PRODUCTS = gql`
   query GetListProduct($company_id: uuid!, $search: String) {
+    total: products_aggregate(
+      where: { company: { id: { _eq: $company_id } }, name: { _ilike: $search } }
+    ) {
+      aggregate {
+        count
+      }
+    }
     products(where: { company: { id: { _eq: $company_id } }, name: { _ilike: $search } }) {
       id
       name
       image
       description
       type
+      created_at
       categories {
         id
         name
@@ -132,6 +140,135 @@ export const ADD_PRODUCT = gql`
         categories: { data: $categories }
         variants: { data: $variants }
         product_variants: { data: $product_variants }
+      }
+    ) {
+      affected_rows
+      returning {
+        id
+      }
+    }
+  }
+`;
+
+export const EDIT_PRODUCT = gql`
+  mutation UpdateProduct(
+    $id: uuid!
+    $name: String
+    $image: String
+    $description: String
+    $type: String
+    $categories: [categories_insert_input!]!
+    $variants: [variants_insert_input!]!
+    $product_variants: [product_variants_insert_input!]!
+  ) {
+    delete_categories(where: { productId: { _eq: $id } }) {
+      affected_rows
+    }
+
+    delete_variants(where: { productId: { _eq: $id } }) {
+      affected_rows
+    }
+
+    delete_product_variants(where: { productId: { _eq: $id } }) {
+      affected_rows
+    }
+
+    update_products(
+      where: { id: { _eq: $id } }
+      _set: { name: $name, image: $image, description: $description, type: $type }
+    ) {
+      affected_rows
+      returning {
+        id
+      }
+    }
+
+    insert_categories(
+      objects: $categories
+      on_conflict: { constraint: categories_pkey, update_columns: [name] }
+    ) {
+      affected_rows
+    }
+
+    insert_variants(
+      objects: $variants
+      on_conflict: { constraint: variants_pkey, update_columns: [name, values] }
+    ) {
+      affected_rows
+    }
+
+    insert_product_variants(
+      objects: $product_variants
+      on_conflict: {
+        constraint: product_variants_pkey
+        update_columns: [coord, is_primary, price, sku, status, stock]
+      }
+    ) {
+      affected_rows
+    }
+  }
+`;
+export const EDIT_PRODUCT_OLDD = gql`
+  mutation UpdateProduct(
+    $id: uuid!
+    $name: String
+    $image: String
+    $description: String
+    $type: String
+    $variants: [variants_insert_input!]!
+    $product_variants: [product_variants_insert_input!]!
+  ) {
+    update_products(
+      where: { id: { _eq: $id } }
+      _set: { name: $name, image: $image, description: $description, type: $type }
+    ) {
+      affected_rows
+      returning {
+        id
+      }
+    }
+
+    insert_variants(
+      objects: $variants
+      on_conflict: { constraint: variants_pkey, update_columns: [name, values] }
+    ) {
+      affected_rows
+    }
+
+    insert_product_variants(
+      objects: $product_variants
+      on_conflict: {
+        constraint: product_variants_pkey
+        update_columns: [coord, is_primary, price, sku, status, stock]
+      }
+    ) {
+      affected_rows
+    }
+  }
+`;
+export const EDIT_PRODUCT_OLD = gql`
+  mutation UpdateProduct(
+    $id: uuid!
+    $name: String
+    $image: String
+    $companyId: uuid
+    $description: String
+    $type: String
+    $categories: [categories_update_input!]!
+    $product_variants: [product_variants_update_input!]!
+    $variants: [variants_update_input!]!
+  ) {
+    update_products(
+      where: { id: { _eq: $id } }
+      _set: {
+        name: $name
+        image: $image
+        companyId: $companyId
+        description: $description
+        type: $type
+        categories: { data: $categories }
+        product_variants: { data: $product_variants }
+        variants: { data: $variants }
       }
     ) {
       affected_rows
