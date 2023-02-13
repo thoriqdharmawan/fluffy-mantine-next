@@ -4,6 +4,7 @@ import {
   IconCash,
   IconBusinessplan,
   IconReceiptRefund,
+  IconUsers,
 } from '@tabler/icons';
 import { useRouter } from 'next/router';
 
@@ -22,6 +23,7 @@ const data = [
   },
   { icon: IconBusinessplan, label: 'Daftar Produk', href: '/products' },
   { icon: IconReceiptRefund, label: 'Riwayat Pesanan', href: '/orders-histories' },
+  { icon: IconUsers, label: 'Karyawan', href: '/employee' },
 ];
 
 export default function Navbar(props: NabarProps) {
