@@ -21,7 +21,9 @@ export default function ListEmployee({ search }: Props) {
   const [data, setData] = useState<any>(undefined);
   const [loading, setLoading] = useState(true);
 
+  console.log("Rendered")
   const getData = (withLoading: boolean) => {
+    console.log("LOADED")
     if (withLoading) {
       setLoading(true);
     }
@@ -40,7 +42,6 @@ export default function ListEmployee({ search }: Props) {
     }
   }, [companyId, search]);
 
-  console.log({ data });
   const loadingData = !companyId || loading;
 
   const handleUpdateStatus = (employeeId: string, status: string) => {
@@ -73,7 +74,7 @@ export default function ListEmployee({ search }: Props) {
     <Paper shadow="md" radius="md">
       <Header />
       <Box pos="relative" mih={120}>
-        <LoadingOverlay visible={loadingData} overlayBlur={2} />
+        <LoadingOverlay zIndex={1} visible={loadingData} overlayBlur={2} />
 
         {data?.total.aggregate.count === 0 && (
           <Empty
