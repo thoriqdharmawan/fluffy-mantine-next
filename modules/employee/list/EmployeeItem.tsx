@@ -4,6 +4,7 @@ import { IconDots, IconEye, IconEdit, IconTrash, IconCopy } from '@tabler/icons'
 
 import { getInitials } from '../../../context/helpers';
 import MenuDropdown from '../../../components/menu/MenuDropdown';
+import { useRouter } from 'next/router';
 
 type Props = {
   image: string;
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export default function EmployeeItem(props: Props) {
+  const router = useRouter()
   const { image, name, position, email, status, onUpdateStatus } = props;
   const [loadingUpdateStatus, setLoadingUpdateStatus] = useState(false);
 
@@ -28,6 +30,7 @@ export default function EmployeeItem(props: Props) {
         {
           icon: <IconEdit size={14} />,
           children: 'Ubah',
+          onClick: () => router.push(`/employee/edit`),
         },
         {
           icon: <IconCopy size={14} />,

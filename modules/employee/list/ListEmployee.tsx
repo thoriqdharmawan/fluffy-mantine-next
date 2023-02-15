@@ -21,9 +21,7 @@ export default function ListEmployee({ search }: Props) {
   const [data, setData] = useState<any>(undefined);
   const [loading, setLoading] = useState(true);
 
-  console.log("Rendered")
   const getData = (withLoading: boolean) => {
-    console.log("LOADED")
     if (withLoading) {
       setLoading(true);
     }
@@ -52,7 +50,7 @@ export default function ListEmployee({ search }: Props) {
       },
     })
       .then(() => {
-        getData(false)
+        getData(false);
         showNotification({
           title: 'Yeayy, Berhasil Mengubah Status Karyawan!! 😊',
           message: 'Status Karyawan Berhasil Diubah',
