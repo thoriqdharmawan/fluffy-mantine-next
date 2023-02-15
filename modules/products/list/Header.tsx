@@ -15,7 +15,7 @@ const Header = () => {
         wrap="nowrap"
         px="24px"
         py={12}
-        pos="sticky"
+        // pos="sticky"
         top={matches ? 70 : 0}
         sx={(theme) => ({
           zIndex: 4,
