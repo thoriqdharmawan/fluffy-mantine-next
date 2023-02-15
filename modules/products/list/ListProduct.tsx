@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Box, Paper, LoadingOverlay, Button } from '@mantine/core';
+import { Box, Paper, LoadingOverlay, Button, ScrollArea } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconCheck, IconExclamationMark, IconPlus } from '@tabler/icons';
 
@@ -72,41 +72,43 @@ export default function ListProduct(props: Props) {
   const loadingData = !companyId || loading;
 
   return (
-    <Paper shadow="md" radius="md">
-      <Header />
-      <Box pos="relative" mih={120}>
-        <LoadingOverlay visible={loadingData} overlayBlur={2} />
-        {data?.total.aggregate.count === 0 && (
-          <Empty
-            title="Tidak Ada Produk"
-            label="Anda belum menambahkan produk apapun. Mulai dengan menekan tombol Tambah Produk."
-            action={
-              <Link href="/products/add">
-                <Button leftIcon={<IconPlus size={16} />} mt="xl">
-                  Tambah Produk
-                </Button>
-              </Link>
-            }
-          />
-        )}
-
-        {data?.products.map((product: any) => {
-          return (
-            <ProductItem
-              key={product.id}
-              id={product.id}
-              name={product.name}
-              image={product.image}
-              product_variants={product.product_variants}
-              stock={product.product_variants_aggregate.aggregate.sum.stock}
-              categories={product.categories || []}
-              type={product.type}
-              onDelete={(setLoading) => handleDeleteProduct(setLoading, product.id)}
-              onCompleteUpdate={() => getData(false)}
+    <ScrollArea style={{ width: 'auto', height: 'auto' }}>
+      <Paper w={1187} shadow="md" radius="md">
+        <Header />
+        <Box pos="relative" mih={120}>
+          <LoadingOverlay visible={loadingData} overlayBlur={2} />
+          {data?.total.aggregate.count === 0 && (
+            <Empty
+              title="Tidak Ada Produk"
+              label="Anda belum menambahkan produk apapun. Mulai dengan menekan tombol Tambah Produk."
+              action={
+                <Link href="/products/add">
+                  <Button leftIcon={<IconPlus size={16} />} mt="xl">
+                    Tambah Produk
+                  </Button>
+                </Link>
+              }
             />
-          );
-        })}
-      </Box>
-    </Paper>
+          )}
+
+          {data?.products.map((product: any) => {
+            return (
+              <ProductItem
+                key={product.id}
+                id={product.id}
+                name={product.name}
+                image={product.image}
+                product_variants={product.product_variants}
+                stock={product.product_variants_aggregate.aggregate.sum.stock}
+                categories={product.categories || []}
+                type={product.type}
+                onDelete={(setLoading) => handleDeleteProduct(setLoading, product.id)}
+                onCompleteUpdate={() => getData(false)}
+              />
+            );
+          })}
+        </Box>
+      </Paper>
+    </ScrollArea>
   );
 }
