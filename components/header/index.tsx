@@ -1,6 +1,7 @@
 import { Header as Head, Text, MediaQuery, Burger, useMantineTheme, Group } from '@mantine/core';
 import { Dispatch, SetStateAction } from 'react';
 import { ColorSchemeToggle } from '../color-scheme-toggle';
+import { Fullscreen } from '../fullscreen';
 import { UserLogin } from './UserLogin';
 
 import BillsToggle from '../bills/BillsToggle';
@@ -37,6 +38,7 @@ export default function Header(props: HeaderType) {
         <Group position="center">
           <BillsToggle />
           <ColorSchemeToggle />
+          <Fullscreen />
 
           <UserLogin />
         </Group>
