@@ -16,7 +16,7 @@ interface NabarProps {
 const data = [
   { icon: IconHome2, label: 'Dasbor', href: '/' },
   { icon: IconBusinessplan, label: 'Daftar Produk', href: '/products' },
-  { icon: IconReceiptRefund, label: 'Riwayat Pesanan', href: '/orders-histories' },
+  { icon: IconReceiptRefund, label: 'Riwayat Transaksi', href: '/transactions' },
   { icon: IconUsers, label: 'Karyawan', href: '/employee' },
 ];
 
