@@ -48,7 +48,7 @@ import { useUser } from '../../../context/user';
 import { editProduct, getProductById, UPDATE_IMAGE_PRODUCT } from '../../../services/products';
 import { ProductVariants, Variants } from '../../../services/products/product.interface';
 
-export interface FormValues extends ProductsCardProps {}
+export interface FormValues extends ProductsCardProps { }
 
 export default function EditProducts() {
   const theme = useMantineTheme();
@@ -73,7 +73,12 @@ export default function EditProducts() {
         {
           coord: [0],
           sku: undefined,
-          price: undefined,
+          price: undefined, // harga normal
+          has_price_purchase: false,
+          price_purchase: undefined, // harga beli
+          has_price_wholesale: false,
+          price_wholesale: undefined, // harga grosir
+          min_wholesale: undefined, // minimal pembelian grosir
           stock: undefined,
           status: GLOABL_STATUS.ACTIVE,
           isPrimary: true,
@@ -92,6 +97,21 @@ export default function EditProducts() {
       },
       productVariants: {
         price: (value) => (!value ? 'Bagian ini diperlukan' : null),
+        price_purchase: (value, values, path) => {
+          const index: number = Number(path.split('.')[1] || 0)
+          const isRequired = values.productVariants?.[index]?.has_price_purchase
+          return (isRequired && !value) ? 'Bagian ini diperlukan' : null
+        },
+        price_wholesale: (value, values, path) => {
+          const index: number = Number(path.split('.')[1] || 0)
+          const isRequired = values.productVariants?.[index]?.has_price_wholesale
+          return (isRequired && !value) ? 'Bagian ini diperlukan' : null
+        },
+        min_wholesale: (value, values, path) => {
+          const index: number = Number(path.split('.')[1] || 0)
+          const isRequired = values.productVariants?.[index]?.has_price_wholesale
+          return (isRequired && !value) ? 'Bagian ini diperlukan' : null
+        },
         sku: (value) => (!value ? 'Bagian ini diperlukan' : null),
         stock: (value) => (!value ? 'Bagian ini diperlukan' : null),
       },
@@ -107,6 +127,7 @@ export default function EditProducts() {
       .then(({ data }) => {
         const { name, image, description, categories, type, variants, product_variants } =
           data.products?.[0] || {};
+
         form.setValues({
           image,
           name,
@@ -118,15 +139,24 @@ export default function EditProducts() {
             label: variant.name,
             values: variant.values,
           })),
-          productVariants: product_variants?.map((product: ProductVariants) => ({
-            id: product.id,
-            coord: product.coord,
-            sku: product.sku,
-            price: product.price,
-            stock: product.stock,
-            status: product.status,
-            isPrimary: product.is_primary,
-          })),
+          productVariants: product_variants?.map((product: ProductVariants) => {
+            const { price, price_purchase, price_wholesale } = product
+
+            return {
+              id: product.id,
+              coord: product.coord,
+              sku: product.sku,
+              price: price,
+              price_purchase: price_purchase,
+              price_wholesale: price_wholesale,
+              min_wholesale: product.min_wholesale,
+              stock: product.stock,
+              status: product.status,
+              isPrimary: product.is_primary,
+              has_price_purchase: (price_purchase && price) !== price_purchase,
+              has_price_wholesale: (price_wholesale && price) !== price_wholesale,
+            }
+          }),
         });
       })
       .finally(() => setLoading(false));
@@ -216,16 +246,25 @@ export default function EditProducts() {
           values: variant.values,
           productId: product_id,
         })),
-        product_variants: values.productVariants?.map((product_variant) => ({
-          id: product_variant.id,
-          coord: product_variant.coord,
-          is_primary: product_variant.isPrimary,
-          price: product_variant.price,
-          sku: product_variant.sku,
-          status: product_variant.status,
-          stock: product_variant.stock,
-          productId: product_id,
-        })),
+        product_variants: values.productVariants?.map((product_variant) => {
+          const { has_price_purchase, has_price_wholesale, price_purchase, price_wholesale, price } = product_variant
+
+          const pricePurchase = has_price_purchase ? price_purchase : price
+          const priceWholesale = has_price_wholesale ? price_wholesale : price
+
+          return {
+            coord: product_variant.coord,
+            is_primary: product_variant.isPrimary,
+            price: product_variant.price,
+            price_purchase: pricePurchase,
+            price_wholesale: priceWholesale,
+            min_wholesale: product_variant.min_wholesale || 1,
+            sku: product_variant.sku,
+            status: product_variant.status,
+            stock: product_variant.stock,
+            productId: product_id,
+          }
+        }),
       };
 
       editProduct({ variables })

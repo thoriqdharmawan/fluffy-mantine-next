@@ -31,6 +31,7 @@ import client from '../../../apollo-client';
 import { UPDATE_STATUS_PRODUCT } from '../../../services/products/product.graphql';
 import { showNotification } from '@mantine/notifications';
 import { useRouter } from 'next/router';
+import { getPrices } from '../../../context/helpers';
 
 interface CategoriesInterface {
   id: number;
@@ -47,6 +48,7 @@ interface ListProps {
   type: 'VARIANT' | 'NOVARIANT';
   onDelete: (setLoading: Dispatch<SetStateAction<boolean>>) => void;
   onCompleteUpdate: () => void;
+  product_variants_aggregate: any;
 }
 
 interface HandleChangeStatus {
@@ -67,6 +69,7 @@ const ProductItem = (props: ListProps) => {
     type,
     onDelete,
     onCompleteUpdate,
+    product_variants_aggregate,
   } = props;
 
   const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
@@ -151,6 +154,9 @@ const ProductItem = (props: ListProps) => {
       ],
     },
   ];
+  const { max, min } = product_variants_aggregate?.aggregate || {};
+
+  const prices = getPrices(max?.price, min?.price);
 
   return (
     <>
@@ -186,8 +192,7 @@ const ProductItem = (props: ListProps) => {
               </Flex>
             </Flex>
           </Box>
-          <Box w="20%">123</Box>
-          <Box w="15%">{product_variants?.[0]?.price}</Box>
+          <Box w="35%">{prices}</Box>
           <Box w="15%">{stock}</Box>
           <Box w="6%">
             {type === 'NOVARIANT' && (
@@ -265,7 +270,6 @@ const ProductItem = (props: ListProps) => {
                     name={[variant1, variant2].filter((data) => data).join(' | ')}
                     sku={productVariant.sku}
                     price={productVariant.price}
-                    purchased={10}
                     stock={productVariant.stock}
                     status={productVariant.status}
                     loadingUpdateStatus={loadingUpdateStatus}

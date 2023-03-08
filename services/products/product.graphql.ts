@@ -9,13 +9,12 @@ export const GET_LIST_PRODUCTS = gql`
         count
       }
     }
-    products(where: { company: { id: { _eq: $company_id } }, name: { _ilike: $search } }) {
+    products(where: { company: { id: { _eq: $company_id } }, name: { _ilike: $search } }, 
+      order_by: { created_at: desc }) {
       id
       name
       image
-      description
       type
-      created_at
       categories {
         id
         name
@@ -28,12 +27,21 @@ export const GET_LIST_PRODUCTS = gql`
         sku
         status
         stock
-        productId
       }
       variants {
         id
         values
         name
+      }
+      product_variants_aggregate {
+        aggregate {
+          max {
+            price
+          }
+          min {
+            price
+          }
+        }
       }
       product_variants_aggregate {
         aggregate {
@@ -63,6 +71,9 @@ export const GET_PRODUCT_BY_ID = gql`
         coord
         is_primary
         price
+        price_purchase
+        price_wholesale
+        min_wholesale
         sku
         status
         stock
