@@ -1,21 +1,22 @@
 import { gql } from '@apollo/client';
 
 export const GET_LIST_PRODUCTS = gql`
-  query GetListProduct($company_id: uuid!, $search: String) {
-    total: products_aggregate(
-      where: { company: { id: { _eq: $company_id } }, name: { _ilike: $search } }
-    ) {
+  query GetListProduct($where: products_bool_exp!, $limit: Int, $offset: Int) {
+    total: products_aggregate(where: $where) {
       aggregate {
         count
       }
     }
-    products(where: { company: { id: { _eq: $company_id } }, name: { _ilike: $search } }) {
+    products(
+      where: $where
+      limit: $limit
+      offset: $offset
+      order_by: { created_at: desc }
+    ) {
       id
       name
       image
-      description
       type
-      created_at
       categories {
         id
         name
@@ -28,12 +29,21 @@ export const GET_LIST_PRODUCTS = gql`
         sku
         status
         stock
-        productId
       }
       variants {
         id
         values
         name
+      }
+      product_variants_aggregate {
+        aggregate {
+          max {
+            price
+          }
+          min {
+            price
+          }
+        }
       }
       product_variants_aggregate {
         aggregate {
@@ -63,6 +73,9 @@ export const GET_PRODUCT_BY_ID = gql`
         coord
         is_primary
         price
+        price_purchase
+        price_wholesale
+        min_wholesale
         sku
         status
         stock

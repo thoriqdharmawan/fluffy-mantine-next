@@ -1,7 +1,6 @@
 import { Navbar as Nav, NavLink } from '@mantine/core';
 import {
   IconHome2,
-  IconCash,
   IconBusinessplan,
   IconReceiptRefund,
   IconUsers,
@@ -16,13 +15,8 @@ interface NabarProps {
 
 const data = [
   { icon: IconHome2, label: 'Dasbor', href: '/' },
-  {
-    icon: IconCash,
-    label: 'Pendapatan',
-    href: '/income',
-  },
   { icon: IconBusinessplan, label: 'Daftar Produk', href: '/products' },
-  { icon: IconReceiptRefund, label: 'Riwayat Pesanan', href: '/orders-histories' },
+  { icon: IconReceiptRefund, label: 'Riwayat Transaksi', href: '/transactions' },
   { icon: IconUsers, label: 'Karyawan', href: '/employee' },
 ];
 

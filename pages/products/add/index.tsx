@@ -46,7 +46,7 @@ import { GLOABL_STATUS } from '../../../mock/global';
 import { useUser } from '../../../context/user';
 import { addProduct, UPDATE_IMAGE_PRODUCT } from '../../../services/products';
 
-export interface FormValues extends ProductsCardProps {}
+export interface FormValues extends ProductsCardProps { }
 
 export default function AddProducts() {
   const theme = useMantineTheme();
@@ -69,7 +69,12 @@ export default function AddProducts() {
         {
           coord: [0],
           sku: undefined,
-          price: undefined,
+          price: undefined, // harga normal
+          has_price_purchase: false,
+          price_purchase: undefined, // harga beli
+          has_price_wholesale: false,
+          price_wholesale: undefined, // harga grosir
+          min_wholesale: undefined, // minimal pembelian grosir
           stock: undefined,
           status: GLOABL_STATUS.ACTIVE,
           isPrimary: true,
@@ -88,8 +93,23 @@ export default function AddProducts() {
       },
       productVariants: {
         price: (value) => (!value ? 'Bagian ini diperlukan' : null),
-        sku: (value) => (!value ? 'Bagian ini diperlukan' : null),
-        stock: (value) => (!value ? 'Bagian ini diperlukan' : null),
+        price_purchase: (value, values, path) => {
+          const index: number = Number(path.split('.')[1] || 0)
+          const isRequired = values.productVariants?.[index]?.has_price_purchase
+          return (isRequired && !value) ? 'Bagian ini diperlukan' : null
+        },
+        price_wholesale: (value, values, path) => {
+          const index: number = Number(path.split('.')[1] || 0)
+          const isRequired = values.productVariants?.[index]?.has_price_wholesale
+          return (isRequired && !value) ? 'Bagian ini diperlukan' : null
+        },
+        min_wholesale: (value, values, path) => {
+          const index: number = Number(path.split('.')[1] || 0)
+          const isRequired = values.productVariants?.[index]?.has_price_wholesale
+          return (isRequired && !value) ? 'Bagian ini diperlukan' : null
+        },
+        // sku: (value) => (!value ? 'Bagian ini diperlukan' : null),
+        // stock: (value) => (!value ? 'Bagian ini diperlukan' : null),
       },
     },
   });
@@ -99,7 +119,6 @@ export default function AddProducts() {
   const handleBack = () => {
     router.push('/products');
     form.clearErrors();
-    form.reset();
   };
 
   const handleDeleteFiles = () => {
@@ -119,7 +138,7 @@ export default function AddProducts() {
     });
   };
 
-  const handleUploadImage = (productId: string) => {
+  const handleUploadImage = (productId: string, goToList: boolean) => {
     const storage = getStorage();
     const storageRef = ref(storage, 'products/' + productId);
 
@@ -144,8 +163,11 @@ export default function AddProducts() {
             })
             .catch(() => showError('Gagal Menambahkan Foto Produk 🤥'))
             .finally(() => {
+              form.reset();
               setLoading(false);
-              handleBack();
+              if (goToList) {
+                handleBack();
+              }
             });
         });
       })
@@ -155,7 +177,7 @@ export default function AddProducts() {
       });
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (goToList: boolean) => {
     const { hasErrors } = form.validate();
 
     if (!hasErrors) {
@@ -177,19 +199,29 @@ export default function AddProducts() {
           name: variant.label,
           values: variant.values,
         })),
-        product_variants: values.productVariants?.map((product_variant) => ({
-          coord: product_variant.coord,
-          is_primary: product_variant.isPrimary,
-          price: product_variant.price,
-          sku: product_variant.sku,
-          status: product_variant.status,
-          stock: product_variant.stock,
-        })),
+        product_variants: values.productVariants?.map((product_variant) => {
+          const { has_price_purchase, has_price_wholesale, price_purchase, price_wholesale, price } = product_variant
+
+          const pricePurchase = has_price_purchase ? price_purchase : price
+          const priceWholesale = has_price_wholesale ? price_wholesale : price
+
+          return {
+            coord: product_variant.coord,
+            is_primary: product_variant.isPrimary,
+            price: product_variant.price,
+            price_purchase: pricePurchase,
+            price_wholesale: priceWholesale,
+            min_wholesale: product_variant.min_wholesale || 1,
+            sku: product_variant.sku,
+            status: product_variant.status,
+            stock: product_variant.stock || 0,
+          }
+        }),
       };
 
       addProduct({ variables })
         .then((res) => {
-          handleUploadImage(res.data?.insert_products?.returning?.[0].id);
+          handleUploadImage(res.data?.insert_products?.returning?.[0].id, goToList);
         })
         .catch(() => {
           showError('Gagal Membuat Produk 🤥');
@@ -207,8 +239,8 @@ export default function AddProducts() {
       overlayColor: theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2],
       children: (
         <Text size="sm">
-          Apakah Anda yakin mengubah varian produk? Varian produk yang telah anda isi sebelumnya akan
-          menghilang.
+          Apakah Anda yakin mengubah varian produk? Varian produk yang telah anda isi sebelumnya
+          akan menghilang.
         </Text>
       ),
       labels: { confirm: 'Ya, Ubah Varian Produk', cancel: 'Batalkan' },
@@ -319,10 +351,10 @@ export default function AddProducts() {
             Batalkan
           </Button>
           <Group position="right" mt="md">
-            <Button variant="subtle" onClick={handleSubmit}>
+            <Button variant="subtle" onClick={() => handleSubmit(false)}>
               Simpan dan Tambah Baru
             </Button>
-            <Button onClick={handleSubmit}>Tambahkan Produk</Button>
+            <Button onClick={() => handleSubmit(true)}>Tambahkan Produk</Button>
           </Group>
         </Flex>
       </Box>
@@ -339,6 +371,11 @@ const DEFAULT_PRODUCT_VARIANT: TableProductsVariants = {
   coord: [0],
   sku: undefined,
   price: undefined,
+  price_purchase: undefined,
+  price_wholesale: undefined,
+  min_wholesale: undefined,
+  has_price_purchase: false,
+  has_price_wholesale: false,
   stock: undefined,
   status: GLOABL_STATUS.ACTIVE,
   isPrimary: true,

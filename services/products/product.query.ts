@@ -8,6 +8,9 @@ interface ProductActionInterface {
   fetchPolicy?: FetchPolicy;
 }
 
+/**
+ * @deprecated
+ */
 const getListProducts = async (props: ProductActionInterface) => {
   const result = await client.query({
     query: GET_LIST_PRODUCTS,

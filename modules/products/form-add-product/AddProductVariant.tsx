@@ -39,6 +39,11 @@ const SelectVariant = (props: SelectVariantType) => {
           coord,
           sku: '',
           price: 0,
+          price_purchase: 0,
+          price_wholesale: 0,
+          min_wholesale: 1,
+          has_price_purchase: false,
+          has_price_wholesale: false,
           stock: 0,
           status: GLOABL_STATUS.ACTIVE,
           isPrimary: false,
@@ -144,7 +149,7 @@ export default function AddProductVariant({ form }: { form: UseFormReturnType<Fo
             <th>Nama Varian</th>
             <th>Harga</th>
             <th>SKU</th>
-            <th>Stock Awal</th>
+            <th>Stock</th>
             <th>Produk Utama</th>
           </tr>
         </thead>

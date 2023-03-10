@@ -4,7 +4,6 @@ import { useMediaQuery } from '@mantine/hooks';
 
 import Navbar from '../components/navbar';
 import Header from '../components/header';
-import BillsCollector from '../components/bills/BillsCollector';
 import FooterLayout from '../components/footer/FooterLayout';
 
 import { MOCK_FOOTER } from '../mock/footer';
@@ -36,7 +35,6 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <Box w="100%" component="div">
         {children}
       </Box>
-      <BillsCollector />
     </AppShell>
   );
 }

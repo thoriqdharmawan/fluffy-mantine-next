@@ -1,10 +1,10 @@
 import { Box, Divider, Flex, Text, Switch } from '@mantine/core';
+import { convertToRupiah } from '../../../../context/helpers';
 
 type Props = {
   name: string;
   sku: string;
   price: number;
-  purchased: number;
   stock: number;
   status: 'ACTIVE' | 'INACTIVE';
   onChangeStatus: () => void;
@@ -12,7 +12,7 @@ type Props = {
 };
 
 export default function ListProductVariant(props: Props) {
-  const { name, sku, price, purchased, stock, status, loadingUpdateStatus, onChangeStatus } = props;
+  const { name, sku, price, stock, status, loadingUpdateStatus, onChangeStatus } = props;
 
   return (
     <>
@@ -34,8 +34,7 @@ export default function ListProductVariant(props: Props) {
             SKU: {sku}
           </Text>
         </Box>
-        <Box w="21.6%">{purchased}</Box>
-        <Box w="15.6%">{price}</Box>
+        <Box w="37.2%">{convertToRupiah(price)}</Box>
         <Box w="16%">{stock}</Box>
         <Box w="6%">
           <Switch

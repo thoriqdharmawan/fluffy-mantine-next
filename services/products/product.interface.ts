@@ -15,6 +15,9 @@ export interface ProductVariants {
   coord: number[];
   is_primary: boolean;
   price?: number;
+  price_purchase?: number;
+  price_wholesale?: number;
+  min_wholesale: number;
   sku?: string;
   status?: string;
   stock?: number;

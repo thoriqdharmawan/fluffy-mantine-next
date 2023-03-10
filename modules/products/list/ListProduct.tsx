@@ -1,46 +1,70 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Box, Paper, LoadingOverlay, Button, ScrollArea } from '@mantine/core';
+import { Dispatch, SetStateAction } from 'react';
+import { Box, Paper, LoadingOverlay, Button, ScrollArea, Pagination, Group } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconCheck, IconExclamationMark, IconPlus } from '@tabler/icons';
 
 import { useUser } from '../../../context/user';
-import { getListProducts, deleteProduct } from '../../../services/products';
+import { deleteProduct, GET_LIST_PRODUCTS } from '../../../services/products';
 
 import Header from './Header';
 import ProductItem from './ProductItem';
 import { Empty } from '../../../components/empty-state';
 import Link from 'next/link';
+import { useQuery } from '@apollo/client';
+import client from '../../../apollo-client';
+import { usePagination } from '@mantine/hooks';
 
 type Props = {
   search: string;
 };
 
+const LIMIT = 10;
+
 export default function ListProduct(props: Props) {
   const { search } = props;
 
+  const pagination = usePagination({ total: 10, initialPage: 1 });
   const { companyId } = useUser();
 
-  const [data, setData] = useState<any>(undefined);
-  const [loading, setLoading] = useState(true);
+  // const [data, setData] = useState<any>(undefined);
+  // const [loading, setLoading] = useState(true);
 
-  const getData = (withLoading: boolean) => {
-    if (withLoading) {
-      setLoading(true);
+  const { data, loading, error, refetch } = useQuery(GET_LIST_PRODUCTS, {
+    client: client,
+    fetchPolicy: 'cache-and-network',
+    variables: {
+      limit: LIMIT,
+      offset: (pagination.active - 1) * LIMIT,
+      where: {
+        company: { id: companyId ? { _eq: companyId } : undefined },
+        name: search ? { _ilike: `%${search}%` } : undefined,
+      },
     }
-    getListProducts({
-      variables: { company_id: companyId, search: `%${search}%` },
-      fetchPolicy: 'network-only',
-    }).then((result) => {
-      setData(result.data);
-      setLoading(result.loading);
-    });
-  };
+  })
 
-  useEffect(() => {
-    if (companyId) {
-      getData(true);
-    }
-  }, [companyId, search]);
+  if (error) {
+    console.error(error)
+  }
+
+  console.log({ data, loading, error, companyId })
+  // const getData = (withLoading: boolean) => {
+  //   if (withLoading) {
+  //     setLoading(true);
+  //   }
+  //   getListProducts({
+  //     variables: { company_id: companyId, search: `%${search}%` },
+  //     fetchPolicy: 'network-only',
+  //   }).then((result) => {
+  //     setData(result.data);
+  //     setLoading(result.loading);
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   if (companyId) {
+  //     getData(true);
+  //   }
+  // }, [companyId, search]);
 
   const handleDeleteProduct = (
     setLoading: Dispatch<SetStateAction<boolean>>,
@@ -50,7 +74,7 @@ export default function ListProduct(props: Props) {
 
     deleteProduct(productId)
       .then(() => {
-        getData(true);
+        refetch();
         showNotification({
           title: 'Yeayy, Berhasil Menghapus Produk!! 😊',
           message: 'Produk berhasil dihapus',
@@ -71,9 +95,11 @@ export default function ListProduct(props: Props) {
 
   const loadingData = !companyId || loading;
 
+  const totalPage = Math.ceil((data?.total.aggregate.count || 0) / LIMIT);
+
   return (
     <ScrollArea style={{ width: 'auto', height: 'auto' }}>
-      <Paper w={1187} shadow="md" radius="md">
+      <Paper w={1187} shadow="md" radius="md" p="md">
         <Header />
         <Box pos="relative" mih={120}>
           <LoadingOverlay visible={loadingData} overlayBlur={2} />
@@ -100,14 +126,19 @@ export default function ListProduct(props: Props) {
                 image={product.image}
                 product_variants={product.product_variants}
                 stock={product.product_variants_aggregate.aggregate.sum.stock}
+                product_variants_aggregate={product?.product_variants_aggregate}
                 categories={product.categories || []}
                 type={product.type}
                 onDelete={(setLoading) => handleDeleteProduct(setLoading, product.id)}
-                onCompleteUpdate={() => getData(false)}
+                onCompleteUpdate={() => refetch()}
               />
             );
           })}
         </Box>
+
+        <Group mt={24} mb={12}>
+          <Pagination m="auto" total={totalPage} onChange={pagination.setPage} />
+        </Group>
       </Paper>
     </ScrollArea>
   );

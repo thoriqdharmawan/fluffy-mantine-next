@@ -4,8 +4,6 @@ import { ColorSchemeToggle } from '../color-scheme-toggle';
 import { Fullscreen } from '../fullscreen';
 import { UserLogin } from './UserLogin';
 
-import BillsToggle from '../bills/BillsToggle';
-
 type HeaderType = {
   opened: boolean;
   setOpened: Dispatch<SetStateAction<boolean>>;
@@ -36,7 +34,6 @@ export default function Header(props: HeaderType) {
         </MediaQuery>
         <Text>Application Head</Text>
         <Group position="center">
-          <BillsToggle />
           <ColorSchemeToggle />
           <Fullscreen />
 
