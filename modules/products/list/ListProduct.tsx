@@ -26,9 +26,6 @@ export default function ListProduct(props: Props) {
   const pagination = usePagination({ total: 10, initialPage: 1 });
   const { companyId } = useUser();
 
-  // const [data, setData] = useState<any>(undefined);
-  // const [loading, setLoading] = useState(true);
-
   const { data, loading, error, refetch } = useQuery(GET_LIST_PRODUCTS, {
     client: client,
     fetchPolicy: 'cache-and-network',
@@ -45,26 +42,6 @@ export default function ListProduct(props: Props) {
   if (error) {
     console.error(error)
   }
-
-  console.log({ data, loading, error, companyId })
-  // const getData = (withLoading: boolean) => {
-  //   if (withLoading) {
-  //     setLoading(true);
-  //   }
-  //   getListProducts({
-  //     variables: { company_id: companyId, search: `%${search}%` },
-  //     fetchPolicy: 'network-only',
-  //   }).then((result) => {
-  //     setData(result.data);
-  //     setLoading(result.loading);
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   if (companyId) {
-  //     getData(true);
-  //   }
-  // }, [companyId, search]);
 
   const handleDeleteProduct = (
     setLoading: Dispatch<SetStateAction<boolean>>,
