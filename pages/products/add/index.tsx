@@ -46,7 +46,7 @@ import { GLOABL_STATUS } from '../../../mock/global';
 import { useUser } from '../../../context/user';
 import { addProduct, UPDATE_IMAGE_PRODUCT } from '../../../services/products';
 
-export interface FormValues extends ProductsCardProps {}
+export interface FormValues extends ProductsCardProps { }
 
 export default function AddProducts() {
   const theme = useMantineTheme();
@@ -108,8 +108,8 @@ export default function AddProducts() {
           const isRequired = values.productVariants?.[index]?.has_price_wholesale
           return (isRequired && !value) ? 'Bagian ini diperlukan' : null
         },
-        sku: (value) => (!value ? 'Bagian ini diperlukan' : null),
-        stock: (value) => (!value ? 'Bagian ini diperlukan' : null),
+        // sku: (value) => (!value ? 'Bagian ini diperlukan' : null),
+        // stock: (value) => (!value ? 'Bagian ini diperlukan' : null),
       },
     },
   });
@@ -119,7 +119,6 @@ export default function AddProducts() {
   const handleBack = () => {
     router.push('/products');
     form.clearErrors();
-    form.reset();
   };
 
   const handleDeleteFiles = () => {
@@ -139,7 +138,7 @@ export default function AddProducts() {
     });
   };
 
-  const handleUploadImage = (productId: string) => {
+  const handleUploadImage = (productId: string, goToList: boolean) => {
     const storage = getStorage();
     const storageRef = ref(storage, 'products/' + productId);
 
@@ -164,8 +163,11 @@ export default function AddProducts() {
             })
             .catch(() => showError('Gagal Menambahkan Foto Produk 🤥'))
             .finally(() => {
+              form.reset();
               setLoading(false);
-              handleBack();
+              if (goToList) {
+                handleBack();
+              }
             });
         });
       })
@@ -175,7 +177,7 @@ export default function AddProducts() {
       });
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (goToList: boolean) => {
     const { hasErrors } = form.validate();
 
     if (!hasErrors) {
@@ -212,14 +214,14 @@ export default function AddProducts() {
             min_wholesale: product_variant.min_wholesale || 1,
             sku: product_variant.sku,
             status: product_variant.status,
-            stock: product_variant.stock,
+            stock: product_variant.stock || 0,
           }
         }),
       };
 
       addProduct({ variables })
         .then((res) => {
-          handleUploadImage(res.data?.insert_products?.returning?.[0].id);
+          handleUploadImage(res.data?.insert_products?.returning?.[0].id, goToList);
         })
         .catch(() => {
           showError('Gagal Membuat Produk 🤥');
@@ -349,10 +351,10 @@ export default function AddProducts() {
             Batalkan
           </Button>
           <Group position="right" mt="md">
-            <Button variant="subtle" onClick={handleSubmit}>
+            <Button variant="subtle" onClick={() => handleSubmit(false)}>
               Simpan dan Tambah Baru
             </Button>
-            <Button onClick={handleSubmit}>Tambahkan Produk</Button>
+            <Button onClick={() => handleSubmit(true)}>Tambahkan Produk</Button>
           </Group>
         </Flex>
       </Box>
@@ -369,6 +371,11 @@ const DEFAULT_PRODUCT_VARIANT: TableProductsVariants = {
   coord: [0],
   sku: undefined,
   price: undefined,
+  price_purchase: undefined,
+  price_wholesale: undefined,
+  min_wholesale: undefined,
+  has_price_purchase: false,
+  has_price_wholesale: false,
   stock: undefined,
   status: GLOABL_STATUS.ACTIVE,
   isPrimary: true,

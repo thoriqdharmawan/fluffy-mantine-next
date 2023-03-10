@@ -1,16 +1,18 @@
 import { gql } from '@apollo/client';
 
 export const GET_LIST_PRODUCTS = gql`
-  query GetListProduct($company_id: uuid!, $search: String) {
-    total: products_aggregate(
-      where: { company: { id: { _eq: $company_id } }, name: { _ilike: $search } }
-    ) {
+  query GetListProduct($where: products_bool_exp!, $limit: Int, $offset: Int) {
+    total: products_aggregate(where: $where) {
       aggregate {
         count
       }
     }
-    products(where: { company: { id: { _eq: $company_id } }, name: { _ilike: $search } }, 
-      order_by: { created_at: desc }) {
+    products(
+      where: $where
+      limit: $limit
+      offset: $offset
+      order_by: { created_at: desc }
+    ) {
       id
       name
       image

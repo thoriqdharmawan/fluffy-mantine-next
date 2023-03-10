@@ -6,13 +6,13 @@ export interface VARIANTS_TYPE {
 
 export const DEFAULT_VARIANTS_TYPE_NAME: VARIANTS_TYPE[] = [
   {
-    value: 'Ukuran',
-    label: 'Ukuran',
+    value: 'Satuan',
+    label: 'Satuan',
     disabled: false,
   },
   {
-    value: 'Bahan',
-    label: 'Bahan',
+    value: 'Ukuran',
+    label: 'Ukuran',
     disabled: false,
   },
   {
@@ -27,4 +27,4 @@ export const DEFAULT_VARIANTS_TYPE_NAME: VARIANTS_TYPE[] = [
   },
 ];
 
-export const DEFAULT_VARIANTS_TYPE: string[] = ['S', 'M', 'L', 'Manis', 'Pahit'];
+export const DEFAULT_VARIANTS_TYPE: string[] = ['Pcs', 'Dus', 'Renceng', 'S', 'M', 'L', 'Manis', 'Pahit'];

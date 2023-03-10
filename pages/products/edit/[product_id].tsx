@@ -112,8 +112,8 @@ export default function EditProducts() {
           const isRequired = values.productVariants?.[index]?.has_price_wholesale
           return (isRequired && !value) ? 'Bagian ini diperlukan' : null
         },
-        sku: (value) => (!value ? 'Bagian ini diperlukan' : null),
-        stock: (value) => (!value ? 'Bagian ini diperlukan' : null),
+        // sku: (value) => (!value ? 'Bagian ini diperlukan' : null),
+        // stock: (value) => (!value ? 'Bagian ini diperlukan' : null),
       },
     },
   });
@@ -125,6 +125,7 @@ export default function EditProducts() {
       fetchPolicy: 'network-only',
     })
       .then(({ data }) => {
+
         const { name, image, description, categories, type, variants, product_variants } =
           data.products?.[0] || {};
 
@@ -414,6 +415,11 @@ const DEFAULT_PRODUCT_VARIANT: TableProductsVariants = {
   coord: [0],
   sku: undefined,
   price: undefined,
+  price_purchase: undefined,
+  price_wholesale: undefined,
+  min_wholesale: undefined,
+  has_price_purchase: false,
+  has_price_wholesale: false,
   stock: undefined,
   status: GLOABL_STATUS.ACTIVE,
   isPrimary: true,

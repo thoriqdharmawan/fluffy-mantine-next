@@ -80,7 +80,7 @@ export default function AddProductNoVariant({ form }: { form: UseFormReturnType<
             description="Kode unik produk"
             placeholder="Tambahkan SKU"
             labelProps={{ mb: 8 }}
-            withAsterisk
+            // withAsterisk
             mb={24}
             {...form.getInputProps('productVariants.0.sku')}
           />
@@ -89,7 +89,7 @@ export default function AddProductNoVariant({ form }: { form: UseFormReturnType<
             label="Stok"
             description="Stok produk tersedia"
             placeholder="Tambahkan Stok"
-            withAsterisk
+            // withAsterisk
             labelProps={{ mb: 8 }}
             mb={24}
             {...form.getInputProps('productVariants.0.stock')}
