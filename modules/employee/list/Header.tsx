@@ -43,9 +43,9 @@ const Header = () => {
         <Box fw={600} w="6%">
           Aktif
         </Box>
-        <Box fw={600} w="9%">
+        {/* <Box fw={600} w="9%">
           Aksi
-        </Box>
+        </Box> */}
       </Flex>
     </>
   );

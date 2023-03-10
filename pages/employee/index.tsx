@@ -23,11 +23,11 @@ export default function index({}: Props) {
       <HeaderSection
         title="Daftar Karyawan"
         label="Anda dapat melihat daftar karyawan yang terdaftar dalam aplikasi kami. Anda juga dapat menambahkan, mengedit, dan menghapus karyawan sesuai kebutuhan. Klik pada karyawan untuk melihat detail atau mulai mengedit informasi karyawan."
-        action={
-          <Link href="/employee/add">
-            <Button leftIcon={<IconPlus size={16} />}>Tambah Karyawan</Button>
-          </Link>
-        }
+        // action={
+        //   <Link href="/employee/add">
+        //     <Button leftIcon={<IconPlus size={16} />}>Tambah Karyawan</Button>
+        //   </Link>
+        // }
       />
 
       <SearchBar

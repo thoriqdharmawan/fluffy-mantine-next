@@ -42,7 +42,7 @@ export default function Navbar(props: NabarProps) {
   });
 
   return (
-    <Nav p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 300 }}>
+    <Nav p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 200 }}>
       <Nav.Section grow>{menus}</Nav.Section>
       <Nav.Section>Last section</Nav.Section>
     </Nav>
