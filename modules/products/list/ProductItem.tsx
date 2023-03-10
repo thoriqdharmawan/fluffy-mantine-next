@@ -128,19 +128,19 @@ const ProductItem = (props: ListProps) => {
     {
       label: 'Produk',
       items: [
-        {
-          icon: <IconEye size={14} />,
-          children: 'Rincian',
-        },
+        // {
+        //   icon: <IconEye size={14} />,
+        //   children: 'Rincian',
+        // },
         {
           icon: <IconEdit size={14} />,
           children: 'Ubah',
           onClick: () => router.push(`/products/edit/${productId}`),
         },
-        {
-          icon: <IconCopy size={14} />,
-          children: 'Duplikat',
-        },
+        // {
+        //   icon: <IconCopy size={14} />,
+        //   children: 'Duplikat',
+        // },
       ],
     },
     {

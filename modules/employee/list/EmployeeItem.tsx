@@ -88,7 +88,7 @@ export default function EmployeeItem(props: Props) {
               onChange={() => handleChangeStatus(status)}
             />
           </Box>
-          <Box fw={600} w="9%">
+          {/* <Box fw={600} w="9%">
             <Flex gap="sm" align="center">
               <MenuDropdown sections={EMPLOYEES_ACTION_MENUS}>
                 <ActionIcon>
@@ -96,9 +96,9 @@ export default function EmployeeItem(props: Props) {
                 </ActionIcon>
               </MenuDropdown>
 
-              {/* {loadingDelete && <Loader size="xs" color="gray" />} */}
+              {loadingDelete && <Loader size="xs" color="gray" />}
             </Flex>
-          </Box>
+          </Box> */}
         </Flex>
       </Box>
     </>
