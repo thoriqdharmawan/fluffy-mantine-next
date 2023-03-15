@@ -18,7 +18,7 @@ type Props = {
   search: string;
 };
 
-const LIMIT = 10;
+const LIMIT = 5;
 
 export default function ListProduct(props: Props) {
   const { search } = props;

@@ -31,8 +31,11 @@ const Header = () => {
         <Box fw={600} w="35%">
           Info Produk
         </Box>
-        <Box fw={600} w="35%">
+        <Box fw={600} w="18%">
           Harga
+        </Box>
+        <Box fw={600} w="17%">
+          Harga Grosir
         </Box>
         <Box fw={600} w="15%">
           Stok

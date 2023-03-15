@@ -15,13 +15,12 @@ import {
   IconCheck,
   IconDots,
   IconEdit,
-  IconEye,
   IconExclamationMark,
   IconSelector,
   IconTrash,
-  IconCopy,
 } from '@tabler/icons';
 import { Dispatch, SetStateAction, useState } from 'react';
+import { showNotification } from '@mantine/notifications';
 
 import MenuDropdown from '../../../components/menu/MenuDropdown';
 
@@ -29,7 +28,6 @@ import ListProductVariant from './variant/ListProductVariant';
 import { getListProductVariants } from '../../../services/products';
 import client from '../../../apollo-client';
 import { UPDATE_STATUS_PRODUCT } from '../../../services/products/product.graphql';
-import { showNotification } from '@mantine/notifications';
 import { useRouter } from 'next/router';
 import { getPrices } from '../../../context/helpers';
 
@@ -157,6 +155,7 @@ const ProductItem = (props: ListProps) => {
   const { max, min } = product_variants_aggregate?.aggregate || {};
 
   const prices = getPrices(max?.price, min?.price);
+  const prices_wholesale = getPrices(max?.price_wholesale, min?.price_wholesale);
 
   return (
     <>
@@ -192,7 +191,8 @@ const ProductItem = (props: ListProps) => {
               </Flex>
             </Flex>
           </Box>
-          <Box w="35%">{prices}</Box>
+          <Box w="18%">{prices}</Box>
+          <Box w="17%">{prices_wholesale === prices ? '-' : prices_wholesale}</Box>
           <Box w="15%">{stock}</Box>
           <Box w="6%">
             {type === 'NOVARIANT' && (
@@ -251,7 +251,11 @@ const ProductItem = (props: ListProps) => {
                 <Flex justify="center" align="center" py="120px">
                   <Loader />
                 </Flex>
-                <Divider color="#E5E7E9" />
+                <Divider sx={(theme) => ({
+                  color: theme.colorScheme === 'dark'
+                    ? `${theme.colors.dark[6]}`
+                    : '#E5E7E9',
+                })} />
               </>
             )}
 
@@ -270,6 +274,7 @@ const ProductItem = (props: ListProps) => {
                     name={[variant1, variant2].filter((data) => data).join(' | ')}
                     sku={productVariant.sku}
                     price={productVariant.price}
+                    price_wholesale={productVariant.price_wholesale}
                     stock={productVariant.stock}
                     status={productVariant.status}
                     loadingUpdateStatus={loadingUpdateStatus}

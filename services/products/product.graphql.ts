@@ -26,6 +26,7 @@ export const GET_LIST_PRODUCTS = gql`
         coord
         is_primary
         price
+        price_wholesale
         sku
         status
         stock
@@ -39,9 +40,11 @@ export const GET_LIST_PRODUCTS = gql`
         aggregate {
           max {
             price
+            price_wholesale
           }
           min {
             price
+            price_wholesale
           }
         }
       }
@@ -102,6 +105,7 @@ export const GET_LIST_PRODUCT_VARIANTS = gql`
       coord
       is_primary
       price
+      price_wholesale
       sku
       status
       stock
