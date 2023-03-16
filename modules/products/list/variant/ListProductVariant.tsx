@@ -5,6 +5,7 @@ type Props = {
   name: string;
   sku: string;
   price: number;
+  price_wholesale: number;
   stock: number;
   status: 'ACTIVE' | 'INACTIVE';
   onChangeStatus: () => void;
@@ -12,11 +13,15 @@ type Props = {
 };
 
 export default function ListProductVariant(props: Props) {
-  const { name, sku, price, stock, status, loadingUpdateStatus, onChangeStatus } = props;
+  const { name, sku, price, price_wholesale, stock, status, loadingUpdateStatus, onChangeStatus } = props;
 
   return (
     <>
-      <Divider color="#E5E7E9" />
+      <Divider sx={(theme) => ({
+        color: theme.colorScheme === 'dark'
+          ? `${theme.colors.dark[6]}`
+          : '#E5E7E9',
+      })} />
       <Flex
         gap="md"
         justify="flex-start"
@@ -35,6 +40,7 @@ export default function ListProductVariant(props: Props) {
           </Text>
         </Box>
         <Box w="37.2%">{convertToRupiah(price)}</Box>
+        <Box w="37.2%">{price_wholesale !== price ? convertToRupiah(price_wholesale) : '-'}</Box>
         <Box w="16%">{stock}</Box>
         <Box w="6%">
           <Switch

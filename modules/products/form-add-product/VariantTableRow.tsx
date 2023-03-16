@@ -17,8 +17,6 @@ const VariantTableRow = memo(function VariantTableRowMemo(props: Props) {
   const variant1 = variants?.[0]?.values?.[coord?.[0] || 0];
   const variant2 = variants?.[1]?.values?.[coord?.[1] || 0];
 
-  console.log({ productVariants })
-
   const { has_price_wholesale } = productVariants?.[index] || {}
 
   return (
