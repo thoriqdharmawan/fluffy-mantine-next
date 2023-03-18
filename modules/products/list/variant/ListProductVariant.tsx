@@ -1,5 +1,7 @@
-import { Box, Divider, Flex, Text, Switch } from '@mantine/core';
+import { ActionIcon, Box, Divider, Flex, Text, Switch } from '@mantine/core';
 import { convertToRupiah } from '../../../../context/helpers';
+import MenuDropdown from '../../../../components/menu/MenuDropdown';
+import { IconCalculator, IconDots } from '@tabler/icons';
 
 type Props = {
   name: string;
@@ -9,11 +11,26 @@ type Props = {
   stock: number;
   status: 'ACTIVE' | 'INACTIVE';
   onChangeStatus: () => void;
+  onChangePrice: () => void;
   loadingUpdateStatus: boolean;
 };
 
 export default function ListProductVariant(props: Props) {
-  const { name, sku, price, price_wholesale, stock, status, loadingUpdateStatus, onChangeStatus } = props;
+  const { name, sku, price, price_wholesale, stock, status, loadingUpdateStatus, onChangeStatus, onChangePrice } = props;
+
+  const PRODUCT_ACTION_MENUS = [
+    {
+      label: 'Produk',
+      items: [
+        {
+          icon: <IconCalculator size={14} />,
+          children: 'Ubah Harga',
+          onClick: onChangePrice
+        },
+      ],
+    },
+  ];
+  
 
   return (
     <>
@@ -50,7 +67,16 @@ export default function ListProductVariant(props: Props) {
             styles={{ root: { display: 'flex' }, track: { cursor: 'pointer' } }}
           />
         </Box>
-        <Box w="5%"></Box>
+
+        <Box w="5%">
+          <Flex gap="sm" align="center">
+            <MenuDropdown sections={PRODUCT_ACTION_MENUS}>
+              <ActionIcon>
+                <IconDots size={18} />
+              </ActionIcon>
+            </MenuDropdown>
+          </Flex>
+        </Box>
       </Flex>
     </>
   );

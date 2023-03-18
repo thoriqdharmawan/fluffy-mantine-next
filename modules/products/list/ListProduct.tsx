@@ -14,7 +14,7 @@ import client from '../../../apollo-client';
 import Header from './Header';
 import ProductItem from './ProductItem';
 import Loading from '../../../components/loading/Loading';
-import ChangeProductPrice from './modal/ChangeProductPrice';
+import ChangeProductPrices from './modal/ChangeProductPrices';
 
 type Props = {
   search: string;
@@ -128,7 +128,7 @@ export default function ListProduct(props: Props) {
         </Paper>
       </ScrollArea>
 
-      <ChangeProductPrice
+      <ChangeProductPrices
         opened={changePrice.open}
         id={changePrice.id}
         refetch={refetch}

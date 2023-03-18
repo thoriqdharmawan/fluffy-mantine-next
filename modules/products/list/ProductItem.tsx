@@ -13,7 +13,6 @@ import {
   Switch,
 } from '@mantine/core';
 import {
-  IconBrandUnsplash,
   IconCalculator,
   IconCheck,
   IconDots,
@@ -34,6 +33,7 @@ import client from '../../../apollo-client';
 import Loading from '../../../components/loading/Loading';
 import ListProductVariant from './variant/ListProductVariant';
 import MenuDropdown from '../../../components/menu/MenuDropdown';
+import ChangeProductPrice from './modal/ChangeProductPrice';
 
 interface CategoriesInterface {
   id: number;
@@ -82,6 +82,10 @@ const ProductItem = (props: ListProps) => {
 
   const [isOpenVariant, setIsOpenVariant] = useState<boolean>(false);
   const [dataVariants, setDataVariants] = useState<any>({});
+  const [changePrice, setChangePrice] = useState<{ opened: boolean, id?: number }>({
+    opened: false,
+    id: undefined
+  });
 
   const getVariants = (productId: string, withLoading: boolean | undefined) => {
     if (withLoading) {
@@ -136,10 +140,6 @@ const ProductItem = (props: ListProps) => {
           icon: <IconEye size={14} />,
           children: 'Rincian',
         },
-        // {
-        //   icon: <IconBrandUnsplash size={14} />,
-        //   children: 'Tambah Stok',
-        // },
         {
           icon: <IconCalculator size={14} />,
           children: 'Ubah Harga',
@@ -150,10 +150,6 @@ const ProductItem = (props: ListProps) => {
           children: 'Ubah',
           onClick: () => router.push(`/products/edit/${productId}`),
         },
-        // {
-        //   icon: <IconCopy size={14} />,
-        //   children: 'Duplikat',
-        // },
       ],
     },
     {
@@ -289,12 +285,20 @@ const ProductItem = (props: ListProps) => {
                         type: 'VARIANT',
                       })
                     }
+                    onChangePrice={() => setChangePrice({ opened: true, id: productVariant.id })}
                   />
                 );
               })}
           </Box>
         )}
       </Box>
+
+      <ChangeProductPrice
+        opened={changePrice.opened}
+        id={changePrice.id}
+        onClose={() => setChangePrice({ opened: false, id: undefined })}
+        refetch={() => getVariants(productId, false)}
+      />
     </>
   );
 };

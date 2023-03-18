@@ -3,7 +3,7 @@ import { Button, Badge, Flex, Paper, Center, Modal, Image, Title, NumberInput, S
 import { useMutation, useQuery } from '@apollo/client';
 import { useForm } from '@mantine/form';
 
-import { EDIT_PRODUCT_PRICES, GET_PRODUCT_PRICES_BY_ID } from '../../../../services/products';
+import { EDIT_PRODUCT_PRICE, GET_PRODUCT_VARIANT_PRICES_BY_ID } from '../../../../services/products';
 import { getVariants } from '../../../../context/helpers';
 import client from '../../../../apollo-client';
 
@@ -11,20 +11,16 @@ import Loading from '../../../../components/loading/Loading';
 
 interface Props {
   opened: boolean;
-  id?: string;
+  id?: number;
   onClose: () => void;
-  refetch: () => void;
+  refetch?: () => void;
 }
 
-interface pv {
+interface FormValues {
   price?: number;
   price_wholesale?: number,
   min_wholesale?: number,
   has_price_wholesale: boolean
-}
-
-interface FormValues {
-  productVariants: pv[]
 }
 
 export default function ChangeProductPrice(props: Props) {
@@ -33,64 +29,39 @@ export default function ChangeProductPrice(props: Props) {
 
   const form = useForm<FormValues>({
     initialValues: {
-      productVariants: [
-        {
-          price: undefined,
-          price_wholesale: undefined,
-          min_wholesale: undefined,
-          has_price_wholesale: false
-        },
-      ],
+      price: undefined,
+      price_wholesale: undefined,
+      min_wholesale: undefined,
+      has_price_wholesale: false
     },
     validate: {
-      productVariants: {
-        price: (value) => (!value ? 'Bagian ini diperlukan' : null),
-        price_wholesale: (value, values, path) => {
-          const index: number = Number(path.split('.')[1] || 0)
-          const isRequired = values.productVariants?.[index]?.has_price_wholesale
-          return (isRequired && !value) ? 'Bagian ini diperlukan' : null
-        },
-        min_wholesale: (value, values, path) => {
-          const index: number = Number(path.split('.')[1] || 0)
-          const isRequired = values.productVariants?.[index]?.has_price_wholesale
-          return (isRequired && !value) ? 'Bagian ini diperlukan' : null
-        },
+      price: (value) => (!value ? 'Bagian ini diperlukan' : null),
+      price_wholesale: (value, values) => {
+        const isRequired = values.has_price_wholesale
+        return (isRequired && !value) ? 'Bagian ini diperlukan' : null
+      },
+      min_wholesale: (value, values) => {
+        const isRequired = values.has_price_wholesale
+        return (isRequired && !value) ? 'Bagian ini diperlukan' : null
       },
     },
   })
 
-  const [updatePrices] = useMutation(EDIT_PRODUCT_PRICES, { client: client })
+  const [updatePrice] = useMutation(EDIT_PRODUCT_PRICE, { client: client })
 
-  const { data, loading, error } = useQuery(GET_PRODUCT_PRICES_BY_ID, {
+  const { data, loading, error } = useQuery(GET_PRODUCT_VARIANT_PRICES_BY_ID, {
     client: client,
     skip: !id,
     fetchPolicy: 'cache-and-network',
-    variables: {
-      product_id: id
-    },
+    variables: { variant_id: id },
     onCompleted: (data) => {
-      const { product_variants } = data.products?.[0] || {};
-
+      const { price, price_wholesale, min_wholesale } = data?.product_variants?.[0] || {}
       form.setValues((prev) => ({
         ...prev,
-        productVariants: product_variants?.map((product: any) => {
-          const { price, price_purchase, price_wholesale, min_wholesale } = product
-
-          return {
-            id: product.id,
-            coord: product.coord,
-            sku: product.sku,
-            price: price,
-            price_purchase: price_purchase,
-            price_wholesale: price_wholesale,
-            min_wholesale: product.min_wholesale,
-            stock: product.stock,
-            status: product.status,
-            isPrimary: product.is_primary,
-            has_price_purchase: (price_purchase && price) !== price_purchase,
-            has_price_wholesale: (price_wholesale && price) !== price_wholesale,
-          }
-        }),
+        price: price,
+        price_wholesale: price_wholesale,
+        min_wholesale: min_wholesale,
+        has_price_wholesale: (price_wholesale && price) !== price_wholesale,
       }))
     }
   })
@@ -99,44 +70,32 @@ export default function ChangeProductPrice(props: Props) {
     console.error(error)
   }
 
-  const { image, name, type, variants, product_variants } = data?.products?.[0] || {}
-
-
   const handleSubmit = async () => {
     setLoadingMutation(true)
     const { hasErrors } = form.validate();
 
     if (!hasErrors) {
-      updatePrices({
+      const { has_price_wholesale, price_wholesale, price, min_wholesale } = form.values
+
+      const priceWholesale = has_price_wholesale ? price_wholesale : price
+
+      updatePrice({
         variables: {
           id,
-          product_variants: form.values.productVariants?.map((product_variant: any) => {
-            const { has_price_purchase, has_price_wholesale, price_purchase, price_wholesale, price } = product_variant
-
-            const pricePurchase = has_price_purchase ? price_purchase : price
-            const priceWholesale = has_price_wholesale ? price_wholesale : price
-            return {
-              coord: product_variant.coord,
-              is_primary: product_variant.isPrimary,
-              price: product_variant.price,
-              price_purchase: pricePurchase,
-              price_wholesale: priceWholesale,
-              min_wholesale: product_variant.min_wholesale || 1,
-              sku: product_variant.sku,
-              status: product_variant.status,
-              stock: product_variant.stock,
-              productId: id,
-            }
-          })
+          price: price,
+          price_wholesale: priceWholesale,
+          min_wholesale: min_wholesale,
         }
       }).then(() => {
-        refetch()
         onClose()
+        refetch()
       })
     }
 
     setLoadingMutation(false)
   }
+
+  const { has_price_wholesale } = form.values || {}
 
   return (
     <Modal
@@ -149,76 +108,57 @@ export default function ChangeProductPrice(props: Props) {
       )}
       {!loading && data && (
         <>
-          <Center>
-            <Image maw={240} mx="auto" radius="md" src={image} alt={name} />
-          </Center>
-
-          <Title order={3} my="lg" ta="center">{name}</Title>
-
-          {product_variants?.map((pv: any, index: number) => {
-
-            const { has_price_wholesale } = form.values?.productVariants?.[index] || {}
-
-            return (
-              <Paper shadow="md" withBorder p="md" mb="xl" key={pv.id}>
-                {type === "VARIANT" && (
-                  <Badge sx={{ textTransform: 'none' }} color="teal" mb="md">
-                    {getVariants(variants, pv.coord)}
-                  </Badge>
-                )}
-                <NumberInput
-                  hideControls
-                  label="Harga Jual"
-                  placeholder="Tambahkan Harga Jual"
-                  min={0}
-                  icon="Rp"
-                  labelProps={{ mb: 8 }}
-                  mb="lg"
-                  withAsterisk
-                  parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
-                  formatter={(value: any) =>
-                    !Number.isNaN(parseFloat(value)) ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''
-                  }
-                  {...form.getInputProps(`productVariants.${index}.price`)}
-                />
-                <Switch
-                  label="Tambahkan Harga Jual Grosir?"
-                  mb={24}
-                  checked={has_price_wholesale}
-                  {...form.getInputProps(`productVariants.${index}.has_price_wholesale`)}
-                />
-                {has_price_wholesale && (
-                  <NumberInput
-                    hideControls
-                    label="Harga Jual Grosir"
-                    placeholder="Tambahkan Harga Jual"
-                    min={0}
-                    icon="Rp"
-                    labelProps={{ mb: 8 }}
-                    mb="lg"
-                    withAsterisk
-                    parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
-                    formatter={(value: any) =>
-                      !Number.isNaN(parseFloat(value)) ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''
-                    }
-                    {...form.getInputProps(`productVariants.${index}.price_wholesale`)}
-                  />
-                )}
-                {has_price_wholesale && (
-                  <NumberInput
-                    label="Minimal Pembelian Grosir"
-                    placeholder="Tambahkan Minimal Pembelian Grosir"
-                    min={0}
-                    labelProps={{ mb: 8 }}
-                    mb="lg"
-                    withAsterisk={has_price_wholesale}
-                    {...form.getInputProps(`productVariants.${index}.min_wholesale`)}
-                  />
-                )}
-              </Paper>
-            )
-          })}
-
+          <Paper shadow="md" withBorder p="md" mb="xl">
+            <NumberInput
+              hideControls
+              label="Harga Jual"
+              placeholder="Tambahkan Harga Jual"
+              min={0}
+              icon="Rp"
+              labelProps={{ mb: 8 }}
+              mb="lg"
+              withAsterisk
+              parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
+              formatter={(value: any) =>
+                !Number.isNaN(parseFloat(value)) ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''
+              }
+              {...form.getInputProps(`price`)}
+            />
+            <Switch
+              label="Tambahkan Harga Jual Grosir?"
+              mb={24}
+              checked={has_price_wholesale}
+              {...form.getInputProps(`has_price_wholesale`)}
+            />
+            {has_price_wholesale && (
+              <NumberInput
+                hideControls
+                label="Harga Jual Grosir"
+                placeholder="Tambahkan Harga Jual"
+                min={0}
+                icon="Rp"
+                labelProps={{ mb: 8 }}
+                mb="lg"
+                withAsterisk
+                parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
+                formatter={(value: any) =>
+                  !Number.isNaN(parseFloat(value)) ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''
+                }
+                {...form.getInputProps(`price_wholesale`)}
+              />
+            )}
+            {has_price_wholesale && (
+              <NumberInput
+                label="Minimal Pembelian Grosir"
+                placeholder="Tambahkan Minimal Pembelian Grosir"
+                min={0}
+                labelProps={{ mb: 8 }}
+                mb="lg"
+                withAsterisk={has_price_wholesale}
+                {...form.getInputProps(`min_wholesale`)}
+              />
+            )}
+          </Paper>
           <Flex
             justify="space-between"
             align="center"
@@ -231,6 +171,6 @@ export default function ChangeProductPrice(props: Props) {
           </Flex>
         </>
       )}
-    </Modal>
+    </Modal >
   )
 }

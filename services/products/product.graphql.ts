@@ -121,6 +121,16 @@ export const GET_PRODUCT_PRICES_BY_ID = gql`
     }
   }
 `;
+export const GET_PRODUCT_VARIANT_PRICES_BY_ID = gql`
+  query GetProductVariantPricesById($variant_id: Int!) {
+    product_variants(where: { id: { _eq: $variant_id } }) {
+      id
+      price
+      price_wholesale
+      min_wholesale
+    }
+  }
+`;
 
 export const GET_LIST_PRODUCT_VARIANTS = gql`
   query GetProductVariants($productId: uuid!) {
@@ -272,6 +282,32 @@ export const EDIT_PRODUCT_PRICES = gql`
       }
     ) {
       affected_rows
+    }
+  }
+`;
+export const EDIT_PRODUCT_PRICE = gql`
+  mutation UpdatePrice(
+    $id: Int!
+    $price: numeric!
+    $price_wholesale: numeric!
+    $min_wholesale: Int!
+  ) {
+    update_product_variants(
+      where: { id: { _eq: $id } }
+      _set: {
+        price: $price
+        price_wholesale: $price_wholesale
+        min_wholesale: $min_wholesale
+      }
+    ) {
+      affected_rows
+      returning {
+        id
+        min_wholesale
+        price
+        price_purchase
+        price_wholesale
+      }
     }
   }
 `;
