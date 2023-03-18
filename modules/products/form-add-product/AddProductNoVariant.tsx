@@ -66,8 +66,7 @@ export default function AddProductNoVariant({ form }: { form: UseFormReturnType<
               label="Minimal Pembelian Grosir"
               description="Minimal pembelian untuk mendapatkan Harga Jual Grosir"
               placeholder="Tambahkan Minimal Pembelian Grosir"
-              min={0}
-              icon="Rp"
+              min={1}
               withAsterisk={has_price_wholesale}
               labelProps={{ mb: 8 }}
               mb={24}

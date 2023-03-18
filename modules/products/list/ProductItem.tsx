@@ -13,10 +13,13 @@ import {
   Switch,
 } from '@mantine/core';
 import {
+  IconBrandUnsplash,
+  IconCalculator,
   IconCheck,
   IconDots,
   IconEdit,
   IconExclamationMark,
+  IconEye,
   IconSelector,
   IconTrash,
 } from '@tabler/icons';
@@ -48,6 +51,7 @@ interface ListProps {
   onDelete: (setLoading: Dispatch<SetStateAction<boolean>>) => void;
   onCompleteUpdate: () => void;
   product_variants_aggregate: any;
+  onChangePrice: () => void
 }
 
 interface HandleChangeStatus {
@@ -69,6 +73,7 @@ const ProductItem = (props: ListProps) => {
     onDelete,
     onCompleteUpdate,
     product_variants_aggregate,
+    onChangePrice,
   } = props;
 
   const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
@@ -127,10 +132,19 @@ const ProductItem = (props: ListProps) => {
     {
       label: 'Produk',
       items: [
+        {
+          icon: <IconEye size={14} />,
+          children: 'Rincian',
+        },
         // {
-        //   icon: <IconEye size={14} />,
-        //   children: 'Rincian',
+        //   icon: <IconBrandUnsplash size={14} />,
+        //   children: 'Tambah Stok',
         // },
+        {
+          icon: <IconCalculator size={14} />,
+          children: 'Ubah Harga',
+          onClick: onChangePrice
+        },
         {
           icon: <IconEdit size={14} />,
           children: 'Ubah',
