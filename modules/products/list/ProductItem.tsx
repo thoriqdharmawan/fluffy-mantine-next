@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction, useState } from 'react';
 import {
   Flex,
   Image,
@@ -19,17 +20,17 @@ import {
   IconSelector,
   IconTrash,
 } from '@tabler/icons';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useRouter } from 'next/router';
 import { showNotification } from '@mantine/notifications';
 
-import MenuDropdown from '../../../components/menu/MenuDropdown';
-
-import ListProductVariant from './variant/ListProductVariant';
 import { getListProductVariants } from '../../../services/products';
-import client from '../../../apollo-client';
 import { UPDATE_STATUS_PRODUCT } from '../../../services/products/product.graphql';
-import { useRouter } from 'next/router';
 import { getPrices } from '../../../context/helpers';
+import client from '../../../apollo-client';
+
+import Loading from '../../../components/loading/Loading';
+import ListProductVariant from './variant/ListProductVariant';
+import MenuDropdown from '../../../components/menu/MenuDropdown';
 
 interface CategoriesInterface {
   id: number;
@@ -246,18 +247,7 @@ const ProductItem = (props: ListProps) => {
               <IconSelector size={16} />
             </UnstyledButton>
 
-            {isOpenVariant && loadingVariants && (
-              <>
-                <Flex justify="center" align="center" py="120px">
-                  <Loader />
-                </Flex>
-                <Divider sx={(theme) => ({
-                  color: theme.colorScheme === 'dark'
-                    ? `${theme.colors.dark[6]}`
-                    : '#E5E7E9',
-                })} />
-              </>
-            )}
+            {isOpenVariant && loadingVariants && (<Loading count={2} height={46} />)}
 
             {isOpenVariant &&
               !loadingVariants &&

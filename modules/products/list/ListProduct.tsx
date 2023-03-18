@@ -1,18 +1,19 @@
 import { Dispatch, SetStateAction } from 'react';
-import { Box, Paper, LoadingOverlay, Button, ScrollArea, Pagination, Group } from '@mantine/core';
+import { Box, Paper, Button, ScrollArea, Pagination, Group } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconCheck, IconExclamationMark, IconPlus } from '@tabler/icons';
+import { usePagination } from '@mantine/hooks';
+import { useQuery } from '@apollo/client';
+import Link from 'next/link';
 
 import { useUser } from '../../../context/user';
 import { deleteProduct, GET_LIST_PRODUCTS } from '../../../services/products';
+import { Empty } from '../../../components/empty-state';
+import client from '../../../apollo-client';
 
 import Header from './Header';
 import ProductItem from './ProductItem';
-import { Empty } from '../../../components/empty-state';
-import Link from 'next/link';
-import { useQuery } from '@apollo/client';
-import client from '../../../apollo-client';
-import { usePagination } from '@mantine/hooks';
+import Loading from '../../../components/loading/Loading';
 
 type Props = {
   search: string;
@@ -79,8 +80,8 @@ export default function ListProduct(props: Props) {
       <Paper w={1187} shadow="md" radius="md" p="md">
         <Header />
         <Box pos="relative" mih={120}>
-          <LoadingOverlay visible={loadingData} overlayBlur={2} />
-          {data?.total.aggregate.count === 0 && (
+          {loadingData && <Loading height={120} />}
+          {!loadingData && data?.total.aggregate.count === 0 && (
             <Empty
               title="Tidak Ada Produk"
               label="Anda belum menambahkan produk apapun. Mulai dengan menekan tombol Tambah Produk."
