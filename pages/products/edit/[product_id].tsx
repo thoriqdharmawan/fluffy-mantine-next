@@ -60,6 +60,7 @@ export default function EditProducts() {
   const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [updateImage, setUpdateImage] = useState<boolean>(false)
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -171,6 +172,7 @@ export default function EditProducts() {
   };
 
   const handleDeleteFiles = () => {
+    setUpdateImage(true)
     if (form?.values.image) {
       form.setValues({ image: '' });
     } else {
@@ -270,7 +272,18 @@ export default function EditProducts() {
 
       editProduct({ variables })
         .then((res) => {
-          handleUploadImage(res.data?.update_products?.returning?.[0].id);
+          if (updateImage) {
+            handleUploadImage(res.data?.update_products?.returning?.[0].id);
+          } else {
+            setLoading(false);
+            handleBack();
+            showNotification({
+              title: 'Yeayy, Sukses!! 😊',
+              message: 'Produk berhasil dibuat',
+              icon: <IconCheck />,
+              color: 'green',
+            });
+          }
         })
         .catch(() => {
           showError('Gagal Membuat Produk 🤥');
