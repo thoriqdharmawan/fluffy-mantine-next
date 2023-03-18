@@ -3188,9 +3188,9 @@
     tslib "^2.4.0"
 
 "@tabler/icons@^1.107.0":
-  version "1.107.0"
-  resolved "https://registry.yarnpkg.com/@tabler/icons/-/icons-1.107.0.tgz#ad1ecd20a3a478a9f2e8f9c5000a54662a854ec3"
-  integrity sha512-HlNN5uXPr9NUD2IqTNv5HfL2P3P8RT8VzYip3CBSiB4t9n7ZNFj/9gJRKgy9ONn9AN+hqACRaisu7M+koLAZzA==
+  version "1.119.0"
+  resolved "https://registry.yarnpkg.com/@tabler/icons/-/icons-1.119.0.tgz#8c590bc5a563c8673a78ccd451bedabd584b376e"
+  integrity sha512-Fk3Qq4w2SXcTjc/n1cuL5bccPkylrOMo7cYpQIf/yw6zP76LQV9dtLcHQUjFiUnaYuswR645CnURIhlafyAh9g==
 
 "@testing-library/dom@^8.12.0", "@testing-library/dom@^8.5.0":
   version "8.12.0"
@@ -10773,6 +10773,11 @@ react-is@^16.13.1, react-is@^16.7.0, react-is@^16.8.1:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
+
+react-loading-skeleton@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/react-loading-skeleton/-/react-loading-skeleton-3.2.0.tgz#c79f1390195bcd8625c30e68454a1b95508a9c74"
+  integrity sha512-kN12x4Ud69jbksr2EdhYywAFeW4bPdvFQ9p3ID1OM/QeFjgwFSmSUY2a6P6uOb5ACzWp3ozY8C+7+04KR6+PHA==
 
 react-property@2.0.0:
   version "2.0.0"

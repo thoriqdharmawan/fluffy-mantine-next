@@ -9,6 +9,10 @@ import { ModalsProvider } from '@mantine/modals';
 
 import AuthStateChangeProvider from '../context/auth';
 import { UserProvider } from '../context/user';
+
+import 'react-loading-skeleton/dist/skeleton.css'
+import { SkeletonTheme } from 'react-loading-skeleton';
+
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
@@ -28,17 +32,19 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
       </Head>
 
       <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-        <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
-          <NotificationsProvider>
-            <ModalsProvider>
-              <UserProvider>
-                <AuthStateChangeProvider>
-                  <Component {...pageProps} />
-                </AuthStateChangeProvider>
-              </UserProvider>
-            </ModalsProvider>
-          </NotificationsProvider>
-        </MantineProvider>
+        <SkeletonTheme baseColor={colorScheme === 'dark' ? "#25262b" : '#ebebeb'} highlightColor={colorScheme === 'dark' ? "#1A1B1E" : '#f5f5f5'}>
+          <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
+            <NotificationsProvider>
+              <ModalsProvider>
+                <UserProvider>
+                  <AuthStateChangeProvider>
+                    <Component {...pageProps} />
+                  </AuthStateChangeProvider>
+                </UserProvider>
+              </ModalsProvider>
+            </NotificationsProvider>
+          </MantineProvider>
+        </SkeletonTheme>
       </ColorSchemeProvider>
     </>
   );

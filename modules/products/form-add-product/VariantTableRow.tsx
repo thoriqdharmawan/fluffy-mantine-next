@@ -67,12 +67,11 @@ const VariantTableRow = memo(function VariantTableRowMemo(props: Props) {
           <NumberInput
             label="Minimal Pembelian Grosir"
             placeholder="Tambahkan Minimal Pembelian Grosir"
-            min={0}
-            icon="Rp"
+            min={1}
             withAsterisk={has_price_wholesale}
             labelProps={{ mb: 8 }}
             mb={24}
-            {...form.getInputProps('productVariants.0.min_wholesale')}
+            {...form.getInputProps(`productVariants.${index}.min_wholesale`)}
           />
         )}
       </td>

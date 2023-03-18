@@ -93,6 +93,45 @@ export const GET_PRODUCT_BY_ID = gql`
   }
 `;
 
+export const GET_PRODUCT_PRICES_BY_ID = gql`
+  query GetProductPricesById($product_id: uuid!) {
+    products(where: { id: { _eq: $product_id } }) {
+      id
+      name
+      image
+      type
+      product_variants {
+        id
+        coord
+        is_primary
+        price
+        price_purchase
+        price_wholesale
+        min_wholesale
+        sku
+        status
+        stock
+        productId
+      }
+      variants {
+        id
+        values
+        name
+      }
+    }
+  }
+`;
+export const GET_PRODUCT_VARIANT_PRICES_BY_ID = gql`
+  query GetProductVariantPricesById($variant_id: Int!) {
+    product_variants(where: { id: { _eq: $variant_id } }) {
+      id
+      price
+      price_wholesale
+      min_wholesale
+    }
+  }
+`;
+
 export const GET_LIST_PRODUCT_VARIANTS = gql`
   query GetProductVariants($productId: uuid!) {
     variants(where: { productId: { _eq: $productId } }, order_by: { id: asc }) {
@@ -218,37 +257,20 @@ export const EDIT_PRODUCT = gql`
       objects: $product_variants
       on_conflict: {
         constraint: product_variants_pkey
-        update_columns: [coord, is_primary, price, sku, status, stock]
+        update_columns: [coord, is_primary, price, price_purchase, price_wholesale, min_wholesale, sku, status, stock]
       }
     ) {
       affected_rows
     }
   }
 `;
-export const EDIT_PRODUCT_OLDD = gql`
-  mutation UpdateProduct(
+
+export const EDIT_PRODUCT_PRICES = gql`
+  mutation UpdateProductPrices(
     $id: uuid!
-    $name: String
-    $image: String
-    $description: String
-    $type: String
-    $variants: [variants_insert_input!]!
     $product_variants: [product_variants_insert_input!]!
   ) {
-    update_products(
-      where: { id: { _eq: $id } }
-      _set: { name: $name, image: $image, description: $description, type: $type }
-    ) {
-      affected_rows
-      returning {
-        id
-      }
-    }
-
-    insert_variants(
-      objects: $variants
-      on_conflict: { constraint: variants_pkey, update_columns: [name, values] }
-    ) {
+    delete_product_variants(where: { productId: { _eq: $id } }) {
       affected_rows
     }
 
@@ -256,41 +278,35 @@ export const EDIT_PRODUCT_OLDD = gql`
       objects: $product_variants
       on_conflict: {
         constraint: product_variants_pkey
-        update_columns: [coord, is_primary, price, sku, status, stock]
+        update_columns: [price, price_wholesale, min_wholesale]
       }
     ) {
       affected_rows
     }
   }
 `;
-export const EDIT_PRODUCT_OLD = gql`
-  mutation UpdateProduct(
-    $id: uuid!
-    $name: String
-    $image: String
-    $companyId: uuid
-    $description: String
-    $type: String
-    $categories: [categories_update_input!]!
-    $product_variants: [product_variants_update_input!]!
-    $variants: [variants_update_input!]!
+export const EDIT_PRODUCT_PRICE = gql`
+  mutation UpdatePrice(
+    $id: Int!
+    $price: numeric!
+    $price_wholesale: numeric!
+    $min_wholesale: Int!
   ) {
-    update_products(
+    update_product_variants(
       where: { id: { _eq: $id } }
       _set: {
-        name: $name
-        image: $image
-        companyId: $companyId
-        description: $description
-        type: $type
-        categories: { data: $categories }
-        product_variants: { data: $product_variants }
-        variants: { data: $variants }
+        price: $price
+        price_wholesale: $price_wholesale
+        min_wholesale: $min_wholesale
       }
     ) {
       affected_rows
       returning {
         id
+        min_wholesale
+        price
+        price_purchase
+        price_wholesale
       }
     }
   }

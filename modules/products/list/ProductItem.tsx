@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction, useState } from 'react';
 import {
   Flex,
   Image,
@@ -12,24 +13,27 @@ import {
   Switch,
 } from '@mantine/core';
 import {
+  IconCalculator,
   IconCheck,
   IconDots,
   IconEdit,
   IconExclamationMark,
+  IconEye,
   IconSelector,
   IconTrash,
 } from '@tabler/icons';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useRouter } from 'next/router';
 import { showNotification } from '@mantine/notifications';
 
-import MenuDropdown from '../../../components/menu/MenuDropdown';
-
-import ListProductVariant from './variant/ListProductVariant';
 import { getListProductVariants } from '../../../services/products';
-import client from '../../../apollo-client';
 import { UPDATE_STATUS_PRODUCT } from '../../../services/products/product.graphql';
-import { useRouter } from 'next/router';
 import { getPrices } from '../../../context/helpers';
+import client from '../../../apollo-client';
+
+import Loading from '../../../components/loading/Loading';
+import ListProductVariant from './variant/ListProductVariant';
+import MenuDropdown from '../../../components/menu/MenuDropdown';
+import ChangeProductPrice from './modal/ChangeProductPrice';
 
 interface CategoriesInterface {
   id: number;
@@ -47,6 +51,7 @@ interface ListProps {
   onDelete: (setLoading: Dispatch<SetStateAction<boolean>>) => void;
   onCompleteUpdate: () => void;
   product_variants_aggregate: any;
+  onChangePrice: () => void
 }
 
 interface HandleChangeStatus {
@@ -68,6 +73,7 @@ const ProductItem = (props: ListProps) => {
     onDelete,
     onCompleteUpdate,
     product_variants_aggregate,
+    onChangePrice,
   } = props;
 
   const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
@@ -76,6 +82,10 @@ const ProductItem = (props: ListProps) => {
 
   const [isOpenVariant, setIsOpenVariant] = useState<boolean>(false);
   const [dataVariants, setDataVariants] = useState<any>({});
+  const [changePrice, setChangePrice] = useState<{ opened: boolean, id?: number }>({
+    opened: false,
+    id: undefined
+  });
 
   const getVariants = (productId: string, withLoading: boolean | undefined) => {
     if (withLoading) {
@@ -126,19 +136,20 @@ const ProductItem = (props: ListProps) => {
     {
       label: 'Produk',
       items: [
-        // {
-        //   icon: <IconEye size={14} />,
-        //   children: 'Rincian',
-        // },
+        {
+          icon: <IconEye size={14} />,
+          children: 'Rincian',
+        },
+        {
+          icon: <IconCalculator size={14} />,
+          children: 'Ubah Harga',
+          onClick: onChangePrice
+        },
         {
           icon: <IconEdit size={14} />,
           children: 'Ubah',
           onClick: () => router.push(`/products/edit/${productId}`),
         },
-        // {
-        //   icon: <IconCopy size={14} />,
-        //   children: 'Duplikat',
-        // },
       ],
     },
     {
@@ -246,18 +257,7 @@ const ProductItem = (props: ListProps) => {
               <IconSelector size={16} />
             </UnstyledButton>
 
-            {isOpenVariant && loadingVariants && (
-              <>
-                <Flex justify="center" align="center" py="120px">
-                  <Loader />
-                </Flex>
-                <Divider sx={(theme) => ({
-                  color: theme.colorScheme === 'dark'
-                    ? `${theme.colors.dark[6]}`
-                    : '#E5E7E9',
-                })} />
-              </>
-            )}
+            {isOpenVariant && loadingVariants && (<Loading count={2} height={46} />)}
 
             {isOpenVariant &&
               !loadingVariants &&
@@ -285,12 +285,20 @@ const ProductItem = (props: ListProps) => {
                         type: 'VARIANT',
                       })
                     }
+                    onChangePrice={() => setChangePrice({ opened: true, id: productVariant.id })}
                   />
                 );
               })}
           </Box>
         )}
       </Box>
+
+      <ChangeProductPrice
+        opened={changePrice.opened}
+        id={changePrice.id}
+        onClose={() => setChangePrice({ opened: false, id: undefined })}
+        refetch={() => getVariants(productId, false)}
+      />
     </>
   );
 };
