@@ -13,7 +13,7 @@ interface Props {
   opened: boolean;
   id?: number;
   onClose: () => void;
-  refetch?: () => void;
+  refetch: () => void;
 }
 
 interface FormValues {
