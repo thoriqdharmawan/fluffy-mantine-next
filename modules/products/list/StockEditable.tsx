@@ -8,7 +8,7 @@ import { EDIT_PRODUCT_STOCK } from '../../../services/products';
 import client from '../../../apollo-client';
 
 interface Props {
-  editable: boolean;
+  editable?: boolean;
   id?: number;
   stock: number;
   refetch: () => void;
