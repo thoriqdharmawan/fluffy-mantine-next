@@ -301,13 +301,17 @@ export const EDIT_PRODUCT_PRICE = gql`
       }
     ) {
       affected_rows
-      returning {
-        id
-        min_wholesale
-        price
-        price_purchase
-        price_wholesale
-      }
+    }
+  }
+`;
+
+export const EDIT_PRODUCT_STOCK = gql`
+  mutation UpdateStock($id: Int!, $stock: Int!) {
+    update_product_variants(
+      where: { id: { _eq: $id } }
+      _set: { stock: $stock }
+    ) {
+      affected_rows
     }
   }
 `;

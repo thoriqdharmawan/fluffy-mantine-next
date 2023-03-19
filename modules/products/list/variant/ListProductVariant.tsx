@@ -1,9 +1,12 @@
 import { ActionIcon, Box, Divider, Flex, Text, Switch } from '@mantine/core';
-import { convertToRupiah } from '../../../../context/helpers';
-import MenuDropdown from '../../../../components/menu/MenuDropdown';
 import { IconCalculator, IconDots, IconStack } from '@tabler/icons';
 
+import { convertToRupiah } from '../../../../context/helpers';
+import MenuDropdown from '../../../../components/menu/MenuDropdown';
+import StockEditable from '../StockEditable';
+
 type Props = {
+  id: number;
   name: string;
   sku: string;
   price: number;
@@ -12,11 +15,12 @@ type Props = {
   status: 'ACTIVE' | 'INACTIVE';
   onChangeStatus: () => void;
   onChangePrice: () => void;
+  refetch: () => void;
   loadingUpdateStatus: boolean;
 };
 
 export default function ListProductVariant(props: Props) {
-  const { name, sku, price, price_wholesale, stock, status, loadingUpdateStatus, onChangeStatus, onChangePrice } = props;
+  const { id, name, sku, price, price_wholesale, stock, status, loadingUpdateStatus, onChangeStatus, onChangePrice, refetch } = props;
 
   const PRODUCT_ACTION_MENUS = [
     {
@@ -27,11 +31,6 @@ export default function ListProductVariant(props: Props) {
           children: 'Ubah Harga',
           onClick: onChangePrice
         },
-        // {
-        //   icon: <IconCalculator size={14} />,
-        //   children: 'Tambah Stok',
-        //   onClick: onChangePrice
-        // },
         {
           icon: <IconStack size={14} />,
           children: 'Sesuaikan Stok',
@@ -40,7 +39,6 @@ export default function ListProductVariant(props: Props) {
       ],
     },
   ];
-  
 
   return (
     <>
@@ -58,7 +56,7 @@ export default function ListProductVariant(props: Props) {
         px="24px"
         py="md"
       >
-        <Box w="33%">
+        <Box w="30%">
           <Text mb="4px" fw={600}>
             {name}
           </Text>
@@ -66,9 +64,11 @@ export default function ListProductVariant(props: Props) {
             SKU: {sku}
           </Text>
         </Box>
-        <Box w="37.2%">{convertToRupiah(price)}</Box>
-        <Box w="37.2%">{price_wholesale !== price ? convertToRupiah(price_wholesale) : '-'}</Box>
-        <Box w="16%">{stock}</Box>
+        <Box w="20%">{convertToRupiah(price)}</Box>
+        <Box w="20%">{price_wholesale !== price ? convertToRupiah(price_wholesale) : '-'}</Box>
+        <Box w="19%">
+          <StockEditable id={id} stock={stock} refetch={refetch} />
+        </Box>
         <Box w="6%">
           <Switch
             disabled={loadingUpdateStatus}

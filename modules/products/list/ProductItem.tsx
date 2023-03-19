@@ -18,7 +18,6 @@ import {
   IconDots,
   IconEdit,
   IconExclamationMark,
-  IconEye,
   IconSelector,
   IconTrash,
 } from '@tabler/icons';
@@ -34,6 +33,7 @@ import Loading from '../../../components/loading/Loading';
 import ListProductVariant from './variant/ListProductVariant';
 import MenuDropdown from '../../../components/menu/MenuDropdown';
 import ChangeProductPrice from './modal/ChangeProductPrice';
+import StockEditable from './StockEditable';
 
 interface CategoriesInterface {
   id: number;
@@ -51,7 +51,7 @@ interface ListProps {
   onDelete: (setLoading: Dispatch<SetStateAction<boolean>>) => void;
   onCompleteUpdate: () => void;
   product_variants_aggregate: any;
-  onChangePrice: () => void
+  onChangePrice: () => void;
 }
 
 interface HandleChangeStatus {
@@ -70,9 +70,9 @@ const ProductItem = (props: ListProps) => {
     stock,
     categories,
     type,
+    product_variants_aggregate,
     onDelete,
     onCompleteUpdate,
-    product_variants_aggregate,
     onChangePrice,
   } = props;
 
@@ -136,10 +136,10 @@ const ProductItem = (props: ListProps) => {
     {
       label: 'Produk',
       items: [
-        {
-          icon: <IconEye size={14} />,
-          children: 'Rincian',
-        },
+        // {
+        //   icon: <IconEye size={14} />,
+        //   children: 'Rincian',
+        // },
         {
           icon: <IconCalculator size={14} />,
           children: 'Ubah Harga',
@@ -204,7 +204,9 @@ const ProductItem = (props: ListProps) => {
           </Box>
           <Box w="18%">{prices}</Box>
           <Box w="17%">{prices_wholesale === prices ? '-' : prices_wholesale}</Box>
-          <Box w="15%">{stock}</Box>
+          <Box w="15%">
+            <StockEditable stock={stock} id={product_variants?.[0]?.id} editable={type === 'NOVARIANT'} refetch={onCompleteUpdate} />
+          </Box>
           <Box w="6%">
             {type === 'NOVARIANT' && (
               <Switch
@@ -271,6 +273,7 @@ const ProductItem = (props: ListProps) => {
                 return (
                   <ListProductVariant
                     key={productVariant.id}
+                    id={productVariant.id}
                     name={[variant1, variant2].filter((data) => data).join(' | ')}
                     sku={productVariant.sku}
                     price={productVariant.price}
@@ -286,6 +289,7 @@ const ProductItem = (props: ListProps) => {
                       })
                     }
                     onChangePrice={() => setChangePrice({ opened: true, id: productVariant.id })}
+                    refetch={() => getVariants(productId, false)}
                   />
                 );
               })}
