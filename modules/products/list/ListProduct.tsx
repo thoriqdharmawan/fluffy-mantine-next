@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import { Box, Paper, Button, ScrollArea, Pagination, Group } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconCheck, IconExclamationMark, IconPlus } from '@tabler/icons';
@@ -35,7 +35,6 @@ export default function ListProduct(props: Props) {
 
   const { data, loading, error, refetch } = useQuery(GET_LIST_PRODUCTS, {
     client: client,
-    fetchPolicy: 'cache-and-network',
     variables: {
       limit: LIMIT,
       offset: (pagination.active - 1) * LIMIT,
@@ -45,6 +44,11 @@ export default function ListProduct(props: Props) {
       },
     }
   })
+
+  useEffect(() => {
+    pagination.setPage(1)
+  }, [search])
+
 
   if (error) {
     console.error(error)
@@ -102,7 +106,7 @@ export default function ListProduct(props: Props) {
               />
             )}
 
-            {data?.products.map((product: any) => {
+            {!loading && data?.products.map((product: any) => {
               return (
                 <ProductItem
                   key={product.id}
@@ -123,7 +127,7 @@ export default function ListProduct(props: Props) {
           </Box>
 
           <Group mt={24} mb={12}>
-            <Pagination m="auto" total={totalPage} onChange={pagination.setPage} />
+            <Pagination m="auto" page={pagination.active} total={totalPage} onChange={pagination.setPage} />
           </Group>
         </Paper>
       </ScrollArea>
