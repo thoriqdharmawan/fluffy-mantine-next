@@ -13,10 +13,12 @@ const useStyles = createStyles(() => ({
     display: 'flex',
     flexDirection: 'row',
     gap: 12,
+    marginTop: 24,
   },
   column: {
     display: 'flex',
     flexDirection: 'column',
+    marginTop: 24,
   },
 }));
 

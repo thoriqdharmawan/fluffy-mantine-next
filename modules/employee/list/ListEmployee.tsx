@@ -1,46 +1,55 @@
-import { useEffect, useState } from 'react';
-import { Box, Button, Paper, LoadingOverlay } from '@mantine/core';
+import { Dispatch, SetStateAction, useEffect } from 'react'
+import { Box, Button, Paper, LoadingOverlay, Group, Pagination } from '@mantine/core';
 import { IconCheck, IconExclamationMark, IconPlus } from '@tabler/icons';
-
+import { showNotification } from '@mantine/notifications';
+import { useQuery } from '@apollo/client';
+import { usePagination } from '@mantine/hooks';
 import Link from 'next/link';
 
 import { Empty } from '../../../components/empty-state';
 import { useUser } from '../../../context/user';
-import { getListEmployees, updateEmployeeStatus } from '../../../services/employee';
+import { GET_LIST_EMPLOYEES, updateEmployeeStatus } from '../../../services/employee';
+import client from '../../../apollo-client';
 
 import Header from './Header';
 import EmployeeItem from './EmployeeItem';
-import { showNotification } from '@mantine/notifications';
+import Loading from '../../../components/loading/Loading';
 
 type Props = {
   search?: string;
 };
 
-export default function ListEmployee({ search }: Props) {
-  const { companyId } = useUser();
-  const [data, setData] = useState<any>(undefined);
-  const [loading, setLoading] = useState(true);
+const LIMIT = 5;
 
-  const getData = (withLoading: boolean) => {
-    if (withLoading) {
-      setLoading(true);
+export default function ListEmployee(props: Props) {
+  const { search } = props
+  const { companyId } = useUser();
+  const pagination = usePagination({ total: 10, initialPage: 1 });
+
+  const { data, loading, error, refetch } = useQuery(GET_LIST_EMPLOYEES, {
+    client: client,
+    skip: !companyId,
+    variables: {
+      limit: LIMIT,
+      offset: (pagination.active - 1) * LIMIT,
+      where: {
+        companyId: { _eq: companyId },
+        _or: search ? { name: { _ilike: `%${search}%` }, username: { _ilike: `%${search}%` } } : undefined,
+      }
     }
-    getListEmployees({
-      variables: { companyId, search: `%${search}%` },
-      fetchPolicy: 'network-only',
-    }).then((result) => {
-      setData(result.data);
-      setLoading(result.loading);
-    });
-  };
+  })
+
+  if (error) {
+    console.error(error)
+  }
+
 
   useEffect(() => {
-    if (companyId) {
-      getData(true);
-    }
-  }, [companyId, search]);
+    pagination.setPage(1)
+  }, [search])
 
   const loadingData = !companyId || loading;
+  const totalPage = Math.ceil((data?.total.aggregate.count || 0) / LIMIT);
 
   const handleUpdateStatus = (employeeId: string, status: string) => {
     updateEmployeeStatus({
@@ -50,7 +59,7 @@ export default function ListEmployee({ search }: Props) {
       },
     })
       .then(() => {
-        getData(false);
+        refetch()
         showNotification({
           title: 'Yeayy, Berhasil Mengubah Status Karyawan!! 😊',
           message: 'Status Karyawan Berhasil Diubah',
@@ -69,17 +78,17 @@ export default function ListEmployee({ search }: Props) {
   };
 
   return (
-    <Paper shadow="md" radius="md">
+    <Paper shadow="md" radius="md" p="md">
       <Header />
-      <Box pos="relative" mih={120}>
-        <LoadingOverlay zIndex={1} visible={loadingData} overlayBlur={2} />
+      <Box mih={120}>
+        {loadingData && <Loading height={80} />}
 
         {data?.total.aggregate.count === 0 && (
           <Empty
             title="Tidak Ada Karyawan"
             label="Belum ada karyawan yang terdaftar. Mulai menambahkan karyawan baru dengan menekan tombol Tambah Karyawan."
             action={
-              <Link href="/products/add">
+              <Link href="/employee/add">
                 <Button leftIcon={<IconPlus size={16} />} mt="xl">
                   Tambah Karyawan
                 </Button>
@@ -100,6 +109,10 @@ export default function ListEmployee({ search }: Props) {
             />
           );
         })}
+
+        <Group mt={24} mb={12}>
+          <Pagination m="auto" page={pagination.active} total={totalPage} onChange={pagination.setPage} />
+        </Group>
       </Box>
     </Paper>
   );

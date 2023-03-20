@@ -14,7 +14,7 @@ import HeaderSection from '../../components/header/HeaderSection';
 
 type Props = {};
 
-export default function index({}: Props) {
+export default function index({ }: Props) {
   const [search, setSearch] = useState<string>('');
   const [debounce] = useDebouncedValue(search, 200);
 
