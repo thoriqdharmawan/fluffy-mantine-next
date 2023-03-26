@@ -51,7 +51,7 @@ export interface FormValues extends ProductsCardProps { }
 export default function AddProducts() {
   const theme = useMantineTheme();
   const router = useRouter();
-  const user = useUser();
+  const user: any = useUser();
 
   const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
   const [files, setFiles] = useState<FileWithPath[]>([]);

@@ -2,7 +2,6 @@ import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import { Box, Paper, Button, ScrollArea, Pagination, Group } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconCheck, IconExclamationMark, IconPlus } from '@tabler/icons';
-import { usePagination } from '@mantine/hooks';
 import { useQuery } from '@apollo/client';
 import Link from 'next/link';
 
@@ -26,18 +25,17 @@ export default function ListProduct(props: Props) {
   const { search } = props;
   const { companyId } = useUser();
 
+  const [page, setPage] = useState<number>(1)
   const [changePrice, setChangePrice] = useState<{ open: boolean, id?: string }>({
     open: false,
     id: undefined,
   })
 
-  const pagination = usePagination({ total: 10, initialPage: 1 });
-
   const { data, loading, error, refetch } = useQuery(GET_LIST_PRODUCTS, {
     client: client,
     variables: {
       limit: LIMIT,
-      offset: (pagination.active - 1) * LIMIT,
+      offset: (page - 1) * LIMIT,
       where: {
         company: { id: companyId ? { _eq: companyId } : undefined },
         name: search ? { _ilike: `%${search}%` } : undefined,
@@ -45,10 +43,7 @@ export default function ListProduct(props: Props) {
     }
   })
 
-  useEffect(() => {
-    pagination.setPage(1)
-  }, [search])
-
+  useEffect(() => setPage(1), [search])
 
   if (error) {
     console.error(error)
@@ -82,7 +77,6 @@ export default function ListProduct(props: Props) {
   };
 
   const loadingData = !companyId || loading;
-
   const totalPage = Math.ceil((data?.total.aggregate.count || 0) / LIMIT);
 
   return (
@@ -127,7 +121,7 @@ export default function ListProduct(props: Props) {
           </Box>
 
           <Group mt={24} mb={12}>
-            <Pagination m="auto" page={pagination.active} total={totalPage} onChange={pagination.setPage} />
+            <Pagination m="auto" page={page} total={totalPage} onChange={setPage} />
           </Group>
         </Paper>
       </ScrollArea>

@@ -11,7 +11,7 @@ export const GET_LIST_PRODUCTS = gql`
       where: $where
       limit: $limit
       offset: $offset
-      order_by: { created_at: desc }
+      order_by: { name: asc }
     ) {
       id
       name
