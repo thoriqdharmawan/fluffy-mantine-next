@@ -165,6 +165,7 @@ export default function AddProducts() {
             .finally(() => {
               form.reset();
               setLoading(false);
+              handleDeleteFiles()
               if (goToList) {
                 handleBack();
               }

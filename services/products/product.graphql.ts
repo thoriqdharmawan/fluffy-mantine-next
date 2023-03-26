@@ -145,6 +145,7 @@ export const GET_LIST_PRODUCT_VARIANTS = gql`
       is_primary
       price
       price_wholesale
+      min_wholesale
       sku
       status
       stock
