@@ -226,7 +226,7 @@ const ProductItem = (props: ListProps) => {
           <Box w="9%">
             <Flex gap="sm" align="center">
               <MenuDropdown sections={PRODUCT_ACTION_MENUS}>
-                <ActionIcon>
+                <ActionIcon disabled={loadingDelete}>
                   <IconDots size={18} />
                 </ActionIcon>
               </MenuDropdown>

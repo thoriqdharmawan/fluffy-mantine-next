@@ -27,6 +27,8 @@ interface FormValues {
   productVariants: pv[]
 }
 
+const IMG_SIZE = 200
+
 export default function ChangeProductPrices(props: Props) {
   const { id, opened, onClose, refetch } = props
   const [loadingMutation, setLoadingMutation] = useState<boolean>(false)
@@ -151,7 +153,7 @@ export default function ChangeProductPrices(props: Props) {
       {!loading && data && (
         <>
           <Center>
-            <Image maw={240} mx="auto" radius="md" src={image} alt={name} />
+            <Image width={IMG_SIZE} height={IMG_SIZE} mx="auto" radius="md" src={image} alt={name} withPlaceholder />
           </Center>
 
           <Title order={3} my="lg" ta="center">{name}</Title>

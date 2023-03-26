@@ -1,5 +1,5 @@
 import { ActionIcon, Box, Divider, Flex, Text, Switch } from '@mantine/core';
-import { IconCalculator, IconDots, IconStack } from '@tabler/icons';
+import { IconCalculator, IconDots } from '@tabler/icons';
 
 import { convertToRupiah } from '../../../../context/helpers';
 import MenuDropdown from '../../../../components/menu/MenuDropdown';
@@ -29,11 +29,6 @@ export default function ListProductVariant(props: Props) {
         {
           icon: <IconCalculator size={14} />,
           children: 'Ubah Harga',
-          onClick: onChangePrice
-        },
-        {
-          icon: <IconStack size={14} />,
-          children: 'Sesuaikan Stok',
           onClick: onChangePrice
         },
       ],
