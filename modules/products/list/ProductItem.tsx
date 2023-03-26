@@ -174,14 +174,14 @@ const ProductItem = (props: ListProps) => {
       <Box>
         <Flex gap="md" justify="flex-start" align="center" direction="row" wrap="nowrap" px="24px">
           <Box w="35%" display="flex" py={12}>
-            <AspectRatio ratio={1 / 1} w={100}>
+            <AspectRatio ratio={1 / 1} maw={100} w="100%">
               <Image
                 withPlaceholder
                 src={image}
                 radius="md"
                 color="blue"
-                width={100}
-                height={100}
+                width="100%"
+                height="auto"
               />
             </AspectRatio>
             <Flex justify="center" align="flex-start" direction="column" ml="md">
@@ -203,11 +203,11 @@ const ProductItem = (props: ListProps) => {
             </Flex>
           </Box>
           <Box w="18%">{prices}</Box>
-          <Box w="17%">{prices_wholesale === prices ? '-' : prices_wholesale}</Box>
+          <Box w="17%">{prices_wholesale === prices ? <Text color="dimmed" fs="italic" size="xs">Tidak ada harga grosir</Text> : prices_wholesale}</Box>
           <Box w="15%">
             <StockEditable stock={stock} id={product_variants?.[0]?.id} editable={type === 'NOVARIANT'} refetch={onCompleteUpdate} />
           </Box>
-          <Box w="6%">
+          <Box w="4%">
             {type === 'NOVARIANT' && (
               <Switch
                 disabled={loadingUpdateStatus}
@@ -278,6 +278,7 @@ const ProductItem = (props: ListProps) => {
                     sku={productVariant.sku}
                     price={productVariant.price}
                     price_wholesale={productVariant.price_wholesale}
+                    min_wholesale={productVariant.min_wholesale}
                     stock={productVariant.stock}
                     status={productVariant.status}
                     loadingUpdateStatus={loadingUpdateStatus}

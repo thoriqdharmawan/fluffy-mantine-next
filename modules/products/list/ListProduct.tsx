@@ -88,7 +88,7 @@ export default function ListProduct(props: Props) {
   return (
     <>
       <ScrollArea style={{ width: 'auto', height: 'auto' }}>
-        <Paper w={1187} shadow="md" radius="md" p="md">
+        <Paper miw={1000} shadow="md" radius="md" p="md" mx="auto">
           <Header />
           <Box pos="relative" mih={120}>
             {loadingData && <Loading height={120} />}

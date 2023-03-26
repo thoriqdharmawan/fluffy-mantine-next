@@ -11,6 +11,7 @@ type Props = {
   sku: string;
   price: number;
   price_wholesale: number;
+  min_wholesale: number;
   stock: number;
   status: 'ACTIVE' | 'INACTIVE';
   onChangeStatus: () => void;
@@ -19,8 +20,21 @@ type Props = {
   loadingUpdateStatus: boolean;
 };
 
+const Wholesale = ({ price, price_wholesale, min_wholesale }: { price: number, price_wholesale: number, min_wholesale: number }) => {
+  if (price_wholesale === price) {
+    return <Text color="dimmed" fs="italic" size="xs">Tidak ada harga grosir</Text>
+  }
+
+  return (
+    <Flex direction="column">
+      <Text>{convertToRupiah(price_wholesale)}</Text>
+      <Text color="dimmed" size="sm">min. pembelian {min_wholesale}</Text>
+    </Flex>
+  )
+}
+
 export default function ListProductVariant(props: Props) {
-  const { id, name, sku, price, price_wholesale, stock, status, loadingUpdateStatus, onChangeStatus, onChangePrice, refetch } = props;
+  const { id, name, sku, price, price_wholesale, min_wholesale, stock, status, loadingUpdateStatus, onChangeStatus, onChangePrice, refetch } = props;
 
   const PRODUCT_ACTION_MENUS = [
     {
@@ -60,7 +74,9 @@ export default function ListProductVariant(props: Props) {
           </Text>
         </Box>
         <Box w="20%">{convertToRupiah(price)}</Box>
-        <Box w="20%">{price_wholesale !== price ? convertToRupiah(price_wholesale) : '-'}</Box>
+        <Box w="20%">
+          <Wholesale price={price} price_wholesale={price_wholesale} min_wholesale={min_wholesale} />
+        </Box>
         <Box w="19%">
           <StockEditable id={id} stock={stock} refetch={refetch} />
         </Box>
