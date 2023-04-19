@@ -1,4 +1,4 @@
-import { createStyles, Group, Paper, Text, ThemeIcon, SimpleGrid, Center } from '@mantine/core';
+import { createStyles, Group, Paper, Text, ThemeIcon, SimpleGrid, Title } from '@mantine/core';
 import { IconArrowUpRight } from '@tabler/icons';
 import Loading from '../../../components/loading/Loading'
 
@@ -55,7 +55,11 @@ const Incomes = ({ data, loading }: IncomesProps) => {
 
   return (
     <div className={classes.root}>
-      <SimpleGrid cols={3} breakpoints={[{ maxWidth: 'sm', cols: 1 }]}>
+      
+      <Title order={6} mb="md">
+        Ringkasan
+      </Title>
+      <SimpleGrid mb="xl" cols={3} breakpoints={[{ maxWidth: 'sm', cols: 1 }]}>
         {stats}
       </SimpleGrid>
     </div>

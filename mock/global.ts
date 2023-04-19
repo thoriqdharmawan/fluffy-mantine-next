@@ -1,5 +1,7 @@
 import dayjs from "dayjs";
 
+export const GLOBAL_FORMAT_DATE: string = 'LLLL';
+
 export interface GLOBAL_SELECT_TYPE {
   value: string;
   label: string;

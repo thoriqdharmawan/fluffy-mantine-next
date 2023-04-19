@@ -1,3 +1,5 @@
+import { VARIABLES_DATE } from "../mock/global";
+
 const getInitials = (name: string) => {
   let nameArray = name.split(' ');
   let initials = '';
@@ -18,6 +20,11 @@ const idrFormatter = new Intl.NumberFormat('id-ID', {
 function convertToRupiah(nominal: number) {
   return idrFormatter.format(nominal);
 }
+
+const getVariableDate = (variant: string = 'NOW') => {
+  return VARIABLES_DATE[variant]
+}
+
 
 interface Variants {
   name?: string;
@@ -64,4 +71,4 @@ const getPrices = (max: number | undefined, min: number | undefined) => {
   return prices;
 };
 
-export { getInitials, convertToRupiah, getVariants, getNominals, getPrices };
+export { getInitials, convertToRupiah, getVariants, getNominals, getPrices, getVariableDate };
