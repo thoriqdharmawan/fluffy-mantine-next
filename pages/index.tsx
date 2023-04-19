@@ -83,7 +83,7 @@ export default function HomePage() {
 
         {/* <DatePicker /> */}
         <Chips data={chips} onChange={setFilter} />
-        <Incomes data={incomesData} loading={loading} />
+        <Incomes data={incomesData} loading={loading || !user.companyId} />
         
       </Box>
     </MainLayout>
