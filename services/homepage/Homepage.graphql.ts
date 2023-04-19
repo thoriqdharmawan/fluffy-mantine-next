@@ -18,3 +18,20 @@ export const GET_INCOMES = gql`
     }
   }
 `
+
+export const GET_LIST_TRANSACTIONS = gql`
+  query GetListTransactions($where: transactions_bool_exp!, $limit: Int, $offset: Int) {
+    total: transactions_aggregate(where: $where) {
+      aggregate {
+        count
+      }
+    }
+
+    transactions(where: $where, limit: $limit, offset: $offset, order_by: { created_at: desc }) {
+      id
+      code
+      total_amount
+      created_at
+    }
+  }
+`;

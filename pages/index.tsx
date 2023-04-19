@@ -4,18 +4,15 @@ import { Box } from '@mantine/core';
 
 import { GET_INCOMES } from '../services/homepage/Homepage.graphql';
 import { useUser } from '../context/user';
-import { VARIABLES_DATE } from '../mock/global';
-import { convertToRupiah } from '../context/helpers';
+import { convertToRupiah, getVariableDate } from '../context/helpers';
 
 import MainLayout from '../layouts/MainLayout';
 import Chips from '../components/chips/Chips';
 import client from '../apollo-client';
 import Incomes from '../modules/homepage/incomes';
+import RecentTransactions from '../modules/homepage/recent-transaction';
 // import DatePicker from '../components/date/DatePicker';
 
-const getVariableDate = (variant: string = 'NOW') => {
-  return VARIABLES_DATE[variant]
-}
 
 export default function HomePage() {
   const user = useUser()
@@ -84,6 +81,8 @@ export default function HomePage() {
         {/* <DatePicker /> */}
         <Chips data={chips} onChange={setFilter} />
         <Incomes data={incomesData} loading={loading || !user.companyId} />
+
+        <RecentTransactions filter={filter} />
         
       </Box>
     </MainLayout>
