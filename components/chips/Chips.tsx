@@ -1,7 +1,8 @@
+import React from 'react'
 import { Chip as C, Group } from '@mantine/core';
 
 interface ChipsInterface {
-  label: string;
+  label: React.ReactNode;
   value: string | number;
   checked: boolean
 }

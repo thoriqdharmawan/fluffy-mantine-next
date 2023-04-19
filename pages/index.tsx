@@ -11,6 +11,7 @@ import MainLayout from '../layouts/MainLayout';
 import Chips from '../components/chips/Chips';
 import client from '../apollo-client';
 import Incomes from '../modules/homepage/incomes';
+// import DatePicker from '../components/date/DatePicker';
 
 const getVariableDate = (variant: string = 'NOW') => {
   return VARIABLES_DATE[variant]
@@ -80,6 +81,7 @@ export default function HomePage() {
     <MainLayout>
       <Box p="lg" w="100%">
 
+        {/* <DatePicker /> */}
         <Chips data={chips} onChange={setFilter} />
         <Incomes data={incomesData} loading={loading} />
         
