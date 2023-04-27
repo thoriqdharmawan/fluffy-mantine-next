@@ -5,7 +5,7 @@ import { FormValues } from '../../../pages/products/add';
 
 export default function AddProductNoVariant({ form }: { form: UseFormReturnType<FormValues> }) {
 
-  const { has_price_wholesale, has_price_purchase } = form.values?.productVariants?.[0] || {}
+  const { has_price_wholesale, has_price_purchase, has_variant_scale } = form.values?.productVariants?.[0] || {}
 
   return (
     <>
@@ -38,9 +38,14 @@ export default function AddProductNoVariant({ form }: { form: UseFormReturnType<
           />
           <Switch
             label="Tambahkan Harga Jual Grosir?"
-            mb={24}
             checked={form.values.productVariants?.[0].has_price_wholesale}
             {...form.getInputProps('productVariants.0.has_price_wholesale')}
+          />
+          <Switch
+            label="Tambahkan Skala Varian?"
+            mb={24}
+            checked={form.values.productVariants?.[0].has_variant_scale}
+            {...form.getInputProps('productVariants.0.has_variant_scale')}
           />
           {has_price_wholesale && (
             <NumberInput
@@ -71,6 +76,19 @@ export default function AddProductNoVariant({ form }: { form: UseFormReturnType<
               labelProps={{ mb: 8 }}
               mb={24}
               {...form.getInputProps('productVariants.0.min_wholesale')}
+            />
+          )}
+
+          {has_variant_scale && (
+            <NumberInput
+              label="Skala Varian"
+              placeholder="Tambahkan Skala Varian"
+              min={1}
+              step={1}
+              withAsterisk
+              labelProps={{ mb: 8 }}
+              mb={24}
+              {...form.getInputProps('productVariants.0.variant_scale')}
             />
           )}
 

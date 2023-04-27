@@ -17,7 +17,7 @@ const VariantTableRow = memo(function VariantTableRowMemo(props: Props) {
   const variant1 = variants?.[0]?.values?.[coord?.[0] || 0];
   const variant2 = variants?.[1]?.values?.[coord?.[1] || 0];
 
-  const { has_price_wholesale } = productVariants?.[index] || {}
+  const { has_price_wholesale, has_variant_scale } = productVariants?.[index] || {}
 
   return (
     <tr>
@@ -72,6 +72,24 @@ const VariantTableRow = memo(function VariantTableRowMemo(props: Props) {
             labelProps={{ mb: 8 }}
             mb={24}
             {...form.getInputProps(`productVariants.${index}.min_wholesale`)}
+          />
+        )}
+        <Switch
+          label="Tambahkan Skala Varian?"
+          mb="md"
+          checked={has_variant_scale}
+          {...form.getInputProps(`productVariants.${index}.has_variant_scale`)}
+        />
+        {has_variant_scale && (
+          <NumberInput
+            label="Skala Varian"
+            placeholder="Tambahkan Skala Varian"
+            min={1}
+            step={1}
+            withAsterisk={has_variant_scale}
+            labelProps={{ mb: 8 }}
+            mb={24}
+            {...form.getInputProps(`productVariants.${index}.variant_scale`)}
           />
         )}
       </td>

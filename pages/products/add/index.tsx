@@ -36,7 +36,7 @@ import AddProductNoVariant from '../../../modules/products/form-add-product/AddP
 
 import {
   ProductsCardProps,
-  DEFAULT_PRODUCT_CATEGORIES,
+  // DEFAULT_PRODUCT_CATEGORIES,
   ProductType,
   VariantInterface,
   TableProductsVariants,
@@ -53,7 +53,6 @@ export default function AddProducts() {
   const router = useRouter();
   const user: any = useUser();
 
-  const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -75,6 +74,8 @@ export default function AddProducts() {
           has_price_wholesale: false,
           price_wholesale: undefined, // harga grosir
           min_wholesale: undefined, // minimal pembelian grosir
+          has_variant_scale: false,
+          variant_scale: 1,
           stock: undefined,
           status: GLOABL_STATUS.ACTIVE,
           isPrimary: true,
@@ -115,6 +116,8 @@ export default function AddProducts() {
   });
 
   const { type } = form.values;
+
+  console.log(form.values)
 
   const handleBack = () => {
     router.push('/products');
@@ -201,7 +204,7 @@ export default function AddProducts() {
           values: variant.values,
         })),
         product_variants: values.productVariants?.map((product_variant) => {
-          const { has_price_purchase, has_price_wholesale, price_purchase, price_wholesale, price } = product_variant
+          const { has_price_purchase, has_price_wholesale, price_purchase, price_wholesale, price, variant_scale } = product_variant
 
           const pricePurchase = has_price_purchase ? price_purchase : price
           const priceWholesale = has_price_wholesale ? price_wholesale : price
@@ -212,6 +215,7 @@ export default function AddProducts() {
             price: product_variant.price,
             price_purchase: pricePurchase,
             price_wholesale: priceWholesale,
+            scale: variant_scale || 1,
             min_wholesale: product_variant.min_wholesale || 1,
             sku: product_variant.sku,
             status: product_variant.status,

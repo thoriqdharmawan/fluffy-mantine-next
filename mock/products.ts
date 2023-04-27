@@ -16,6 +16,8 @@ export interface TableProductsVariants {
   min_wholesale?: number;
   has_price_purchase?: boolean;
   has_price_wholesale?: boolean;
+  has_variant_scale?: boolean;
+  variant_scale?: number;
   stock?: number | undefined;
   status?: GLOABL_STATUS;
   isPrimary?: boolean;

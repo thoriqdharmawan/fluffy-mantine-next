@@ -277,6 +277,7 @@ const ProductItem = (props: ListProps) => {
                     price={productVariant.price}
                     price_wholesale={productVariant.price_wholesale}
                     min_wholesale={productVariant.min_wholesale}
+                    scale={productVariant.scale}
                     stock={productVariant.stock}
                     status={productVariant.status}
                     loadingUpdateStatus={loadingUpdateStatus}

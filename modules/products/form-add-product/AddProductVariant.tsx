@@ -44,6 +44,8 @@ const SelectVariant = (props: SelectVariantType) => {
           min_wholesale: 1,
           has_price_purchase: false,
           has_price_wholesale: false,
+          has_variant_scale: false,
+          variant_scale: 1,
           stock: 0,
           status: GLOABL_STATUS.ACTIVE,
           isPrimary: false,

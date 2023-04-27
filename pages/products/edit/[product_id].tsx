@@ -80,6 +80,8 @@ export default function EditProducts() {
           has_price_wholesale: false,
           price_wholesale: undefined, // harga grosir
           min_wholesale: undefined, // minimal pembelian grosir
+          has_variant_scale: false,
+          variant_scale: 1,
           stock: undefined,
           status: GLOABL_STATUS.ACTIVE,
           isPrimary: true,

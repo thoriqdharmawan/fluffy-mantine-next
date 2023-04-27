@@ -134,6 +134,7 @@ export const GET_LIST_PRODUCT_VARIANTS = gql`
       price
       price_wholesale
       min_wholesale
+      scale
       sku
       status
       stock
