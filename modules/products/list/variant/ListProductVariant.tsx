@@ -46,11 +46,6 @@ export default function ListProductVariant(props: Props) {
           children: 'Ubah Harga',
           onClick: onChangePrice
         },
-        // {
-        //   icon: <IconTransform size={14} />,
-        //   children: 'Bongkar Pasang Stok',
-        //   onClick: onSwitchStock
-        // },
       ],
     },
   ];
