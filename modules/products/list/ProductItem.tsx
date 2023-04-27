@@ -19,6 +19,7 @@ import {
   IconEdit,
   IconExclamationMark,
   IconSelector,
+  IconTransform,
   IconTrash,
 } from '@tabler/icons';
 import { useRouter } from 'next/router';
@@ -34,6 +35,7 @@ import ListProductVariant from './variant/ListProductVariant';
 import MenuDropdown from '../../../components/menu/MenuDropdown';
 import ChangeProductPrice from './modal/ChangeProductPrice';
 import StockEditable from './StockEditable';
+// import SwitchStock from './modal/SwitchStock';
 
 interface CategoriesInterface {
   id: number;
@@ -52,6 +54,7 @@ interface ListProps {
   onCompleteUpdate: () => void;
   // product_variants_aggregate: any;
   onChangePrice: () => void;
+  onSwitchStock: () => void;
 }
 
 interface HandleChangeStatus {
@@ -70,10 +73,10 @@ const ProductItem = (props: ListProps) => {
     stock,
     categories,
     type,
-    // product_variants_aggregate,
     onDelete,
     onCompleteUpdate,
     onChangePrice,
+    onSwitchStock,
   } = props;
 
   const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
@@ -145,6 +148,11 @@ const ProductItem = (props: ListProps) => {
           children: 'Ubah Harga',
           onClick: onChangePrice
         },
+        ...(type === 'VARIANT' ? [{
+          icon: <IconTransform size={14} />,
+          children: 'Bongkar Pasang Stok',
+          onClick: onSwitchStock,
+        }] : []),
         {
           icon: <IconEdit size={14} />,
           children: 'Ubah',
@@ -289,6 +297,7 @@ const ProductItem = (props: ListProps) => {
                       })
                     }
                     onChangePrice={() => setChangePrice({ opened: true, id: productVariant.id })}
+                    // onSwitchStock={() => setSwitchStock({ opened: true, id: productVariant.id, coord: undefined })}
                     refetch={() => getVariants(productId, false)}
                   />
                 );

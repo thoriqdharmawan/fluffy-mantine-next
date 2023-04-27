@@ -14,6 +14,7 @@ import Header from './Header';
 import ProductItem from './ProductItem';
 import Loading from '../../../components/loading/Loading';
 import ChangeProductPrices from './modal/ChangeProductPrices';
+import SwitchStock from './modal/SwitchStock';
 
 type Props = {
   search: string;
@@ -30,6 +31,11 @@ export default function ListProduct(props: Props) {
     open: false,
     id: undefined,
   })
+
+  const [switchStock, setSwitchStock] = useState<{ opened: boolean, id?: number }>({
+    opened: false,
+    id: undefined,
+  });
 
   const { data, loading, error, refetch } = useQuery(GET_LIST_PRODUCTS, {
     client: client,
@@ -115,6 +121,7 @@ export default function ListProduct(props: Props) {
                   onDelete={(setLoading) => handleDeleteProduct(setLoading, product.id)}
                   onCompleteUpdate={() => refetch()}
                   onChangePrice={() => setChangePrice({ open: true, id: product.id })}
+                  onSwitchStock={() => setSwitchStock((prev) => ({ ...prev, opened: true, id: product.id }))}
                 />
               );
             })}
@@ -131,6 +138,12 @@ export default function ListProduct(props: Props) {
         id={changePrice.id}
         refetch={refetch}
         onClose={() => setChangePrice({ open: false, id: undefined })}
+      />
+
+      <SwitchStock
+        opened={switchStock.opened}
+        id={switchStock.id}
+        onClose={() => setSwitchStock({ opened: false, id: undefined })}
       />
     </>
 
