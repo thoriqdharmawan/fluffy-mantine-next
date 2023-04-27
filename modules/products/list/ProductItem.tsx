@@ -26,7 +26,7 @@ import { showNotification } from '@mantine/notifications';
 
 import { getListProductVariants } from '../../../services/products';
 import { UPDATE_STATUS_PRODUCT } from '../../../services/products/product.graphql';
-import { getPrices } from '../../../context/helpers';
+import { convertToRupiah } from '../../../context/helpers';
 import client from '../../../apollo-client';
 
 import Loading from '../../../components/loading/Loading';
@@ -50,7 +50,7 @@ interface ListProps {
   type: 'VARIANT' | 'NOVARIANT';
   onDelete: (setLoading: Dispatch<SetStateAction<boolean>>) => void;
   onCompleteUpdate: () => void;
-  product_variants_aggregate: any;
+  // product_variants_aggregate: any;
   onChangePrice: () => void;
 }
 
@@ -70,7 +70,7 @@ const ProductItem = (props: ListProps) => {
     stock,
     categories,
     type,
-    product_variants_aggregate,
+    // product_variants_aggregate,
     onDelete,
     onCompleteUpdate,
     onChangePrice,
@@ -109,7 +109,7 @@ const ProductItem = (props: ListProps) => {
         variables: { id, status: status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' },
       })
       .then(() => {
-        if (type === 'VARIANT') {
+        if (isVariant) {
           getVariants(productId, false);
         } else {
           onCompleteUpdate();
@@ -163,10 +163,12 @@ const ProductItem = (props: ListProps) => {
       ],
     },
   ];
-  const { max, min } = product_variants_aggregate?.aggregate || {};
 
-  const prices = getPrices(max?.price, min?.price);
-  const prices_wholesale = getPrices(max?.price_wholesale, min?.price_wholesale);
+  const VT = <Text color="dimmed" fs="italic" size="xs">Buka varian produk untuk melihat harga</Text> 
+  const isVariant = type === 'VARIANT'
+
+  const prices = isVariant ? VT : convertToRupiah(product_variants?.[0]?.price || 0)
+  const prices_wholesale = isVariant ? VT : convertToRupiah(product_variants?.[0]?.price_wholesale || 0)
 
   return (
     <>
@@ -203,7 +205,7 @@ const ProductItem = (props: ListProps) => {
             </Flex>
           </Box>
           <Box w="18%">{prices}</Box>
-          <Box w="17%">{prices_wholesale === prices ? <Text color="dimmed" fs="italic" size="xs">Tidak ada harga grosir</Text> : prices_wholesale}</Box>
+          <Box w="17%">{prices_wholesale}</Box>
           <Box w="15%">
             <StockEditable stock={stock} id={product_variants?.[0]?.id} editable={type === 'NOVARIANT'} refetch={onCompleteUpdate} />
           </Box>
@@ -235,7 +237,7 @@ const ProductItem = (props: ListProps) => {
             </Flex>
           </Box>
         </Flex>
-        {type === 'VARIANT' && (
+        {isVariant && (
           <Box
             mx={36}
             mb={24}
@@ -260,7 +262,6 @@ const ProductItem = (props: ListProps) => {
             </UnstyledButton>
 
             {isOpenVariant && loadingVariants && (<Loading count={2} height={46} />)}
-
             {isOpenVariant &&
               !loadingVariants &&
               dataVariants?.product_variants?.map((productVariant: any) => {

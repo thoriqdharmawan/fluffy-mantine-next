@@ -38,18 +38,6 @@ export const GET_LIST_PRODUCTS = gql`
       }
       product_variants_aggregate {
         aggregate {
-          max {
-            price
-            price_wholesale
-          }
-          min {
-            price
-            price_wholesale
-          }
-        }
-      }
-      product_variants_aggregate {
-        aggregate {
           sum {
             stock
           }

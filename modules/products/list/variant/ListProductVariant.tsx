@@ -21,7 +21,7 @@ type Props = {
 };
 
 const Wholesale = ({ price, price_wholesale, min_wholesale }: { price: number, price_wholesale: number, min_wholesale: number }) => {
-  if (price_wholesale === price) {
+  if (price_wholesale === price || !price_wholesale) {
     return <Text color="dimmed" fs="italic" size="xs">Tidak ada harga grosir</Text>
   }
 
