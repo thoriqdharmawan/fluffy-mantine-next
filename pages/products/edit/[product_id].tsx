@@ -36,10 +36,8 @@ import AddProductNoVariant from '../../../modules/products/form-add-product/AddP
 
 import {
   ProductsCardProps,
-  DEFAULT_PRODUCT_CATEGORIES,
   ProductType,
   VariantInterface,
-  Categories,
   TableProductsVariants,
 } from '../../../mock/products';
 import { GLOABL_STATUS } from '../../../mock/global';
@@ -57,7 +55,6 @@ export default function EditProducts() {
 
   const { product_id } = router.query;
 
-  const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [updateImage, setUpdateImage] = useState<boolean>(false)
@@ -80,6 +77,8 @@ export default function EditProducts() {
           has_price_wholesale: false,
           price_wholesale: undefined, // harga grosir
           min_wholesale: undefined, // minimal pembelian grosir
+          has_variant_scale: false,
+          variant_scale: 1,
           stock: undefined,
           status: GLOABL_STATUS.ACTIVE,
           isPrimary: true,
@@ -89,9 +88,9 @@ export default function EditProducts() {
 
     validate: {
       name: (value) => (!value ? 'Bagian ini diperlukan' : null),
-      categories: (values: string[] | undefined) => {
-        return !values || values?.length === 0 ? 'Bagian ini diperlukan' : null;
-      },
+      // categories: (values: string[] | undefined) => {
+      //   return !values || values?.length === 0 ? 'Bagian ini diperlukan' : null;
+      // },
       variants: {
         label: (value) => (!value ? 'Bagian ini diperlukan' : null),
         values: (values) => (values.length === 0 ? 'Bagian ini diperlukan' : null),
@@ -142,7 +141,7 @@ export default function EditProducts() {
             values: variant.values,
           })),
           productVariants: product_variants?.map((product: ProductVariants) => {
-            const { price, price_purchase, price_wholesale } = product
+            const { price, price_purchase, price_wholesale, scale } = product
 
             return {
               id: product.id,
@@ -152,6 +151,8 @@ export default function EditProducts() {
               price_purchase: price_purchase,
               price_wholesale: price_wholesale,
               min_wholesale: product.min_wholesale,
+              has_variant_scale: (scale || 0) > 1,
+              variant_scale: scale,
               stock: product.stock,
               status: product.status,
               isPrimary: product.is_primary,
@@ -250,7 +251,7 @@ export default function EditProducts() {
           productId: product_id,
         })),
         product_variants: values.productVariants?.map((product_variant) => {
-          const { has_price_purchase, has_price_wholesale, price_purchase, price_wholesale, price } = product_variant
+          const { has_price_purchase, has_price_wholesale, price_purchase, price_wholesale, price, variant_scale } = product_variant
 
           const pricePurchase = has_price_purchase ? price_purchase : price
           const priceWholesale = has_price_wholesale ? price_wholesale : price
@@ -262,6 +263,7 @@ export default function EditProducts() {
             price_purchase: pricePurchase,
             price_wholesale: priceWholesale,
             min_wholesale: product_variant.min_wholesale || 1,
+            scale: variant_scale || 1,
             sku: product_variant.sku,
             status: product_variant.status,
             stock: product_variant.stock,
@@ -362,7 +364,7 @@ export default function EditProducts() {
                 withAsterisk
                 {...form.getInputProps('name')}
               />
-              <MultiSelect
+              {/* <MultiSelect
                 label="Kategori"
                 placeholder="Tambahkan Kategori"
                 labelProps={{ mb: 8 }}
@@ -370,14 +372,13 @@ export default function EditProducts() {
                 data={categories}
                 searchable
                 creatable
-                withAsterisk
                 getCreateLabel={(query) => `+ Tambah "${query}"`}
                 onCreate={(query) => {
                   setCategories((current) => [...current, query]);
                   return query;
                 }}
                 {...form.getInputProps('categories')}
-              />
+              /> */}
 
               <Textarea
                 label="Deskripsi"

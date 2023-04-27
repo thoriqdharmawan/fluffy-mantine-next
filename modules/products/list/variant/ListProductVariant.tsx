@@ -12,6 +12,7 @@ type Props = {
   price: number;
   price_wholesale: number;
   min_wholesale: number;
+  scale: number | undefined;
   stock: number;
   status: 'ACTIVE' | 'INACTIVE';
   onChangeStatus: () => void;
@@ -21,7 +22,7 @@ type Props = {
 };
 
 const Wholesale = ({ price, price_wholesale, min_wholesale }: { price: number, price_wholesale: number, min_wholesale: number }) => {
-  if (price_wholesale === price) {
+  if (price_wholesale === price || !price_wholesale) {
     return <Text color="dimmed" fs="italic" size="xs">Tidak ada harga grosir</Text>
   }
 
@@ -34,7 +35,7 @@ const Wholesale = ({ price, price_wholesale, min_wholesale }: { price: number, p
 }
 
 export default function ListProductVariant(props: Props) {
-  const { id, name, sku, price, price_wholesale, min_wholesale, stock, status, loadingUpdateStatus, onChangeStatus, onChangePrice, refetch } = props;
+  const { id, name, sku, price, price_wholesale, min_wholesale, stock, scale, status, loadingUpdateStatus, onChangeStatus, onChangePrice, refetch } = props;
 
   const PRODUCT_ACTION_MENUS = [
     {
@@ -71,6 +72,9 @@ export default function ListProductVariant(props: Props) {
           </Text>
           <Text color="dimmed" size="xs">
             SKU: {sku}
+          </Text>
+          <Text color="dimmed" mb="xs" size="xs">
+            Skala Varian: {scale || 1}
           </Text>
         </Box>
         <Box w="20%">{convertToRupiah(price)}</Box>

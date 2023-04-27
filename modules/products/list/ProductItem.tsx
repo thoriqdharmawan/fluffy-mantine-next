@@ -19,6 +19,7 @@ import {
   IconEdit,
   IconExclamationMark,
   IconSelector,
+  IconTransform,
   IconTrash,
 } from '@tabler/icons';
 import { useRouter } from 'next/router';
@@ -26,7 +27,7 @@ import { showNotification } from '@mantine/notifications';
 
 import { getListProductVariants } from '../../../services/products';
 import { UPDATE_STATUS_PRODUCT } from '../../../services/products/product.graphql';
-import { getPrices } from '../../../context/helpers';
+import { convertToRupiah } from '../../../context/helpers';
 import client from '../../../apollo-client';
 
 import Loading from '../../../components/loading/Loading';
@@ -34,6 +35,7 @@ import ListProductVariant from './variant/ListProductVariant';
 import MenuDropdown from '../../../components/menu/MenuDropdown';
 import ChangeProductPrice from './modal/ChangeProductPrice';
 import StockEditable from './StockEditable';
+import SwitchStock from './modal/SwitchStock';
 
 interface CategoriesInterface {
   id: number;
@@ -50,8 +52,9 @@ interface ListProps {
   type: 'VARIANT' | 'NOVARIANT';
   onDelete: (setLoading: Dispatch<SetStateAction<boolean>>) => void;
   onCompleteUpdate: () => void;
-  product_variants_aggregate: any;
+  // product_variants_aggregate: any;
   onChangePrice: () => void;
+  // onSwitchStock: (refetch: any) => void;
 }
 
 interface HandleChangeStatus {
@@ -70,15 +73,16 @@ const ProductItem = (props: ListProps) => {
     stock,
     categories,
     type,
-    product_variants_aggregate,
     onDelete,
     onCompleteUpdate,
     onChangePrice,
+    // onSwitchStock,
   } = props;
 
   const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
   const [loadingUpdateStatus, setLoadingUpdateStatus] = useState<boolean>(false);
   const [loadingVariants, setLoadingVariants] = useState<boolean>(false);
+  const [openSwitchStock, setOpenSwitchStock] = useState<boolean>(false)
 
   const [isOpenVariant, setIsOpenVariant] = useState<boolean>(false);
   const [dataVariants, setDataVariants] = useState<any>({});
@@ -109,7 +113,7 @@ const ProductItem = (props: ListProps) => {
         variables: { id, status: status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' },
       })
       .then(() => {
-        if (type === 'VARIANT') {
+        if (isVariant) {
           getVariants(productId, false);
         } else {
           onCompleteUpdate();
@@ -145,6 +149,11 @@ const ProductItem = (props: ListProps) => {
           children: 'Ubah Harga',
           onClick: onChangePrice
         },
+        ...(type === 'VARIANT' ? [{
+          icon: <IconTransform size={14} />,
+          children: 'Bongkar Pasang Stok',
+          onClick: () => setOpenSwitchStock(true),
+        }] : []),
         {
           icon: <IconEdit size={14} />,
           children: 'Ubah',
@@ -163,10 +172,15 @@ const ProductItem = (props: ListProps) => {
       ],
     },
   ];
-  const { max, min } = product_variants_aggregate?.aggregate || {};
 
-  const prices = getPrices(max?.price, min?.price);
-  const prices_wholesale = getPrices(max?.price_wholesale, min?.price_wholesale);
+  const { sku, id, status, price, price_wholesale } = product_variants?.[0] || {}
+
+  const VT = <Text color="dimmed" fs="italic" size="xs">Buka varian produk untuk melihat harga</Text>
+  const NoWholsale = <Text color="dimmed" fs="italic" size="xs">Tidak ada harga grosir</Text>
+  const isVariant = type === 'VARIANT'
+
+  const prices = isVariant ? VT : convertToRupiah(price || 0)
+  const prices_wholesale = isVariant ? VT : (price_wholesale ? convertToRupiah(price_wholesale || 0) : NoWholsale)
 
   return (
     <>
@@ -189,7 +203,7 @@ const ProductItem = (props: ListProps) => {
                 {name}
               </Text>
               <Text color="dimmed" mb="xs" size="xs">
-                SKU: {product_variants?.[0]?.sku || '-'}
+                SKU: {sku || '-'}
               </Text>
               <Flex gap="md" wrap="wrap">
                 {categories.map((category: any) => {
@@ -203,23 +217,17 @@ const ProductItem = (props: ListProps) => {
             </Flex>
           </Box>
           <Box w="18%">{prices}</Box>
-          <Box w="17%">{prices_wholesale === prices ? <Text color="dimmed" fs="italic" size="xs">Tidak ada harga grosir</Text> : prices_wholesale}</Box>
+          <Box w="17%">{prices_wholesale}</Box>
           <Box w="15%">
-            <StockEditable stock={stock} id={product_variants?.[0]?.id} editable={type === 'NOVARIANT'} refetch={onCompleteUpdate} />
+            <StockEditable stock={stock} id={id} editable={type === 'NOVARIANT'} refetch={onCompleteUpdate} />
           </Box>
           <Box w="4%">
             {type === 'NOVARIANT' && (
               <Switch
                 disabled={loadingUpdateStatus}
-                checked={product_variants?.[0]?.status === 'ACTIVE'}
+                checked={status === 'ACTIVE'}
                 styles={{ root: { display: 'flex' }, track: { cursor: 'pointer' } }}
-                onChange={() =>
-                  handleChangeStatus({
-                    id: product_variants?.[0]?.id,
-                    status: product_variants?.[0]?.status,
-                    type,
-                  })
-                }
+                onChange={() => handleChangeStatus({ id, status, type })}
               />
             )}
           </Box>
@@ -235,7 +243,7 @@ const ProductItem = (props: ListProps) => {
             </Flex>
           </Box>
         </Flex>
-        {type === 'VARIANT' && (
+        {isVariant && (
           <Box
             mx={36}
             mb={24}
@@ -260,7 +268,6 @@ const ProductItem = (props: ListProps) => {
             </UnstyledButton>
 
             {isOpenVariant && loadingVariants && (<Loading count={2} height={46} />)}
-
             {isOpenVariant &&
               !loadingVariants &&
               dataVariants?.product_variants?.map((productVariant: any) => {
@@ -279,6 +286,7 @@ const ProductItem = (props: ListProps) => {
                     price={productVariant.price}
                     price_wholesale={productVariant.price_wholesale}
                     min_wholesale={productVariant.min_wholesale}
+                    scale={productVariant.scale}
                     stock={productVariant.stock}
                     status={productVariant.status}
                     loadingUpdateStatus={loadingUpdateStatus}
@@ -303,6 +311,13 @@ const ProductItem = (props: ListProps) => {
         id={changePrice.id}
         onClose={() => setChangePrice({ opened: false, id: undefined })}
         refetch={() => getVariants(productId, false)}
+      />
+
+      <SwitchStock
+        opened={openSwitchStock}
+        id={productId}
+        onClose={() => setOpenSwitchStock(false)}
+        refetch={() => setIsOpenVariant(false)}
       />
     </>
   );

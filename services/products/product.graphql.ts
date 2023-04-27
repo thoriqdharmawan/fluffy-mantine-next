@@ -17,10 +17,10 @@ export const GET_LIST_PRODUCTS = gql`
       name
       image
       type
-      categories {
-        id
-        name
-      }
+      # categories {
+      #   id
+      #   name
+      # }
       product_variants(limit: 1) {
         id
         coord
@@ -35,18 +35,6 @@ export const GET_LIST_PRODUCTS = gql`
         id
         values
         name
-      }
-      product_variants_aggregate {
-        aggregate {
-          max {
-            price
-            price_wholesale
-          }
-          min {
-            price
-            price_wholesale
-          }
-        }
       }
       product_variants_aggregate {
         aggregate {
@@ -146,10 +134,39 @@ export const GET_LIST_PRODUCT_VARIANTS = gql`
       price
       price_wholesale
       min_wholesale
+      scale
       sku
       status
       stock
       productId
+    }
+  }
+`;
+
+export const GET_LIST_PRODUCT_VARIANTS_STOCK = gql`
+  query GetProductVariants($productId: uuid!) {
+    variants(where: { productId: { _eq: $productId } }, order_by: { id: asc }) {
+      id
+      values
+      name
+    }
+    product_variants(where: { productId: { _eq: $productId } }, order_by: { id: asc }) {
+      id
+      coord
+      scale
+      stock
+    }
+  }
+`;
+
+export const SET_TRANSFER_STOCK = gql`
+  mutation TransferStock($id_from: Int!, $id_to:Int!, $stock_from: Int!, $stock_to: Int!) {
+    q1: update_product_variants(where: {id: {_eq: $id_from}}, _inc: {stock: $stock_from}) {
+      affected_rows
+    }
+    
+    q2: update_product_variants(where: {id: {_eq: $id_to}}, _inc: {stock: $stock_to}) {
+      affected_rows
     }
   }
 `;
@@ -184,7 +201,7 @@ export const ADD_PRODUCT = gql`
     $description: String
     $type: String
     $variants: [variants_insert_input!]!
-    $categories: [categories_insert_input!]!
+    # $categories: [categories_insert_input!]!
     $product_variants: [product_variants_insert_input!]!
   ) {
     insert_products(
@@ -194,7 +211,7 @@ export const ADD_PRODUCT = gql`
         companyId: $companyId
         description: $description
         type: $type
-        categories: { data: $categories }
+        # categories: { data: $categories }
         variants: { data: $variants }
         product_variants: { data: $product_variants }
       }
@@ -214,13 +231,13 @@ export const EDIT_PRODUCT = gql`
     $image: String
     $description: String
     $type: String
-    $categories: [categories_insert_input!]!
+    # $categories: [categories_insert_input]
     $variants: [variants_insert_input!]!
     $product_variants: [product_variants_insert_input!]!
   ) {
-    delete_categories(where: { productId: { _eq: $id } }) {
-      affected_rows
-    }
+    # delete_categories(where: { productId: { _eq: $id } }) {
+    #   affected_rows
+    # }
 
     delete_variants(where: { productId: { _eq: $id } }) {
       affected_rows
@@ -240,12 +257,12 @@ export const EDIT_PRODUCT = gql`
       }
     }
 
-    insert_categories(
-      objects: $categories
-      on_conflict: { constraint: categories_pkey, update_columns: [name] }
-    ) {
-      affected_rows
-    }
+    # insert_categories(
+    #   objects: $categories
+    #   on_conflict: { constraint: categories_pkey, update_columns: [name] }
+    # ) {
+    #   affected_rows
+    # }
 
     insert_variants(
       objects: $variants

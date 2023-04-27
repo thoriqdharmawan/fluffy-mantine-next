@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ActionIcon, Flex, NumberInput } from '@mantine/core'
+import { ActionIcon, Flex, NumberInput, Text } from '@mantine/core'
 import { IconCheck, IconPencil, IconX } from '@tabler/icons';
 import { useMutation } from '@apollo/client';
 import { isNotEmpty, useForm } from '@mantine/form';
@@ -69,7 +69,7 @@ export default function StockEditable(props: Props) {
         </>
       ) : (
         <>
-          {stock}
+          {editable ? stock : <Text color="dimmed" fs="italic" size="xs">Buka varian produk untuk melihat stok</Text> }
           <ActionIcon hidden={!editable} onClick={() => setEditing(true)} color="blue" variant="light" ml="md">
             <IconPencil size={18} />
           </ActionIcon>
