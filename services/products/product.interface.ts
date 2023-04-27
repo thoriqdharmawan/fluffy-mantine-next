@@ -18,6 +18,7 @@ export interface ProductVariants {
   price_purchase?: number;
   price_wholesale?: number;
   min_wholesale: number;
+  scale?: number;
   sku?: string;
   status?: string;
   stock?: number;

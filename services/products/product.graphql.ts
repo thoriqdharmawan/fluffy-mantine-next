@@ -143,6 +143,34 @@ export const GET_LIST_PRODUCT_VARIANTS = gql`
   }
 `;
 
+export const GET_LIST_PRODUCT_VARIANTS_STOCK = gql`
+  query GetProductVariants($productId: uuid!) {
+    variants(where: { productId: { _eq: $productId } }, order_by: { id: asc }) {
+      id
+      values
+      name
+    }
+    product_variants(where: { productId: { _eq: $productId } }, order_by: { id: asc }) {
+      id
+      coord
+      scale
+      stock
+    }
+  }
+`;
+
+export const SET_TRANSFER_STOCK = gql`
+  mutation TransferStock($id_from: Int!, $id_to:Int!, $stock_from: Int!, $stock_to: Int!) {
+    q1: update_product_variants(where: {id: {_eq: $id_from}}, _inc: {stock: $stock_from}) {
+      affected_rows
+    }
+    
+    q2: update_product_variants(where: {id: {_eq: $id_to}}, _inc: {stock: $stock_to}) {
+      affected_rows
+    }
+  }
+`;
+
 // {
 //   "name": "Nutrisari",
 //   "image": "https://firebasestorage.googleapis.com/v0/b/fluffy-d91c4.appspot.com/o/A_small_cup_of_coffee.jpg?alt=media&token=7a03e4e8-a163-4f7a-9979-06546cb4d04d",

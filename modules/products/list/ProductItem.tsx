@@ -35,7 +35,7 @@ import ListProductVariant from './variant/ListProductVariant';
 import MenuDropdown from '../../../components/menu/MenuDropdown';
 import ChangeProductPrice from './modal/ChangeProductPrice';
 import StockEditable from './StockEditable';
-// import SwitchStock from './modal/SwitchStock';
+import SwitchStock from './modal/SwitchStock';
 
 interface CategoriesInterface {
   id: number;
@@ -54,7 +54,7 @@ interface ListProps {
   onCompleteUpdate: () => void;
   // product_variants_aggregate: any;
   onChangePrice: () => void;
-  onSwitchStock: () => void;
+  // onSwitchStock: (refetch: any) => void;
 }
 
 interface HandleChangeStatus {
@@ -76,12 +76,13 @@ const ProductItem = (props: ListProps) => {
     onDelete,
     onCompleteUpdate,
     onChangePrice,
-    onSwitchStock,
+    // onSwitchStock,
   } = props;
 
   const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
   const [loadingUpdateStatus, setLoadingUpdateStatus] = useState<boolean>(false);
   const [loadingVariants, setLoadingVariants] = useState<boolean>(false);
+  const [openSwitchStock, setOpenSwitchStock] = useState<boolean>(false)
 
   const [isOpenVariant, setIsOpenVariant] = useState<boolean>(false);
   const [dataVariants, setDataVariants] = useState<any>({});
@@ -151,7 +152,7 @@ const ProductItem = (props: ListProps) => {
         ...(type === 'VARIANT' ? [{
           icon: <IconTransform size={14} />,
           children: 'Bongkar Pasang Stok',
-          onClick: onSwitchStock,
+          onClick: () => setOpenSwitchStock(true),
         }] : []),
         {
           icon: <IconEdit size={14} />,
@@ -297,7 +298,6 @@ const ProductItem = (props: ListProps) => {
                       })
                     }
                     onChangePrice={() => setChangePrice({ opened: true, id: productVariant.id })}
-                    // onSwitchStock={() => setSwitchStock({ opened: true, id: productVariant.id, coord: undefined })}
                     refetch={() => getVariants(productId, false)}
                   />
                 );
@@ -311,6 +311,13 @@ const ProductItem = (props: ListProps) => {
         id={changePrice.id}
         onClose={() => setChangePrice({ opened: false, id: undefined })}
         refetch={() => getVariants(productId, false)}
+      />
+
+      <SwitchStock
+        opened={openSwitchStock}
+        id={productId}
+        onClose={() => setOpenSwitchStock(false)}
+        refetch={() => setIsOpenVariant(false)}
       />
     </>
   );

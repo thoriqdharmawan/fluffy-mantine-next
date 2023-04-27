@@ -36,10 +36,8 @@ import AddProductNoVariant from '../../../modules/products/form-add-product/AddP
 
 import {
   ProductsCardProps,
-  DEFAULT_PRODUCT_CATEGORIES,
   ProductType,
   VariantInterface,
-  Categories,
   TableProductsVariants,
 } from '../../../mock/products';
 import { GLOABL_STATUS } from '../../../mock/global';
@@ -57,7 +55,6 @@ export default function EditProducts() {
 
   const { product_id } = router.query;
 
-  const [categories, setCategories] = useState(DEFAULT_PRODUCT_CATEGORIES);
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [updateImage, setUpdateImage] = useState<boolean>(false)
@@ -144,7 +141,7 @@ export default function EditProducts() {
             values: variant.values,
           })),
           productVariants: product_variants?.map((product: ProductVariants) => {
-            const { price, price_purchase, price_wholesale } = product
+            const { price, price_purchase, price_wholesale, scale } = product
 
             return {
               id: product.id,
@@ -154,6 +151,8 @@ export default function EditProducts() {
               price_purchase: price_purchase,
               price_wholesale: price_wholesale,
               min_wholesale: product.min_wholesale,
+              has_variant_scale: (scale || 0) > 1,
+              variant_scale: scale,
               stock: product.stock,
               status: product.status,
               isPrimary: product.is_primary,
@@ -252,7 +251,7 @@ export default function EditProducts() {
           productId: product_id,
         })),
         product_variants: values.productVariants?.map((product_variant) => {
-          const { has_price_purchase, has_price_wholesale, price_purchase, price_wholesale, price } = product_variant
+          const { has_price_purchase, has_price_wholesale, price_purchase, price_wholesale, price, variant_scale } = product_variant
 
           const pricePurchase = has_price_purchase ? price_purchase : price
           const priceWholesale = has_price_wholesale ? price_wholesale : price
@@ -264,6 +263,7 @@ export default function EditProducts() {
             price_purchase: pricePurchase,
             price_wholesale: priceWholesale,
             min_wholesale: product_variant.min_wholesale || 1,
+            scale: variant_scale || 1,
             sku: product_variant.sku,
             status: product_variant.status,
             stock: product_variant.stock,

@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
-import { Button, Badge, Flex, Paper, Center, Modal, Image, Title, NumberInput, Switch } from '@mantine/core'
+import { Button, Flex, Paper,  Modal, NumberInput, Switch } from '@mantine/core'
 import { useMutation, useQuery } from '@apollo/client';
 import { useForm } from '@mantine/form';
 
 import { EDIT_PRODUCT_PRICE, GET_PRODUCT_VARIANT_PRICES_BY_ID } from '../../../../services/products';
-import { getVariants } from '../../../../context/helpers';
 import client from '../../../../apollo-client';
 
 import Loading from '../../../../components/loading/Loading';
