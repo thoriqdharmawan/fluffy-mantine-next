@@ -164,11 +164,14 @@ const ProductItem = (props: ListProps) => {
     },
   ];
 
-  const VT = <Text color="dimmed" fs="italic" size="xs">Buka varian produk untuk melihat harga</Text> 
+  const { sku, id, status, price, price_wholesale } = product_variants?.[0] || {}
+
+  const VT = <Text color="dimmed" fs="italic" size="xs">Buka varian produk untuk melihat harga</Text>
+  const NoWholsale = <Text color="dimmed" fs="italic" size="xs">Tidak ada harga grosir</Text>
   const isVariant = type === 'VARIANT'
 
-  const prices = isVariant ? VT : convertToRupiah(product_variants?.[0]?.price || 0)
-  const prices_wholesale = isVariant ? VT : convertToRupiah(product_variants?.[0]?.price_wholesale || 0)
+  const prices = isVariant ? VT : convertToRupiah(price || 0)
+  const prices_wholesale = isVariant ? VT : (price_wholesale ? convertToRupiah(price_wholesale || 0) : NoWholsale)
 
   return (
     <>
@@ -191,7 +194,7 @@ const ProductItem = (props: ListProps) => {
                 {name}
               </Text>
               <Text color="dimmed" mb="xs" size="xs">
-                SKU: {product_variants?.[0]?.sku || '-'}
+                SKU: {sku || '-'}
               </Text>
               <Flex gap="md" wrap="wrap">
                 {categories.map((category: any) => {
@@ -207,21 +210,15 @@ const ProductItem = (props: ListProps) => {
           <Box w="18%">{prices}</Box>
           <Box w="17%">{prices_wholesale}</Box>
           <Box w="15%">
-            <StockEditable stock={stock} id={product_variants?.[0]?.id} editable={type === 'NOVARIANT'} refetch={onCompleteUpdate} />
+            <StockEditable stock={stock} id={id} editable={type === 'NOVARIANT'} refetch={onCompleteUpdate} />
           </Box>
           <Box w="4%">
             {type === 'NOVARIANT' && (
               <Switch
                 disabled={loadingUpdateStatus}
-                checked={product_variants?.[0]?.status === 'ACTIVE'}
+                checked={status === 'ACTIVE'}
                 styles={{ root: { display: 'flex' }, track: { cursor: 'pointer' } }}
-                onChange={() =>
-                  handleChangeStatus({
-                    id: product_variants?.[0]?.id,
-                    status: product_variants?.[0]?.status,
-                    type,
-                  })
-                }
+                onChange={() => handleChangeStatus({ id, status, type })}
               />
             )}
           </Box>
