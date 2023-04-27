@@ -17,10 +17,10 @@ export const GET_LIST_PRODUCTS = gql`
       name
       image
       type
-      categories {
-        id
-        name
-      }
+      # categories {
+      #   id
+      #   name
+      # }
       product_variants(limit: 1) {
         id
         coord
@@ -184,7 +184,7 @@ export const ADD_PRODUCT = gql`
     $description: String
     $type: String
     $variants: [variants_insert_input!]!
-    $categories: [categories_insert_input!]!
+    # $categories: [categories_insert_input!]!
     $product_variants: [product_variants_insert_input!]!
   ) {
     insert_products(
@@ -194,7 +194,7 @@ export const ADD_PRODUCT = gql`
         companyId: $companyId
         description: $description
         type: $type
-        categories: { data: $categories }
+        # categories: { data: $categories }
         variants: { data: $variants }
         product_variants: { data: $product_variants }
       }
@@ -214,13 +214,13 @@ export const EDIT_PRODUCT = gql`
     $image: String
     $description: String
     $type: String
-    $categories: [categories_insert_input!]!
+    # $categories: [categories_insert_input]
     $variants: [variants_insert_input!]!
     $product_variants: [product_variants_insert_input!]!
   ) {
-    delete_categories(where: { productId: { _eq: $id } }) {
-      affected_rows
-    }
+    # delete_categories(where: { productId: { _eq: $id } }) {
+    #   affected_rows
+    # }
 
     delete_variants(where: { productId: { _eq: $id } }) {
       affected_rows
@@ -240,12 +240,12 @@ export const EDIT_PRODUCT = gql`
       }
     }
 
-    insert_categories(
-      objects: $categories
-      on_conflict: { constraint: categories_pkey, update_columns: [name] }
-    ) {
-      affected_rows
-    }
+    # insert_categories(
+    #   objects: $categories
+    #   on_conflict: { constraint: categories_pkey, update_columns: [name] }
+    # ) {
+    #   affected_rows
+    # }
 
     insert_variants(
       objects: $variants

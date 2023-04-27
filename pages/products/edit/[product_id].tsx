@@ -89,9 +89,9 @@ export default function EditProducts() {
 
     validate: {
       name: (value) => (!value ? 'Bagian ini diperlukan' : null),
-      categories: (values: string[] | undefined) => {
-        return !values || values?.length === 0 ? 'Bagian ini diperlukan' : null;
-      },
+      // categories: (values: string[] | undefined) => {
+      //   return !values || values?.length === 0 ? 'Bagian ini diperlukan' : null;
+      // },
       variants: {
         label: (value) => (!value ? 'Bagian ini diperlukan' : null),
         values: (values) => (values.length === 0 ? 'Bagian ini diperlukan' : null),
@@ -362,7 +362,7 @@ export default function EditProducts() {
                 withAsterisk
                 {...form.getInputProps('name')}
               />
-              <MultiSelect
+              {/* <MultiSelect
                 label="Kategori"
                 placeholder="Tambahkan Kategori"
                 labelProps={{ mb: 8 }}
@@ -370,14 +370,13 @@ export default function EditProducts() {
                 data={categories}
                 searchable
                 creatable
-                withAsterisk
                 getCreateLabel={(query) => `+ Tambah "${query}"`}
                 onCreate={(query) => {
                   setCategories((current) => [...current, query]);
                   return query;
                 }}
                 {...form.getInputProps('categories')}
-              />
+              /> */}
 
               <Textarea
                 label="Deskripsi"

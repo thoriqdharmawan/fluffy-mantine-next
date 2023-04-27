@@ -110,7 +110,7 @@ export default function ListProduct(props: Props) {
                   product_variants={product.product_variants}
                   stock={product.product_variants_aggregate.aggregate.sum.stock}
                   product_variants_aggregate={product?.product_variants_aggregate}
-                  categories={product.categories || []}
+                  categories={[]}
                   type={product.type}
                   onDelete={(setLoading) => handleDeleteProduct(setLoading, product.id)}
                   onCompleteUpdate={() => refetch()}
