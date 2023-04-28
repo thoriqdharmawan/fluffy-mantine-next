@@ -33,12 +33,18 @@ export default function ListProduct(props: Props) {
 
   const { data, loading, error, refetch } = useQuery(GET_LIST_PRODUCTS, {
     client: client,
+    skip: !companyId,
     variables: {
       limit: LIMIT,
       offset: (page - 1) * LIMIT,
       where: {
-        company: { id: companyId ? { _eq: companyId } : undefined },
-        name: search ? { _ilike: `%${search}%` } : undefined,
+        _and: {
+          company: { id: { _eq: companyId } },
+          _or: search ? [
+            { product_variants: { sku: { _eq: search } } },
+            { name: { _ilike: `%${search}%` } },
+          ] : undefined,
+        }
       },
     }
   })
