@@ -22,11 +22,11 @@ import {
   IconTransform,
   IconTrash,
 } from '@tabler/icons';
+import { useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
 import { showNotification } from '@mantine/notifications';
 
-import { getListProductVariants } from '../../../services/products';
-import { UPDATE_STATUS_PRODUCT } from '../../../services/products/product.graphql';
+import { GET_LIST_PRODUCT_VARIANTS, UPDATE_STATUS_PRODUCT } from '../../../services/products/product.graphql';
 import { convertToRupiah } from '../../../context/helpers';
 import client from '../../../apollo-client';
 
@@ -52,15 +52,12 @@ interface ListProps {
   type: 'VARIANT' | 'NOVARIANT';
   onDelete: (setLoading: Dispatch<SetStateAction<boolean>>) => void;
   onCompleteUpdate: () => void;
-  // product_variants_aggregate: any;
   onChangePrice: () => void;
-  // onSwitchStock: (refetch: any) => void;
 }
 
 interface HandleChangeStatus {
   id: number;
   status: 'ACTIVE' | 'INACTIVE';
-  type: 'VARIANT' | 'NOVARIANT';
 }
 
 const ProductItem = (props: ListProps) => {
@@ -76,36 +73,26 @@ const ProductItem = (props: ListProps) => {
     onDelete,
     onCompleteUpdate,
     onChangePrice,
-    // onSwitchStock,
   } = props;
 
   const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
   const [loadingUpdateStatus, setLoadingUpdateStatus] = useState<boolean>(false);
-  const [loadingVariants, setLoadingVariants] = useState<boolean>(false);
   const [openSwitchStock, setOpenSwitchStock] = useState<boolean>(false)
 
   const [isOpenVariant, setIsOpenVariant] = useState<boolean>(false);
-  const [dataVariants, setDataVariants] = useState<any>({});
   const [changePrice, setChangePrice] = useState<{ opened: boolean, id?: number }>({
     opened: false,
     id: undefined
   });
 
-  const getVariants = (productId: string, withLoading: boolean | undefined) => {
-    if (withLoading) {
-      setIsOpenVariant((prev: boolean) => !prev);
-      setLoadingVariants(true);
-    }
-    getListProductVariants({
-      variables: { productId },
-      fetchPolicy: 'network-only',
-    }).then((result) => {
-      setDataVariants(result.data);
-      setLoadingVariants(result.loading);
-    });
-  };
+  const { data: dataVariants, loading: loadingVariants, refetch } = useQuery(GET_LIST_PRODUCT_VARIANTS, {
+    client: client,
+    fetchPolicy: 'network-only',
+    skip: !productId || !isOpenVariant,
+    variables: { productId: productId }
+  })
 
-  const handleChangeStatus = ({ id, status, type }: HandleChangeStatus) => {
+  const handleChangeStatus = ({ id, status }: HandleChangeStatus) => {
     setLoadingUpdateStatus(true);
     client
       .mutate({
@@ -114,7 +101,7 @@ const ProductItem = (props: ListProps) => {
       })
       .then(() => {
         if (isVariant) {
-          getVariants(productId, false);
+          refetch()
         } else {
           onCompleteUpdate();
         }
@@ -140,10 +127,6 @@ const ProductItem = (props: ListProps) => {
     {
       label: 'Produk',
       items: [
-        // {
-        //   icon: <IconEye size={14} />,
-        //   children: 'Rincian',
-        // },
         {
           icon: <IconCalculator size={14} />,
           children: 'Ubah Harga',
@@ -227,7 +210,7 @@ const ProductItem = (props: ListProps) => {
                 disabled={loadingUpdateStatus}
                 checked={status === 'ACTIVE'}
                 styles={{ root: { display: 'flex' }, track: { cursor: 'pointer' } }}
-                onChange={() => handleChangeStatus({ id, status, type })}
+                onChange={() => handleChangeStatus({ id, status })}
               />
             )}
           </Box>
@@ -258,7 +241,7 @@ const ProductItem = (props: ListProps) => {
               w="100%"
               display="flex"
               sx={{ alignItems: 'center', justifyContent: 'space-between' }}
-              onClick={() => getVariants(productId, true)}
+              onClick={() => setIsOpenVariant(!isOpenVariant)}
             >
               <Text size="sm" fw={700} color="dimmed">
                 Lihat varian produk
@@ -294,11 +277,10 @@ const ProductItem = (props: ListProps) => {
                       handleChangeStatus({
                         id: productVariant.id,
                         status: productVariant.status,
-                        type: 'VARIANT',
                       })
                     }
                     onChangePrice={() => setChangePrice({ opened: true, id: productVariant.id })}
-                    refetch={() => getVariants(productId, false)}
+                    refetch={refetch}
                   />
                 );
               })}
@@ -310,7 +292,7 @@ const ProductItem = (props: ListProps) => {
         opened={changePrice.opened}
         id={changePrice.id}
         onClose={() => setChangePrice({ opened: false, id: undefined })}
-        refetch={() => getVariants(productId, false)}
+        refetch={refetch}
       />
 
       <SwitchStock
