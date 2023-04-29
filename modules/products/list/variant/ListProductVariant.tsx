@@ -4,6 +4,7 @@ import { IconCalculator, IconDots } from '@tabler/icons';
 import { convertToRupiah } from '../../../../context/helpers';
 import MenuDropdown from '../../../../components/menu/MenuDropdown';
 import StockEditable from '../StockEditable';
+import SkuEditable from '../SkuEditable';
 
 type Props = {
   id: number;
@@ -71,7 +72,7 @@ export default function ListProductVariant(props: Props) {
             {name}
           </Text>
           <Text color="dimmed" size="xs">
-            SKU: {sku}
+            SKU: <SkuEditable id={id} sku={sku} refetch={refetch} />
           </Text>
           <Text color="dimmed" mb="xs" size="xs">
             Skala Varian: {scale || 1}

@@ -334,6 +334,17 @@ export const EDIT_PRODUCT_STOCK = gql`
   }
 `;
 
+export const EDIT_SKU_STOCK = gql`
+  mutation UpdateStock($id: Int!, $sku: String!) {
+    update_product_variants(
+      where: { id: { _eq: $id } }
+      _set: { sku: $sku }
+    ) {
+      affected_rows
+    }
+  }
+`;
+
 export const UPDATE_IMAGE_PRODUCT = gql`
   mutation InsertProduct($id: uuid!, $image: String!) {
     update_products(where: { id: { _eq: $id } }, _set: { image: $image }) {
