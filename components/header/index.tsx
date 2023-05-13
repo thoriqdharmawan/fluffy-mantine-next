@@ -47,6 +47,7 @@ export default function Header(props: HeaderType) {
           />
         </MediaQuery>
         <Select
+          variant='unstyled'
           placeholder="Pilih Toko"
           disabled={loading}
           value={value?.selectedCompany || user.companyId}
