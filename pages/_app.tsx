@@ -10,6 +10,7 @@ import { ModalsProvider } from '@mantine/modals';
 
 import AuthStateChangeProvider from '../context/auth';
 import { UserProvider } from '../context/user';
+import { GlobalProvider } from '../context/global';
 
 import 'react-loading-skeleton/dist/skeleton.css'
 import { SkeletonTheme } from 'react-loading-skeleton';
@@ -45,7 +46,9 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
               <ModalsProvider>
                 <UserProvider>
                   <AuthStateChangeProvider>
-                    <Component {...pageProps} />
+                    <GlobalProvider>
+                      <Component {...pageProps} />
+                    </GlobalProvider>
                   </AuthStateChangeProvider>
                 </UserProvider>
               </ModalsProvider>

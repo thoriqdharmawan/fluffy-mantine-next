@@ -1,8 +1,14 @@
-import { Header as Head, Text, MediaQuery, Burger, useMantineTheme, Group } from '@mantine/core';
-import { Dispatch, SetStateAction } from 'react';
+import { Header as Head, Select, MediaQuery, Burger, useMantineTheme, Group } from '@mantine/core';
+import { useState, Dispatch, SetStateAction } from 'react';
 import { ColorSchemeToggle } from '../color-scheme-toggle';
 import { Fullscreen } from '../fullscreen';
 import { UserLogin } from './UserLogin';
+import { GET_LIST_COMPANIES_BY_USER } from '../../services/homepage/Homepage.graphql';
+import { useQuery } from '@apollo/client';
+import { useUser } from '../../context/user';
+
+import client from '../../apollo-client';
+import { useGlobal, type Global } from '../../context/global';
 
 type HeaderType = {
   opened: boolean;
@@ -11,7 +17,16 @@ type HeaderType = {
 
 export default function Header(props: HeaderType) {
   const { opened, setOpened } = props;
+  const user = useUser()
   const theme = useMantineTheme();
+
+  const { value, setValue } = useGlobal()
+
+  const { data, loading } = useQuery(GET_LIST_COMPANIES_BY_USER, {
+    client: client,
+    skip: !user.uid,
+    variables: { uid: user.uid }
+  })
 
   return (
     <Head height={{ base: 'auto', md: 70 }} p="md">
@@ -32,7 +47,21 @@ export default function Header(props: HeaderType) {
             mr="xl"
           />
         </MediaQuery>
-        <Text>Application Head</Text>
+        <Select
+          placeholder="Pilih Toko"
+          disabled={loading}
+          value={value?.selectedCompany || user.companyId}
+          onChange={(value: string) => {
+            setValue((prev: Global) => ({
+              ...prev,
+              selectedCompany: value
+            }))
+          }}
+          data={data?.companies?.map(({ id, name }: { id: string, name: string }) => ({
+            value: id,
+            label: name
+          })) || []}
+        />
         <Group position="center">
           <ColorSchemeToggle />
           <Fullscreen />
