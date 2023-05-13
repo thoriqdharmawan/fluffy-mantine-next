@@ -5,6 +5,7 @@ import { convertToRupiah } from '../../../../context/helpers';
 import MenuDropdown from '../../../../components/menu/MenuDropdown';
 import StockEditable from '../StockEditable';
 import SkuEditable from '../SkuEditable';
+import ScaleEditable from '../ScaleEditable';
 
 type Props = {
   id: number;
@@ -71,11 +72,11 @@ export default function ListProductVariant(props: Props) {
           <Text mb="4px" fw={600}>
             {name}
           </Text>
-          <Text color="dimmed" size="xs">
+          <Text color="dimmed" size="xs" mb="md" sx={{display: 'flex', alignItems: 'center'}}>
             SKU: <SkuEditable id={id} sku={sku} refetch={refetch} />
           </Text>
-          <Text color="dimmed" mb="xs" size="xs">
-            Skala Varian: {scale || 1}
+          <Text color="dimmed" mb="xs" size="xs" sx={{display: 'flex', alignItems: 'center'}}>
+            Skala Varian: <ScaleEditable id={id} scale={scale} refetch={refetch} />
           </Text>
         </Box>
         <Box w="20%">{convertToRupiah(price)}</Box>

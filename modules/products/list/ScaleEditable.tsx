@@ -1,35 +1,32 @@
 import React, { useState } from 'react'
-import { ActionIcon, Flex, TextInput } from '@mantine/core'
+import { ActionIcon, Flex, NumberInput, Text } from '@mantine/core'
 import { IconCheck, IconPencil, IconX } from '@tabler/icons';
 import { useMutation } from '@apollo/client';
 import { isNotEmpty, useForm } from '@mantine/form';
 
-import { EDIT_SKU_STOCK } from '../../../services/products';
+import { EDIT_PRODUCT_SCALE } from '../../../services/products';
 import client from '../../../apollo-client';
 
 interface Props {
   editable?: boolean;
   id?: number;
-  sku: string | undefined;
+  scale: number | undefined;
   refetch: () => void;
 }
 
-export default function SkuEditable(props: Props) {
-  const { id, sku, editable = true, refetch } = props
+export default function ScaleEditable(props: Props) {
+  const { id, scale, editable = true, refetch } = props
 
   const [loading, setLoading] = useState<boolean>(false)
   const [editing, setEditing] = useState<boolean>(false)
 
-  const form = useForm<{ sku: string | undefined }>({
+  const form = useForm<{ scale: number }>({
     validate: {
-      sku: isNotEmpty('Bagian ini diperlukan'),
-    },
-    initialValues: {
-      sku
+      scale: isNotEmpty('Bagian ini diperlukan'),
     }
   })
 
-  const [updateSku] = useMutation(EDIT_SKU_STOCK, { client: client })
+  const [updateScale] = useMutation(EDIT_PRODUCT_SCALE, { client: client })
 
   const handleClose = () => {
     form.reset()
@@ -41,10 +38,10 @@ export default function SkuEditable(props: Props) {
 
     if (!hasErrors) {
       setLoading(true)
-      updateSku({
+      updateScale({
         variables: {
           id: id,
-          sku: form.values.sku
+          scale: form.values.scale
         }
       }).then(() => {
         refetch()
@@ -63,8 +60,8 @@ export default function SkuEditable(props: Props) {
     >
       {editing ? (
         <>
-          <TextInput {...form.getInputProps('sku')} value={form.values.sku} />
-          <ActionIcon onClick={handleClose} color="red" variant="light" ml="sm">
+          <NumberInput maw={100} min={0} {...form.getInputProps('scale')} value={scale} />
+          <ActionIcon onClick={() => setEditing(false)} color="red" variant="light" ml="sm">
             <IconX size={18} />
           </ActionIcon>
           <ActionIcon loading={loading} onClick={handleConfirm} color="blue" variant="light" ml="sm">
@@ -73,7 +70,7 @@ export default function SkuEditable(props: Props) {
         </>
       ) : (
         <>
-          {sku || '-'}
+          {scale}
           {editable && (
             <ActionIcon hidden={!editable} onClick={() => setEditing(true)} color="blue" variant="light" ml="md">
               <IconPencil size={18} />
