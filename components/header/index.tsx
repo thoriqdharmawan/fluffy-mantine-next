@@ -1,5 +1,5 @@
 import { Header as Head, Select, MediaQuery, Burger, useMantineTheme, Group } from '@mantine/core';
-import { useState, Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { ColorSchemeToggle } from '../color-scheme-toggle';
 import { Fullscreen } from '../fullscreen';
 import { UserLogin } from './UserLogin';

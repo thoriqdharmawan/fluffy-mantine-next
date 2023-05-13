@@ -45,13 +45,16 @@ import { GLOABL_STATUS } from '../../../mock/global';
 import { useUser } from '../../../context/user';
 import { editProduct, getProductById, UPDATE_IMAGE_PRODUCT } from '../../../services/products';
 import { ProductVariants, Variants } from '../../../services/products/product.interface';
+import { useGlobal } from '../../../context/global';
 
 export interface FormValues extends ProductsCardProps { }
 
 export default function EditProducts() {
+  const { value } = useGlobal()
   const theme = useMantineTheme();
   const router = useRouter();
   const user = useUser();
+  const companyId = value.selectedCompany || user.companyId
 
   const { product_id } = router.query;
 
@@ -243,7 +246,7 @@ export default function EditProducts() {
         categories: values.categories?.map((category) => ({
           name: category,
           productId: product_id,
-          companyId: user.companyId,
+          companyId,
         })),
         variants: values.variants?.map((variant) => ({
           name: variant.label,

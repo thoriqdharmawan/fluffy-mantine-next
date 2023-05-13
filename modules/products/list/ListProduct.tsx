@@ -14,6 +14,7 @@ import Header from './Header';
 import ProductItem from './ProductItem';
 import Loading from '../../../components/loading/Loading';
 import ChangeProductPrices from './modal/ChangeProductPrices';
+import { useGlobal } from '../../../context/global';
 
 type Props = {
   search: string;
@@ -22,8 +23,11 @@ type Props = {
 const LIMIT = 5;
 
 export default function ListProduct(props: Props) {
+  const { value } = useGlobal()
   const { search } = props;
-  const { companyId } = useUser();
+  const user = useUser();
+
+  const companyId = value.selectedCompany || user.companyId
 
   const [page, setPage] = useState<number>(1)
   const [changePrice, setChangePrice] = useState<{ open: boolean, id?: string }>({

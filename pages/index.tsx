@@ -20,6 +20,8 @@ export default function HomePage() {
   const { value } = useGlobal()
   const user = useUser()
 
+  const companyId = value.selectedCompany || user.companyId
+
   const [filter, setFilter] = useState<string>('NOW')
 
   const chips = useMemo(() => [
@@ -47,11 +49,11 @@ export default function HomePage() {
 
   const { data, loading, error } = useQuery(GET_INCOMES, {
     client,
-    skip: !user.companyId,
+    skip: !companyId,
     fetchPolicy: 'network-only',
     variables: {
       ...getVariableDate(filter),
-      companyId: value.selectedCompany || user.companyId
+      companyId: companyId
     }
   })
 
@@ -82,9 +84,9 @@ export default function HomePage() {
       <Box p="lg" w="100%">
 
         <Chips data={chips} onChange={setFilter} />
-        <Incomes data={incomesData} loading={loading || !user.companyId} />
+        <Incomes data={incomesData} loading={loading || companyId} />
 
-        <RecentTransactions companyId={value.selectedCompany || user.companyId} filter={filter} />
+        <RecentTransactions companyId={companyId} filter={filter} />
 
       </Box>
     </MainLayout>

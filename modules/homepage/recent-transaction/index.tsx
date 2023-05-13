@@ -6,7 +6,6 @@ import dayjs from 'dayjs'
 import { GLOBAL_FORMAT_DATE } from '../../../mock/global'
 import { convertToRupiah, getVariableDate } from '../../../context/helpers'
 import { GET_LIST_TRANSACTIONS } from '../../../services/homepage/Homepage.graphql';
-import { useUser } from '../../../context/user';
 import client from '../../../apollo-client';
 import Loading from '../../../components/loading/Loading';
 import { Empty } from '../../../components/empty-state';
