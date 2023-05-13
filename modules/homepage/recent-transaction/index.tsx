@@ -15,10 +15,10 @@ const LIMIT = 10
 
 interface Props {
   filter: string;
+  companyId: string | undefined;
 }
 
-export default function RecentTransactions({ filter }: Props) {
-  const { companyId } = useUser()
+export default function RecentTransactions({ filter, companyId }: Props) {
 
   const [page, setPage] = useState<number>(1)
 
