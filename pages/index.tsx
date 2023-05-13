@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { Box, Select } from '@mantine/core';
+import { Box } from '@mantine/core';
 
-import { GET_INCOMES, GET_LIST_COMPANIES_BY_USER } from '../services/homepage/Homepage.graphql';
-import { useUser } from '../context/user';
+import { GET_INCOMES } from '../services/homepage/Homepage.graphql';
 import { convertToRupiah, getVariableDate } from '../context/helpers';
 
 import MainLayout from '../layouts/MainLayout';
@@ -11,11 +10,14 @@ import Chips from '../components/chips/Chips';
 import client from '../apollo-client';
 import Incomes from '../modules/homepage/incomes';
 import RecentTransactions from '../modules/homepage/recent-transaction';
+
+import { useGlobal } from '../context/global';
+import { useUser } from '../context/user';
 // import DatePicker from '../components/date/DatePicker';
 
 
 export default function HomePage() {
-  const [selectedCompany, setSelectedCompany] = useState<string | undefined>(undefined)
+  const { value } = useGlobal()
   const user = useUser()
 
   const [filter, setFilter] = useState<string>('NOW')
@@ -43,20 +45,13 @@ export default function HomePage() {
     },
   ], [filter])
 
-
-  const { data: dataCompanies, loading: loadingCompanies } = useQuery(GET_LIST_COMPANIES_BY_USER, {
-    client,
-    skip: !user.uid,
-    variables: { uid: user.uid }
-  })
-
   const { data, loading, error } = useQuery(GET_INCOMES, {
     client,
     skip: !user.companyId,
     fetchPolicy: 'network-only',
     variables: {
       ...getVariableDate(filter),
-      companyId: selectedCompany || user.companyId
+      companyId: value.selectedCompany || user.companyId
     }
   })
 
@@ -86,24 +81,10 @@ export default function HomePage() {
     <MainLayout>
       <Box p="lg" w="100%">
 
-        <Select
-          mb={38}
-          label="Toko"
-          placeholder="Pilih Toko"
-          disabled={loadingCompanies}
-          value={selectedCompany || user.companyId}
-          onChange={(value: string) => setSelectedCompany(value)}
-          data={dataCompanies?.companies?.map(({ id, name }: { id: string, name: string }) => ({
-            value: id,
-            label: name
-          })) || []}
-          labelProps={{ mb: 8 }}
-        />
-
         <Chips data={chips} onChange={setFilter} />
         <Incomes data={incomesData} loading={loading || !user.companyId} />
 
-        <RecentTransactions companyId={selectedCompany || user.companyId} filter={filter} />
+        <RecentTransactions companyId={value.selectedCompany || user.companyId} filter={filter} />
 
       </Box>
     </MainLayout>

@@ -17,10 +17,9 @@ type HeaderType = {
 
 export default function Header(props: HeaderType) {
   const { opened, setOpened } = props;
+  const { value, setValue } = useGlobal()
   const user = useUser()
   const theme = useMantineTheme();
-
-  const { value, setValue } = useGlobal()
 
   const { data, loading } = useQuery(GET_LIST_COMPANIES_BY_USER, {
     client: client,
