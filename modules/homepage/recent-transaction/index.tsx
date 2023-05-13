@@ -6,7 +6,6 @@ import dayjs from 'dayjs'
 import { GLOBAL_FORMAT_DATE } from '../../../mock/global'
 import { convertToRupiah, getVariableDate } from '../../../context/helpers'
 import { GET_LIST_TRANSACTIONS } from '../../../services/homepage/Homepage.graphql';
-import { useUser } from '../../../context/user';
 import client from '../../../apollo-client';
 import Loading from '../../../components/loading/Loading';
 import { Empty } from '../../../components/empty-state';
@@ -15,10 +14,10 @@ const LIMIT = 10
 
 interface Props {
   filter: string;
+  companyId: string | undefined;
 }
 
-export default function RecentTransactions({ filter }: Props) {
-  const { companyId } = useUser()
+export default function RecentTransactions({ filter, companyId }: Props) {
 
   const [page, setPage] = useState<number>(1)
 

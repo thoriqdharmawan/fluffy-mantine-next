@@ -27,6 +27,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       fixed={matches}
       navbarOffsetBreakpoint="md"
       asideOffsetBreakpoint="sm"
+      zIndex={0}
       navbar={<Navbar opened={opened} />}
       header={<Header opened={opened} setOpened={setOpened} />}
       footer={<FooterLayout data={MOCK_FOOTER.data} />}

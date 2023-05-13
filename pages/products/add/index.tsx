@@ -45,13 +45,17 @@ import { GLOABL_STATUS } from '../../../mock/global';
 
 import { useUser } from '../../../context/user';
 import { addProduct, UPDATE_IMAGE_PRODUCT } from '../../../services/products';
+import { useGlobal } from '../../../context/global';
 
 export interface FormValues extends ProductsCardProps { }
 
 export default function AddProducts() {
   const theme = useMantineTheme();
+  const {value} = useGlobal()
   const router = useRouter();
   const user: any = useUser();
+
+  const companyId = value.selectedCompany || user.companyId
 
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -192,12 +196,12 @@ export default function AddProducts() {
       const variables = {
         name: values.name,
         image: values.image,
-        companyId: user.companyId,
+        companyId,
         description: values.description,
         type: values.type,
         categories: values.categories?.map((category) => ({
           name: category,
-          companyId: user.companyId,
+          companyId,
         })),
         variants: values.variants?.map((variant) => ({
           name: variant.label,

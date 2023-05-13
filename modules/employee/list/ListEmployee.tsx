@@ -14,6 +14,7 @@ import client from '../../../apollo-client';
 import Header from './Header';
 import EmployeeItem from './EmployeeItem';
 import Loading from '../../../components/loading/Loading';
+import { useGlobal } from '../../../context/global';
 
 type Props = {
   search?: string;
@@ -23,8 +24,11 @@ const LIMIT = 5;
 
 export default function ListEmployee(props: Props) {
   const { search } = props
-  const { companyId } = useUser();
+  const { value } = useGlobal()
+  const user = useUser();
   const pagination = usePagination({ total: 10, initialPage: 1 });
+
+  const companyId = value.selectedCompany || user.companyId
 
   const { data, loading, error, refetch } = useQuery(GET_LIST_EMPLOYEES, {
     client: client,

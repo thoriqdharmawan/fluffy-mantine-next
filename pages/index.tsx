@@ -3,7 +3,6 @@ import { useQuery } from '@apollo/client';
 import { Box } from '@mantine/core';
 
 import { GET_INCOMES } from '../services/homepage/Homepage.graphql';
-import { useUser } from '../context/user';
 import { convertToRupiah, getVariableDate } from '../context/helpers';
 
 import MainLayout from '../layouts/MainLayout';
@@ -11,11 +10,17 @@ import Chips from '../components/chips/Chips';
 import client from '../apollo-client';
 import Incomes from '../modules/homepage/incomes';
 import RecentTransactions from '../modules/homepage/recent-transaction';
+
+import { useGlobal } from '../context/global';
+import { useUser } from '../context/user';
 // import DatePicker from '../components/date/DatePicker';
 
 
 export default function HomePage() {
+  const { value } = useGlobal()
   const user = useUser()
+
+  const companyId = value.selectedCompany || user.companyId
 
   const [filter, setFilter] = useState<string>('NOW')
 
@@ -43,12 +48,12 @@ export default function HomePage() {
   ], [filter])
 
   const { data, loading, error } = useQuery(GET_INCOMES, {
-    client: client,
-    skip: !user.companyId,
+    client,
+    skip: !companyId,
     fetchPolicy: 'network-only',
     variables: {
       ...getVariableDate(filter),
-      companyId: user.companyId
+      companyId: companyId
     }
   })
 
@@ -78,12 +83,11 @@ export default function HomePage() {
     <MainLayout>
       <Box p="lg" w="100%">
 
-        {/* <DatePicker /> */}
         <Chips data={chips} onChange={setFilter} />
-        <Incomes data={incomesData} loading={loading || !user.companyId} />
+        <Incomes data={incomesData} loading={loading || !companyId} />
 
-        <RecentTransactions filter={filter} />
-        
+        <RecentTransactions companyId={companyId} filter={filter} />
+
       </Box>
     </MainLayout>
   );
