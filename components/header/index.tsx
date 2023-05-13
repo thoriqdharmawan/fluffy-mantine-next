@@ -61,10 +61,9 @@ export default function Header(props: HeaderType) {
             label: name
           })) || []}
         />
-        <Group position="center" >
+        <Group position="center" sx={{gap: 0}}>
           <ColorSchemeToggle />
           <Fullscreen />
-
           <UserLogin />
         </Group>
       </Box>
