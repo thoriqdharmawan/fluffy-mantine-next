@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 
 import {
   createStyles,
@@ -9,10 +10,13 @@ import {
   Menu,
 } from '@mantine/core';
 
-import { IconChevronDown, IconLogout } from '@tabler/icons';
+import { 
+  IconChevronDown, 
+  IconLogout, 
+ } from '@tabler/icons';
+
 import { SignOut } from '../../services/authentication';
 import { useUser } from '../../context/user';
-import { useRouter } from 'next/router';
 
 const useStyles = createStyles((theme) => ({
   user: {
@@ -57,7 +61,6 @@ export function UserLogin() {
     user.ResetUser();
     router.push('/login');
   };
-
   return (
     <>
       <Menu

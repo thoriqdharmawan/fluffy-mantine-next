@@ -1,4 +1,4 @@
-import { Header as Head, Select, MediaQuery, Burger, useMantineTheme, Group } from '@mantine/core';
+import { Header as Head, Select, MediaQuery, Burger, useMantineTheme, Group, Box } from '@mantine/core';
 import { Dispatch, SetStateAction } from 'react';
 import { ColorSchemeToggle } from '../color-scheme-toggle';
 import { Fullscreen } from '../fullscreen';
@@ -29,8 +29,8 @@ export default function Header(props: HeaderType) {
 
   return (
     <Head height={{ base: 'auto', md: 70 }} p="md">
-      <div
-        style={{
+      <Box
+        sx={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -43,7 +43,6 @@ export default function Header(props: HeaderType) {
             onClick={() => setOpened((o: SetStateAction<boolean>) => !o)}
             size="sm"
             color={theme.colors.gray[6]}
-            mr="xl"
           />
         </MediaQuery>
         <Select
@@ -62,13 +61,13 @@ export default function Header(props: HeaderType) {
             label: name
           })) || []}
         />
-        <Group position="center">
+        <Group position="center" >
           <ColorSchemeToggle />
           <Fullscreen />
 
           <UserLogin />
         </Group>
-      </div>
+      </Box>
     </Head>
   );
 }
