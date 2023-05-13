@@ -19,8 +19,8 @@ interface IncomesProps {
 
 const Incomes = ({ data, loading }: IncomesProps) => {
   const { classes } = useStyles();
-  const stats = data.map((stat) => {
 
+  const stats = data.map((stat) => {
     return (
       <Paper withBorder p="md" radius="md" key={stat.title}>
         <Group position="apart">

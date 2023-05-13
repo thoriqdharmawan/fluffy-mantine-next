@@ -84,7 +84,7 @@ export default function HomePage() {
       <Box p="lg" w="100%">
 
         <Chips data={chips} onChange={setFilter} />
-        <Incomes data={incomesData} loading={loading || companyId} />
+        <Incomes data={incomesData} loading={loading || !companyId} />
 
         <RecentTransactions companyId={companyId} filter={filter} />
 
