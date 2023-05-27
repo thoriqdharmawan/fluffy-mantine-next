@@ -78,10 +78,10 @@ export default function DetailTransaction(props: Props) {
                 return (
                   <tr key={idx}>
                     <td>
-                      <Text maw="140px">{product.name}</Text>
+                      <Text maw="140px" miw="62px">{product.name}</Text>
                     </td>
                     <td>
-                      <Text miw="32px" ta="center">{product.quantity_sold}</Text>
+                      <Text ta="center" miw="32px">{product.quantity_sold}</Text>
                     </td>
                     <td>
                       <Text ta="right" miw="62px">{convertToRupiah(product.unit_price)}</Text>
