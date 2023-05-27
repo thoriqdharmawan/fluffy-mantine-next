@@ -81,7 +81,15 @@ export default function HomePage() {
 
   return (
     <MainLayout>
-      <Box p="lg" w="100%">
+      <Box
+        w="100%"
+        sx={(theme) => ({
+          padding: theme.spacing.lg,
+          [theme.fn.smallerThan('sm')]: {
+            padding: 0,
+          },
+        })}
+      >
 
         <Chips data={chips} onChange={setFilter} />
         <Incomes data={incomesData} loading={loading || !companyId} />
