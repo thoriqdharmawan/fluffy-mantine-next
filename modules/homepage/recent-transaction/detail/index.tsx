@@ -64,14 +64,13 @@ export default function DetailTransaction(props: Props) {
             <List label="Waktu Transaksi" value={dayjs(created_at).format(GLOBAL_FORMAT_DATE)} />
             <List label="Metode Pembayaran" value={`${payment_type} - ${payment_method}`} />
           </SimpleGrid>
-
           <Table highlightOnHover withBorder withColumnBorders mb="xl">
             <thead>
               <tr>
                 <th>Nama Barang</th>
                 <th>Jmlh</th>
-                <th>Harga</th>
-                <th>Harga Total</th>
+                <th><Text ta="center">Harga</Text></th>
+                <th><Text ta="center">Harga Total</Text></th>
               </tr>
             </thead>
             <tbody>
@@ -82,12 +81,13 @@ export default function DetailTransaction(props: Props) {
                       <Text maw="140px">{product.name}</Text>
                     </td>
                     <td>
-                      <Text miw="32px" ta="center">{product.quantity_sold}</Text></td>
-                    <td>
-                      <Text ta="right" miw="54px">{convertToRupiah(product.unit_price)}</Text>
+                      <Text miw="32px" ta="center">{product.quantity_sold}</Text>
                     </td>
                     <td>
-                      <Text ta="right" miw="54px">{convertToRupiah(product.total_price)}</Text>
+                      <Text ta="right" miw="62px">{convertToRupiah(product.unit_price)}</Text>
+                    </td>
+                    <td>
+                      <Text ta="right" miw="63px">{convertToRupiah(product.total_price)}</Text>
                     </td>
                   </tr>
                 );
@@ -116,7 +116,7 @@ export default function DetailTransaction(props: Props) {
                   </td>
                   <td align="right">
                     <Text color="green" fw="bold">
-                      + {convertToRupiah(offset)}
+                      +{convertToRupiah(offset)}
                     </Text>
                   </td>
                 </tr>
@@ -128,7 +128,7 @@ export default function DetailTransaction(props: Props) {
                   </td>
                   <td align="right">
                     <Text color="red" fw="bold">
-                      - {convertToRupiah(Math.abs(offset))}
+                      -{convertToRupiah(Math.abs(offset))}
                     </Text>
                   </td>
                 </tr>
