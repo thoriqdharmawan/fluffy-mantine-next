@@ -68,7 +68,7 @@ export default function DetailTransaction(props: Props) {
             <thead>
               <tr>
                 <th>Nama Barang</th>
-                <th>Jmlh</th>
+                <th>Qty</th>
                 <th><Text ta="center">Harga</Text></th>
                 <th><Text ta="center">Harga Total</Text></th>
               </tr>
@@ -81,7 +81,7 @@ export default function DetailTransaction(props: Props) {
                       <Text maw="140px" miw="62px">{product.name}</Text>
                     </td>
                     <td>
-                      <Text ta="center" miw="32px">{product.quantity_sold}</Text>
+                      <Text ta="center" miw="24px">{product.quantity_sold}</Text>
                     </td>
                     <td>
                       <Text ta="right" miw="62px">{convertToRupiah(product.unit_price)}</Text>
@@ -98,7 +98,7 @@ export default function DetailTransaction(props: Props) {
                   <Text fw={600}>Total Tagihan</Text>
                 </td>
                 <td>
-                  <Text ta="right">{convertToRupiah(total_amount)}</Text>
+                  <Text ta="right" miw="69px">{convertToRupiah(total_amount)}</Text>
                 </td>
               </tr>
               <tr>
@@ -106,7 +106,7 @@ export default function DetailTransaction(props: Props) {
                   <Text>Dibayar</Text>
                 </td>
                 <td>
-                  <Text ta="right">{convertToRupiah(payment_amount)}</Text>
+                  <Text ta="right" miw="69px">{convertToRupiah(payment_amount)}</Text>
                 </td>
               </tr>
               {offset > 0 && (
@@ -115,7 +115,7 @@ export default function DetailTransaction(props: Props) {
                     <Text>Kembali</Text>
                   </td>
                   <td align="right">
-                    <Text color="green" fw="bold">
+                    <Text color="green" fw="bold" miw="69px">
                       +{convertToRupiah(offset)}
                     </Text>
                   </td>
@@ -127,7 +127,7 @@ export default function DetailTransaction(props: Props) {
                     <Text>Kurang</Text>
                   </td>
                   <td align="right">
-                    <Text color="red" fw="bold">
+                    <Text color="red" fw="bold" miw="69px">
                       -{convertToRupiah(Math.abs(offset))}
                     </Text>
                   </td>
