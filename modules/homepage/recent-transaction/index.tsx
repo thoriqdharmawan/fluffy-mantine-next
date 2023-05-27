@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
-import { Paper, Title, Table, Group, Pagination } from '@mantine/core'
+import { Paper, Title, Table, Group, Pagination, ActionIcon } from '@mantine/core'
+import { IconEye } from '@tabler/icons';
 import { useQuery } from '@apollo/client';
 import dayjs from 'dayjs'
 
@@ -9,6 +10,7 @@ import { GET_LIST_TRANSACTIONS } from '../../../services/homepage/Homepage.graph
 import client from '../../../apollo-client';
 import Loading from '../../../components/loading/Loading';
 import { Empty } from '../../../components/empty-state';
+import DetailTransaction from './detail';
 
 const LIMIT = 10
 
@@ -16,10 +18,18 @@ interface Props {
   filter: string;
   companyId: string | undefined;
 }
+interface Detail {
+  id: string | undefined;
+  open: boolean;
+}
 
 export default function RecentTransactions({ filter, companyId }: Props) {
 
   const [page, setPage] = useState<number>(1)
+  const [detail, setDetail] = useState<Detail>({
+    id: undefined,
+    open: false,
+  })
 
   const date = useMemo(() => getVariableDate(filter), [filter])
 
@@ -60,6 +70,7 @@ export default function RecentTransactions({ filter, companyId }: Props) {
               <th>No</th>
               <th>Waktu Transaksi</th>
               <th>Total</th>
+              <th>Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -69,6 +80,11 @@ export default function RecentTransactions({ filter, companyId }: Props) {
                   <td>{code}</td>
                   <td>{dayjs(created_at).format(GLOBAL_FORMAT_DATE)}</td>
                   <td>{convertToRupiah(total_amount)}</td>
+                  <td>
+                    <ActionIcon onClick={() => setDetail({ open: true, id })} variant="light" color="primary">
+                      <IconEye size={16} />
+                    </ActionIcon>
+                  </td>
                 </tr>
               ))
             )}
@@ -86,6 +102,12 @@ export default function RecentTransactions({ filter, companyId }: Props) {
           <Pagination m="auto" page={page} total={totalPage} onChange={setPage} />
         </Group>
       </Paper>
+
+      <DetailTransaction
+        opened={detail.open}
+        id={detail.id}
+        onClose={() => setDetail({ open: false, id: undefined })}
+      />
     </>
   )
 }

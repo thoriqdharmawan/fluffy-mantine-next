@@ -43,3 +43,28 @@ export const GET_LIST_TRANSACTIONS = gql`
     }
   }
 `;
+
+export const GET_DETAIL_TRANSACTION = gql`
+  query GetDetailTransactions($id: uuid!) {
+    transactions(where: { id: { _eq: $id } }) {
+      id
+      code
+      created_at
+      total_amount
+      payment_amount
+      payment_method
+      payment_type
+      products_solds {
+        id
+        name
+        quantity_sold
+        total_price
+        unit_price
+      }
+      employee {
+        id
+        name
+      }
+    }
+  }
+`;
