@@ -42,6 +42,7 @@ export default function ListProduct(props: Props) {
       limit: LIMIT,
       offset: (page - 1) * LIMIT,
       where: {
+        status: { _eq: "ACTIVE" },
         _and: {
           company: { id: { _eq: companyId } },
           _or: search ? [

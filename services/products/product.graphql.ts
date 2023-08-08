@@ -17,10 +17,6 @@ export const GET_LIST_PRODUCTS = gql`
       name
       image
       type
-      # categories {
-      #   id
-      #   name
-      # }
       product_variants(limit: 1) {
         id
         coord
