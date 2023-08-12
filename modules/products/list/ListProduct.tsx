@@ -124,6 +124,7 @@ export default function ListProduct(props: Props) {
           <Tabs.Tab value={PRODUCT_STATUS.REJECT}>Ditolak</Tabs.Tab>
           <Tabs.Tab value={PRODUCT_STATUS.OPNAME}>Produk Opname</Tabs.Tab>
           <Tabs.Tab value={PRODUCT_STATUS.WAITING_FOR_APPROVAL}>Menunggu Persetujuan</Tabs.Tab>
+          <Tabs.Tab value={PRODUCT_STATUS.DELETE}>Dihapus</Tabs.Tab>
         </Tabs.List>
       </Tabs>
 

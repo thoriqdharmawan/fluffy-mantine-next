@@ -3,4 +3,5 @@ export const PRODUCT_STATUS = {
   ACTIVE: 'ACTIVE',
   REJECT: 'REJECT',
   OPNAME: 'OPNAME',
+  DELETE: 'DELETE',
 }

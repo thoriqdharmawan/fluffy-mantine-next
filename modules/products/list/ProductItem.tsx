@@ -13,6 +13,7 @@ import {
   Loader,
 } from '@mantine/core';
 import {
+  IconArrowBarToRight,
   IconCalculator,
   IconCheck,
   IconDots,
@@ -137,11 +138,12 @@ const ProductItem = (props: ListProps) => {
           children: 'Ubah Harga',
           onClick: onChangePrice
         },
-        ...(type === 'VARIANT' ? [{
+        {
+          hidden: type !== 'VARIANT',
           icon: <IconTransform size={14} />,
           children: 'Bongkar Pasang Stok',
           onClick: () => setOpenSwitchStock(true),
-        }] : []),
+        },
         {
           icon: <IconEdit size={14} />,
           children: 'Ubah',
@@ -149,24 +151,23 @@ const ProductItem = (props: ListProps) => {
         },
       ],
     },
-    ...(productType === PRODUCT_STATUS.ACTIVE ? [
-      {
-        items: [
-          {
-            icon: <IconEdit size={14} />,
-            children: 'Pindah Ke Opname',
-            onClick: () => onChangeStatus(PRODUCT_STATUS.OPNAME),
-          },
-        ]
-      },
-    ] : []),
+    {
+      hidden: productType !== PRODUCT_STATUS.ACTIVE,
+      items: [
+        {
+          icon: <IconArrowBarToRight size={14} />,
+          children: 'Pindah Ke Opname',
+          onClick: () => onChangeStatus(PRODUCT_STATUS.OPNAME),
+        },
+      ]
+    },
     {
       items: [
         {
           icon: <IconTrash size={14} />,
           color: 'red',
           children: 'Hapus',
-          onClick: () => onDelete(setLoadingDelete),
+          onClick: () => onChangeStatus(PRODUCT_STATUS.DELETE),
         },
       ],
     },
@@ -303,7 +304,7 @@ const ProductItem = (props: ListProps) => {
           </Box>
         )}
 
-        {productType !== PRODUCT_STATUS.ACTIVE && (
+        {productType === PRODUCT_STATUS.WAITING_FOR_APPROVAL && (
           <Flex align="center" justify="center" gap="md" px="xl" mb="lg">
             <Button onClick={() => onChangeStatus(PRODUCT_STATUS.REJECT)} color="red">Tolak</Button>
             <Button onClick={() => onChangeStatus(PRODUCT_STATUS.ACTIVE)}>Setujui</Button>
