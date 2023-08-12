@@ -17,6 +17,7 @@ export const GET_LIST_PRODUCTS = gql`
       name
       image
       type
+      status
       product_variants(limit: 1) {
         id
         coord
@@ -196,6 +197,7 @@ export const ADD_PRODUCT = gql`
     $companyId: uuid
     $description: String
     $type: String
+    $status: String
     $variants: [variants_insert_input!]!
     # $categories: [categories_insert_input!]!
     $product_variants: [product_variants_insert_input!]!
@@ -207,6 +209,7 @@ export const ADD_PRODUCT = gql`
         companyId: $companyId
         description: $description
         type: $type
+        status: $status
         # categories: { data: $categories }
         variants: { data: $variants }
         product_variants: { data: $product_variants }
@@ -215,6 +218,7 @@ export const ADD_PRODUCT = gql`
       affected_rows
       returning {
         id
+        status
       }
     }
   }

@@ -1,5 +1,5 @@
-import { Dispatch, SetStateAction, useState, useEffect } from 'react';
-import { Box, Paper, Button, ScrollArea, Pagination, Group } from '@mantine/core';
+import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
+import { Box, Paper, Button, ScrollArea, Pagination, Group, Tabs } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconCheck, IconExclamationMark, IconPlus } from '@tabler/icons';
 import { useQuery } from '@apollo/client';
@@ -15,6 +15,7 @@ import ProductItem from './ProductItem';
 import Loading from '../../../components/loading/Loading';
 import ChangeProductPrices from './modal/ChangeProductPrices';
 import { useGlobal } from '../../../context/global';
+import { PRODUCT_STATUS } from '../../../constant/global';
 
 type Props = {
   search: string;
@@ -29,6 +30,7 @@ export default function ListProduct(props: Props) {
 
   const companyId = value.selectedCompany || user.companyId
 
+  const [productType, setProductType] = useState<string | null>(PRODUCT_STATUS.ACTIVE);
   const [page, setPage] = useState<number>(1)
   const [changePrice, setChangePrice] = useState<{ open: boolean, id?: string }>({
     open: false,
@@ -42,8 +44,8 @@ export default function ListProduct(props: Props) {
       limit: LIMIT,
       offset: (page - 1) * LIMIT,
       where: {
-        status: { _eq: "ACTIVE" },
         _and: {
+          status: { _eq: productType },
           company: { id: { _eq: companyId } },
           _or: search ? [
             { product_variants: { sku: { _eq: search } } },
@@ -54,7 +56,7 @@ export default function ListProduct(props: Props) {
     }
   })
 
-  useEffect(() => setPage(1), [search])
+  useEffect(() => setPage(1), [search, productType])
 
   if (error) {
     console.error(error)
@@ -88,10 +90,17 @@ export default function ListProduct(props: Props) {
   };
 
   const loadingData = !companyId || loading;
-  const totalPage = Math.ceil((data?.total.aggregate.count || 0) / LIMIT);
+  const totalPage = useMemo(() => Math.ceil((data?.total.aggregate.count || 0) / LIMIT), [data])
 
   return (
     <>
+      <Tabs value={productType} onTabChange={setProductType}>
+        <Tabs.List>
+          <Tabs.Tab value={PRODUCT_STATUS.ACTIVE}>Produk Aktif</Tabs.Tab>
+          <Tabs.Tab value={PRODUCT_STATUS.WAITING_FOR_APPROVAL}>Menunggu Persetujuan</Tabs.Tab>
+        </Tabs.List>
+      </Tabs>
+
       <ScrollArea style={{ width: 'auto', height: 'auto' }}>
         <Paper miw={1000} shadow="md" radius="md" p="md" mx="auto">
           <Header />

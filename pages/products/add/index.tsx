@@ -46,6 +46,7 @@ import { GLOABL_STATUS } from '../../../mock/global';
 import { useUser } from '../../../context/user';
 import { addProduct, UPDATE_IMAGE_PRODUCT } from '../../../services/products';
 import { useGlobal } from '../../../context/global';
+import { PRODUCT_STATUS } from '../../../constant/global';
 
 export interface FormValues extends ProductsCardProps { }
 
@@ -120,8 +121,6 @@ export default function AddProducts() {
   });
 
   const { type } = form.values;
-
-  console.log(form.values)
 
   const handleBack = () => {
     router.push('/products');
@@ -207,6 +206,7 @@ export default function AddProducts() {
           name: variant.label,
           values: variant.values,
         })),
+        status: PRODUCT_STATUS.WAITING_FOR_APPROVAL,
         product_variants: values.productVariants?.map((product_variant) => {
           const { has_price_purchase, has_price_wholesale, price_purchase, price_wholesale, price, variant_scale } = product_variant
 
