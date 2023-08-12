@@ -4,9 +4,9 @@ import { useMediaQuery } from '@mantine/hooks';
 
 import Navbar from '../components/navbar';
 import Header from '../components/header';
-import FooterLayout from '../components/footer/FooterLayout';
+// import FooterLayout from '../components/footer/FooterLayout';
 
-import { MOCK_FOOTER } from '../mock/footer';
+// import { MOCK_FOOTER } from '../mock/footer';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const theme = useMantineTheme();
@@ -30,7 +30,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       zIndex={0}
       navbar={<Navbar opened={opened} />}
       header={<Header opened={opened} setOpened={setOpened} />}
-      footer={<FooterLayout data={MOCK_FOOTER.data} />}
+      // footer={<FooterLayout data={MOCK_FOOTER.data} />}
       padding="md"
     >
       <Box w="100%" component="div">
