@@ -10,7 +10,6 @@ import {
   UnstyledButton,
   Badge,
   Loader,
-  Switch,
 } from '@mantine/core';
 import {
   IconCalculator,
@@ -204,7 +203,7 @@ const ProductItem = (props: ListProps) => {
           <Box w="15%">
             <StockEditable stock={stock} id={id} editable={type === 'NOVARIANT'} refetch={onCompleteUpdate} />
           </Box>
-          <Box w="4%">
+          {/* <Box w="4%">
             {type === 'NOVARIANT' && (
               <Switch
                 disabled={loadingUpdateStatus}
@@ -213,7 +212,7 @@ const ProductItem = (props: ListProps) => {
                 onChange={() => handleChangeStatus({ id, status })}
               />
             )}
-          </Box>
+          </Box> */}
           <Box w="9%">
             <Flex gap="sm" align="center">
               <MenuDropdown sections={PRODUCT_ACTION_MENUS}>
@@ -271,14 +270,14 @@ const ProductItem = (props: ListProps) => {
                     min_wholesale={productVariant.min_wholesale}
                     scale={productVariant.scale}
                     stock={productVariant.stock}
-                    status={productVariant.status}
-                    loadingUpdateStatus={loadingUpdateStatus}
-                    onChangeStatus={() =>
-                      handleChangeStatus({
-                        id: productVariant.id,
-                        status: productVariant.status,
-                      })
-                    }
+                    // status={productVariant.status}
+                    // loadingUpdateStatus={loadingUpdateStatus}
+                    // onChangeStatus={() =>
+                    //   handleChangeStatus({
+                    //     id: productVariant.id,
+                    //     status: productVariant.status,
+                    //   })
+                    // }
                     onChangePrice={() => setChangePrice({ opened: true, id: productVariant.id })}
                     refetch={refetch}
                   />

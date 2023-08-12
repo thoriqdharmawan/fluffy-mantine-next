@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Divider, Flex, Text, Switch } from '@mantine/core';
+import { ActionIcon, Box, Divider, Flex, Text } from '@mantine/core';
 import { IconCalculator, IconDots } from '@tabler/icons';
 
 import { convertToRupiah } from '../../../../context/helpers';
@@ -16,11 +16,11 @@ type Props = {
   min_wholesale: number;
   scale: number | undefined;
   stock: number;
-  status: 'ACTIVE' | 'INACTIVE';
-  onChangeStatus: () => void;
+  // status: 'ACTIVE' | 'INACTIVE';
+  // onChangeStatus: () => void;
   onChangePrice: () => void;
   refetch: () => void;
-  loadingUpdateStatus: boolean;
+  // loadingUpdateStatus: boolean;
 };
 
 const Wholesale = ({ price, price_wholesale, min_wholesale }: { price: number, price_wholesale: number, min_wholesale: number }) => {
@@ -37,7 +37,7 @@ const Wholesale = ({ price, price_wholesale, min_wholesale }: { price: number, p
 }
 
 export default function ListProductVariant(props: Props) {
-  const { id, name, sku, price, price_wholesale, min_wholesale, stock, scale, status, loadingUpdateStatus, onChangeStatus, onChangePrice, refetch } = props;
+  const { id, name, sku, price, price_wholesale, min_wholesale, stock, scale, onChangePrice, refetch } = props;
 
   const PRODUCT_ACTION_MENUS = [
     {
@@ -86,14 +86,14 @@ export default function ListProductVariant(props: Props) {
         <Box w="19%">
           <StockEditable id={id} stock={stock} refetch={refetch} />
         </Box>
-        <Box w="6%">
+        {/* <Box w="6%">
           <Switch
             disabled={loadingUpdateStatus}
             checked={status === 'ACTIVE'}
             onChange={onChangeStatus}
             styles={{ root: { display: 'flex' }, track: { cursor: 'pointer' } }}
           />
-        </Box>
+        </Box> */}
 
         <Box w="5%">
           <Flex gap="sm" align="center">

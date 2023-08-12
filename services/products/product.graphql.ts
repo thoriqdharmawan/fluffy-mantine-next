@@ -25,7 +25,6 @@ export const GET_LIST_PRODUCTS = gql`
         price
         price_wholesale
         sku
-        status
         stock
       }
       variants {
