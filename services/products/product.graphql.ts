@@ -380,9 +380,21 @@ export const DELETE_PRODUCT = gql`
   }
 `;
 
-export const UPDATE_STATUS_PRODUCT = gql`
+export const UPDATE_STATUS_PRODUCT_VARIANT = gql`
   mutation UpdateStatusProduct($id: Int!, $status: String!) {
     update_product_variants(where: { id: { _eq: $id } }, _set: { status: $status }) {
+      affected_rows
+    }
+  }
+`;
+
+
+export const UPDATE_STATUS_PRODUCT = gql`
+  mutation UpdateStock($id: uuid!, $status: String!) {
+    update_products(
+      where: { id: { _eq: $id } }
+      _set: { status: $status }
+    ) {
       affected_rows
     }
   }

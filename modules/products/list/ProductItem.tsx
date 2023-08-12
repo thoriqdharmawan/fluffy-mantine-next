@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import {
+  Button,
   Flex,
   Image,
   AspectRatio,
@@ -25,7 +26,7 @@ import { useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
 import { showNotification } from '@mantine/notifications';
 
-import { GET_LIST_PRODUCT_VARIANTS, UPDATE_STATUS_PRODUCT } from '../../../services/products/product.graphql';
+import { GET_LIST_PRODUCT_VARIANTS, UPDATE_STATUS_PRODUCT_VARIANT } from '../../../services/products/product.graphql';
 import { convertToRupiah } from '../../../context/helpers';
 import client from '../../../apollo-client';
 
@@ -35,6 +36,7 @@ import MenuDropdown from '../../../components/menu/MenuDropdown';
 import ChangeProductPrice from './modal/ChangeProductPrice';
 import StockEditable from './StockEditable';
 import SwitchStock from './modal/SwitchStock';
+import { PRODUCT_STATUS } from '../../../constant/global';
 
 interface CategoriesInterface {
   id: number;
@@ -49,9 +51,11 @@ interface ListProps {
   stock: number;
   categories: CategoriesInterface[] | void[];
   type: 'VARIANT' | 'NOVARIANT';
+  productType: string;
   onDelete: (setLoading: Dispatch<SetStateAction<boolean>>) => void;
   onCompleteUpdate: () => void;
   onChangePrice: () => void;
+  onChangeStatus: (status: string) => void;
 }
 
 interface HandleChangeStatus {
@@ -72,6 +76,8 @@ const ProductItem = (props: ListProps) => {
     onDelete,
     onCompleteUpdate,
     onChangePrice,
+    onChangeStatus,
+    productType,
   } = props;
 
   const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
@@ -95,7 +101,7 @@ const ProductItem = (props: ListProps) => {
     setLoadingUpdateStatus(true);
     client
       .mutate({
-        mutation: UPDATE_STATUS_PRODUCT,
+        mutation: UPDATE_STATUS_PRODUCT_VARIANT,
         variables: { id, status: status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' },
       })
       .then(() => {
@@ -143,6 +149,17 @@ const ProductItem = (props: ListProps) => {
         },
       ],
     },
+    ...(productType === PRODUCT_STATUS.ACTIVE ? [
+      {
+        items: [
+          {
+            icon: <IconEdit size={14} />,
+            children: 'Pindah Ke Opname',
+            onClick: () => onChangeStatus(PRODUCT_STATUS.OPNAME),
+          },
+        ]
+      },
+    ] : []),
     {
       items: [
         {
@@ -168,7 +185,7 @@ const ProductItem = (props: ListProps) => {
     <>
       <Divider />
       <Box>
-        <Flex gap="md" justify="flex-start" align="center" direction="row" wrap="nowrap" px="24px">
+        <Flex gap="md" justify="flex-start" align="center" direction="row" wrap="nowrap" px="xl">
           <Box w="35%" display="flex" py={12}>
             <AspectRatio ratio={1 / 1} maw={100} w="100%">
               <Image
@@ -284,6 +301,13 @@ const ProductItem = (props: ListProps) => {
                 );
               })}
           </Box>
+        )}
+
+        {productType !== PRODUCT_STATUS.ACTIVE && (
+          <Flex align="center" justify="center" gap="md" px="xl" mb="lg">
+            <Button onClick={() => onChangeStatus(PRODUCT_STATUS.REJECT)} color="red">Tolak</Button>
+            <Button onClick={() => onChangeStatus(PRODUCT_STATUS.ACTIVE)}>Setujui</Button>
+          </Flex>
         )}
       </Box>
 
