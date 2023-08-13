@@ -114,6 +114,11 @@ export default function AddProducts() {
           const isRequired = values.productVariants?.[index]?.has_price_wholesale
           return (isRequired && !value) ? 'Bagian ini diperlukan' : null
         },
+        variant_scale: (value, values, path) => {
+          const index: number = Number(path.split('.')[1] || 0)
+          const isRequired = values.productVariants?.[index]?.has_variant_scale
+          return (isRequired && !value) ? 'Bagian ini diperlukan' : null
+        }
         // sku: (value) => (!value ? 'Bagian ini diperlukan' : null),
         // stock: (value) => (!value ? 'Bagian ini diperlukan' : null),
       },
