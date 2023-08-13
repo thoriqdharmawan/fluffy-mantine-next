@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from 'react';
 import {
   Button,
   Box,
@@ -108,7 +107,7 @@ export default function ListProductTable(props: Props) {
                   onCompleteUpdate={refetch}
                   onChangePrice={() => setChangePrice({ open: true, id: product.id })}
                   onChangeStatus={(status) => handleUpdateStatus(product.id, status)}
-                // onSwitchStock={(refetch: any) => setSwitchStock((prev: any) => ({ ...prev, opened: true, id: product.id, refetch }))}
+                  // onSwitchStock={(refetch: any) => setSwitchStock((prev: any) => ({ ...prev, opened: true, id: product.id, refetch }))}
                 />
               );
             })}
