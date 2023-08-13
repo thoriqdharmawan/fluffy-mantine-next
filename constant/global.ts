@@ -5,3 +5,8 @@ export const PRODUCT_STATUS = {
   OPNAME: 'OPNAME',
   DELETE: 'DELETE',
 }
+
+export const LIST_VIEW_TYPES = {
+  TABLE: 'TABLE',
+  GRID: 'GRID'
+}
