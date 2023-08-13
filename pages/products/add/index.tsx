@@ -5,8 +5,6 @@ import {
   Paper,
   Title,
   Textarea,
-  SegmentedControl,
-  MultiSelect,
   Group,
   Button,
   Flex,
@@ -67,25 +65,27 @@ export default function AddProducts() {
       name: '',
       description: '',
       categories: [],
-      type: 'NOVARIANT',
-      variants: [],
-      productVariants: [
-        {
-          coord: [0],
-          sku: undefined,
-          price: undefined, // harga normal
-          has_price_purchase: false,
-          price_purchase: undefined, // harga beli
-          has_price_wholesale: false,
-          price_wholesale: undefined, // harga grosir
-          min_wholesale: undefined, // minimal pembelian grosir
-          has_variant_scale: false,
-          variant_scale: 1,
-          stock: undefined,
-          status: GLOABL_STATUS.ACTIVE,
-          isPrimary: true,
-        },
-      ],
+      type: 'VARIANT',
+      // variants: [],
+      variants: [DEFAULT_VARIANT],
+      productVariants: [],
+      // productVariants: [
+      //   {
+      //     coord: [0],
+      //     sku: undefined,
+      //     price: undefined, // harga normal
+      //     has_price_purchase: false,
+      //     price_purchase: undefined, // harga beli
+      //     has_price_wholesale: false,
+      //     price_wholesale: undefined, // harga grosir
+      //     min_wholesale: undefined, // minimal pembelian grosir
+      //     has_variant_scale: false,
+      //     variant_scale: 1,
+      //     stock: undefined,
+      //     status: GLOABL_STATUS.ACTIVE,
+      //     isPrimary: true,
+      //   },
+      // ],
     },
 
     validate: {
@@ -341,7 +341,7 @@ export default function AddProducts() {
             Varian Produk
           </Title>
 
-          <SegmentedControl
+          {/* <SegmentedControl
             mb="md"
             onChange={handleOpenConfirmationVariants}
             value={type}
@@ -349,7 +349,7 @@ export default function AddProducts() {
               { label: 'Produk Tanpa Varian', value: 'NOVARIANT' },
               { label: 'Produk Dengan Varian', value: 'VARIANT' },
             ]}
-          />
+          /> */}
 
           {type === 'NOVARIANT' && <AddProductNoVariant form={form} />}
           {type === 'VARIANT' && <AddProductVariant form={form} />}
@@ -371,7 +371,7 @@ export default function AddProducts() {
 }
 
 export const DEFAULT_VARIANT: VariantInterface = {
-  label: undefined,
+  label: 'Satuan',
   values: [],
 };
 

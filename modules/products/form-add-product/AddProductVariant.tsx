@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { Group, Select, MultiSelect, Button, Table, Title, SelectItem, Text } from '@mantine/core';
-import { IconPlus } from '@tabler/icons';
+import { Group, Select, MultiSelect, Table, Title, SelectItem, Text } from '@mantine/core';
 import {
   DEFAULT_VARIANTS_TYPE,
   DEFAULT_VARIANTS_TYPE_NAME,
@@ -38,9 +37,9 @@ const SelectVariant = (props: SelectVariantType) => {
         productVariants: coords?.map((coord) => ({
           coord,
           sku: '',
-          price: 0,
-          price_purchase: 0,
-          price_wholesale: 0,
+          price: '',
+          price_purchase: '',
+          price_wholesale: '',
           min_wholesale: 1,
           has_price_purchase: false,
           has_price_wholesale: false,
@@ -62,7 +61,7 @@ const SelectVariant = (props: SelectVariantType) => {
         label="Tipe Varian"
         placeholder="Pilih Tipe Varian"
         data={variantNames}
-        searchable
+        // searchable
         creatable
         withAsterisk
         getCreateLabel={(query) => `+ Tambah "${query}"`}
@@ -126,7 +125,7 @@ export default function AddProductVariant({ form }: { form: UseFormReturnType<Fo
         })}
       </div>
 
-      <Button
+      {/* <Button
         onClick={handleAddVariants}
         leftIcon={<IconPlus size="16" />}
         disabled={!!variants?.[1]}
@@ -135,11 +134,7 @@ export default function AddProductVariant({ form }: { form: UseFormReturnType<Fo
         mt="md"
       >
         Tambah Varian Baru
-      </Button>
-
-      <Text c="dimmed" size="xs" mt={12}>
-        Anda dapat menambahkan hingga 2 varian
-      </Text>
+      </Button> */}
 
       <Title order={6} my="md">
         Tabel Varian
