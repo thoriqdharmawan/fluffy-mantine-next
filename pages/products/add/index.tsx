@@ -5,8 +5,6 @@ import {
   Paper,
   Title,
   Textarea,
-  SegmentedControl,
-  MultiSelect,
   Group,
   Button,
   Flex,
@@ -46,6 +44,7 @@ import { GLOABL_STATUS } from '../../../mock/global';
 import { useUser } from '../../../context/user';
 import { addProduct, UPDATE_IMAGE_PRODUCT } from '../../../services/products';
 import { useGlobal } from '../../../context/global';
+import { PRODUCT_STATUS } from '../../../constant/global';
 
 export interface FormValues extends ProductsCardProps { }
 
@@ -66,25 +65,27 @@ export default function AddProducts() {
       name: '',
       description: '',
       categories: [],
-      type: 'NOVARIANT',
-      variants: [],
-      productVariants: [
-        {
-          coord: [0],
-          sku: undefined,
-          price: undefined, // harga normal
-          has_price_purchase: false,
-          price_purchase: undefined, // harga beli
-          has_price_wholesale: false,
-          price_wholesale: undefined, // harga grosir
-          min_wholesale: undefined, // minimal pembelian grosir
-          has_variant_scale: false,
-          variant_scale: 1,
-          stock: undefined,
-          status: GLOABL_STATUS.ACTIVE,
-          isPrimary: true,
-        },
-      ],
+      type: 'VARIANT',
+      // variants: [],
+      variants: [DEFAULT_VARIANT],
+      productVariants: [],
+      // productVariants: [
+      //   {
+      //     coord: [0],
+      //     sku: undefined,
+      //     price: undefined, // harga normal
+      //     has_price_purchase: false,
+      //     price_purchase: undefined, // harga beli
+      //     has_price_wholesale: false,
+      //     price_wholesale: undefined, // harga grosir
+      //     min_wholesale: undefined, // minimal pembelian grosir
+      //     has_variant_scale: false,
+      //     variant_scale: 1,
+      //     stock: undefined,
+      //     status: GLOABL_STATUS.ACTIVE,
+      //     isPrimary: true,
+      //   },
+      // ],
     },
 
     validate: {
@@ -113,6 +114,11 @@ export default function AddProducts() {
           const isRequired = values.productVariants?.[index]?.has_price_wholesale
           return (isRequired && !value) ? 'Bagian ini diperlukan' : null
         },
+        variant_scale: (value, values, path) => {
+          const index: number = Number(path.split('.')[1] || 0)
+          const isRequired = values.productVariants?.[index]?.has_variant_scale
+          return (isRequired && !value) ? 'Bagian ini diperlukan' : null
+        }
         // sku: (value) => (!value ? 'Bagian ini diperlukan' : null),
         // stock: (value) => (!value ? 'Bagian ini diperlukan' : null),
       },
@@ -120,8 +126,6 @@ export default function AddProducts() {
   });
 
   const { type } = form.values;
-
-  console.log(form.values)
 
   const handleBack = () => {
     router.push('/products');
@@ -207,6 +211,7 @@ export default function AddProducts() {
           name: variant.label,
           values: variant.values,
         })),
+        status: PRODUCT_STATUS.WAITING_FOR_APPROVAL,
         product_variants: values.productVariants?.map((product_variant) => {
           const { has_price_purchase, has_price_wholesale, price_purchase, price_wholesale, price, variant_scale } = product_variant
 
@@ -341,7 +346,7 @@ export default function AddProducts() {
             Varian Produk
           </Title>
 
-          <SegmentedControl
+          {/* <SegmentedControl
             mb="md"
             onChange={handleOpenConfirmationVariants}
             value={type}
@@ -349,7 +354,7 @@ export default function AddProducts() {
               { label: 'Produk Tanpa Varian', value: 'NOVARIANT' },
               { label: 'Produk Dengan Varian', value: 'VARIANT' },
             ]}
-          />
+          /> */}
 
           {type === 'NOVARIANT' && <AddProductNoVariant form={form} />}
           {type === 'VARIANT' && <AddProductVariant form={form} />}
@@ -371,7 +376,7 @@ export default function AddProducts() {
 }
 
 export const DEFAULT_VARIANT: VariantInterface = {
-  label: undefined,
+  label: 'Satuan',
   values: [],
 };
 

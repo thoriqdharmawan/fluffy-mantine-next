@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import {
+  Button,
   Flex,
   Image,
   AspectRatio,
@@ -10,9 +11,9 @@ import {
   UnstyledButton,
   Badge,
   Loader,
-  Switch,
 } from '@mantine/core';
 import {
+  IconArrowBarToRight,
   IconCalculator,
   IconCheck,
   IconDots,
@@ -26,7 +27,7 @@ import { useQuery } from '@apollo/client';
 import { useRouter } from 'next/router';
 import { showNotification } from '@mantine/notifications';
 
-import { GET_LIST_PRODUCT_VARIANTS, UPDATE_STATUS_PRODUCT } from '../../../services/products/product.graphql';
+import { GET_LIST_PRODUCT_VARIANTS, UPDATE_STATUS_PRODUCT_VARIANT } from '../../../services/products/product.graphql';
 import { convertToRupiah } from '../../../context/helpers';
 import client from '../../../apollo-client';
 
@@ -36,6 +37,7 @@ import MenuDropdown from '../../../components/menu/MenuDropdown';
 import ChangeProductPrice from './modal/ChangeProductPrice';
 import StockEditable from './StockEditable';
 import SwitchStock from './modal/SwitchStock';
+import { PRODUCT_STATUS } from '../../../constant/global';
 
 interface CategoriesInterface {
   id: number;
@@ -50,9 +52,11 @@ interface ListProps {
   stock: number;
   categories: CategoriesInterface[] | void[];
   type: 'VARIANT' | 'NOVARIANT';
+  productType: string;
   onDelete: (setLoading: Dispatch<SetStateAction<boolean>>) => void;
   onCompleteUpdate: () => void;
   onChangePrice: () => void;
+  onChangeStatus: (status: string) => void;
 }
 
 interface HandleChangeStatus {
@@ -73,6 +77,8 @@ const ProductItem = (props: ListProps) => {
     onDelete,
     onCompleteUpdate,
     onChangePrice,
+    onChangeStatus,
+    productType,
   } = props;
 
   const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
@@ -96,7 +102,7 @@ const ProductItem = (props: ListProps) => {
     setLoadingUpdateStatus(true);
     client
       .mutate({
-        mutation: UPDATE_STATUS_PRODUCT,
+        mutation: UPDATE_STATUS_PRODUCT_VARIANT,
         variables: { id, status: status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' },
       })
       .then(() => {
@@ -132,11 +138,12 @@ const ProductItem = (props: ListProps) => {
           children: 'Ubah Harga',
           onClick: onChangePrice
         },
-        ...(type === 'VARIANT' ? [{
+        {
+          hidden: type !== 'VARIANT',
           icon: <IconTransform size={14} />,
           children: 'Bongkar Pasang Stok',
           onClick: () => setOpenSwitchStock(true),
-        }] : []),
+        },
         {
           icon: <IconEdit size={14} />,
           children: 'Ubah',
@@ -145,12 +152,22 @@ const ProductItem = (props: ListProps) => {
       ],
     },
     {
+      hidden: productType !== PRODUCT_STATUS.ACTIVE,
+      items: [
+        {
+          icon: <IconArrowBarToRight size={14} />,
+          children: 'Pindah Ke Opname',
+          onClick: () => onChangeStatus(PRODUCT_STATUS.OPNAME),
+        },
+      ]
+    },
+    {
       items: [
         {
           icon: <IconTrash size={14} />,
           color: 'red',
           children: 'Hapus',
-          onClick: () => onDelete(setLoadingDelete),
+          onClick: () => onChangeStatus(PRODUCT_STATUS.DELETE),
         },
       ],
     },
@@ -169,7 +186,7 @@ const ProductItem = (props: ListProps) => {
     <>
       <Divider />
       <Box>
-        <Flex gap="md" justify="flex-start" align="center" direction="row" wrap="nowrap" px="24px">
+        <Flex gap="md" justify="flex-start" align="center" direction="row" wrap="nowrap" px="xl">
           <Box w="35%" display="flex" py={12}>
             <AspectRatio ratio={1 / 1} maw={100} w="100%">
               <Image
@@ -204,7 +221,7 @@ const ProductItem = (props: ListProps) => {
           <Box w="15%">
             <StockEditable stock={stock} id={id} editable={type === 'NOVARIANT'} refetch={onCompleteUpdate} />
           </Box>
-          <Box w="4%">
+          {/* <Box w="4%">
             {type === 'NOVARIANT' && (
               <Switch
                 disabled={loadingUpdateStatus}
@@ -213,7 +230,7 @@ const ProductItem = (props: ListProps) => {
                 onChange={() => handleChangeStatus({ id, status })}
               />
             )}
-          </Box>
+          </Box> */}
           <Box w="9%">
             <Flex gap="sm" align="center">
               <MenuDropdown sections={PRODUCT_ACTION_MENUS}>
@@ -271,20 +288,27 @@ const ProductItem = (props: ListProps) => {
                     min_wholesale={productVariant.min_wholesale}
                     scale={productVariant.scale}
                     stock={productVariant.stock}
-                    status={productVariant.status}
-                    loadingUpdateStatus={loadingUpdateStatus}
-                    onChangeStatus={() =>
-                      handleChangeStatus({
-                        id: productVariant.id,
-                        status: productVariant.status,
-                      })
-                    }
+                    // status={productVariant.status}
+                    // loadingUpdateStatus={loadingUpdateStatus}
+                    // onChangeStatus={() =>
+                    //   handleChangeStatus({
+                    //     id: productVariant.id,
+                    //     status: productVariant.status,
+                    //   })
+                    // }
                     onChangePrice={() => setChangePrice({ opened: true, id: productVariant.id })}
                     refetch={refetch}
                   />
                 );
               })}
           </Box>
+        )}
+
+        {productType === PRODUCT_STATUS.WAITING_FOR_APPROVAL && (
+          <Flex align="center" justify="center" gap="md" px="xl" mb="lg">
+            <Button onClick={() => onChangeStatus(PRODUCT_STATUS.REJECT)} color="red">Tolak</Button>
+            <Button onClick={() => onChangeStatus(PRODUCT_STATUS.ACTIVE)}>Setujui</Button>
+          </Flex>
         )}
       </Box>
 

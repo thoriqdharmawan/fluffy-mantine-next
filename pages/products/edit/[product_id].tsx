@@ -5,9 +5,6 @@ import {
   Paper,
   Title,
   Textarea,
-  SegmentedControl,
-  MultiSelect,
-  Group,
   Button,
   Flex,
   Grid,
@@ -399,7 +396,7 @@ export default function EditProducts() {
             Varian Produk
           </Title>
 
-          <SegmentedControl
+          {/* <SegmentedControl
             mb="md"
             onChange={handleOpenConfirmationVariants}
             value={type}
@@ -407,7 +404,7 @@ export default function EditProducts() {
               { label: 'Produk Tanpa Varian', value: 'NOVARIANT' },
               { label: 'Produk Dengan Varian', value: 'VARIANT' },
             ]}
-          />
+          /> */}
 
           {type === 'NOVARIANT' && <AddProductNoVariant form={form} />}
           {type === 'VARIANT' && <AddProductVariant form={form} />}

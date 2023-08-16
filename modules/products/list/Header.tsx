@@ -15,7 +15,6 @@ const Header = () => {
         wrap="nowrap"
         px="24px"
         py={12}
-        // pos="sticky"
         top={matches ? 70 : 0}
         sx={(theme) => ({
           zIndex: 4,
@@ -39,9 +38,6 @@ const Header = () => {
         </Box>
         <Box fw={600} w="15%">
           Stok
-        </Box>
-        <Box fw={600} w="6%">
-          Aktif
         </Box>
         <Box fw={600} w="9%">
           Aksi

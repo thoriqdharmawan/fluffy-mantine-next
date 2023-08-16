@@ -10,9 +10,9 @@ export interface TableProductsVariants {
   id?: number;
   coord?: number[];
   sku?: string;
-  price?: number;
-  price_purchase?: number;
-  price_wholesale?: number;
+  price?: number | string;
+  price_purchase?: number | string;
+  price_wholesale?: number | string;
   min_wholesale?: number;
   has_price_purchase?: boolean;
   has_price_wholesale?: boolean;

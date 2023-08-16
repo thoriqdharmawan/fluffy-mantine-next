@@ -1,20 +1,22 @@
-import { Dispatch, SetStateAction, useState, useEffect } from 'react';
-import { Box, Paper, Button, ScrollArea, Pagination, Group } from '@mantine/core';
+import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
+import { Button, Flex, Tabs } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
-import { IconCheck, IconExclamationMark, IconPlus } from '@tabler/icons';
-import { useQuery } from '@apollo/client';
-import Link from 'next/link';
+import { IconCheck, IconExclamationMark, IconList, IconLayoutGrid } from '@tabler/icons';
+import { useMutation, useQuery } from '@apollo/client';
+
+import ChangeProductPrices from './modal/ChangeProductPrices';
+import ListProductTable from '../../../components/list-products/table';
 
 import { useUser } from '../../../context/user';
-import { deleteProduct, GET_LIST_PRODUCTS } from '../../../services/products';
-import { Empty } from '../../../components/empty-state';
-import client from '../../../apollo-client';
-
-import Header from './Header';
-import ProductItem from './ProductItem';
-import Loading from '../../../components/loading/Loading';
-import ChangeProductPrices from './modal/ChangeProductPrices';
+import {
+  deleteProduct,
+  GET_LIST_PRODUCTS,
+  UPDATE_STATUS_PRODUCT,
+} from '../../../services/products';
 import { useGlobal } from '../../../context/global';
+import { LIST_VIEW_TYPES, PRODUCT_STATUS } from '../../../constant/global';
+import client from '../../../apollo-client';
+import ListProductCard from '../../../components/list-products/card';
 
 type Props = {
   search: string;
@@ -23,40 +25,46 @@ type Props = {
 const LIMIT = 5;
 
 export default function ListProduct(props: Props) {
-  const { value } = useGlobal()
+  const { value } = useGlobal();
   const { search } = props;
   const user = useUser();
 
-  const companyId = value.selectedCompany || user.companyId
+  const companyId = value.selectedCompany || user.companyId;
 
-  const [page, setPage] = useState<number>(1)
-  const [changePrice, setChangePrice] = useState<{ open: boolean, id?: string }>({
+  const [listViewType, setListViewType] = useState<string>(LIST_VIEW_TYPES.GRID);
+  const [productType, setProductType] = useState<string>(PRODUCT_STATUS.ACTIVE);
+  const [page, setPage] = useState<number>(1);
+  const [changePrice, setChangePrice] = useState<{ open: boolean; id?: string }>({
     open: false,
     id: undefined,
-  })
+  });
+
+  const [updateStatus] = useMutation(UPDATE_STATUS_PRODUCT, { client });
 
   const { data, loading, error, refetch } = useQuery(GET_LIST_PRODUCTS, {
     client: client,
     skip: !companyId,
+    // skip: true,
+    fetchPolicy: 'cache-and-network',
     variables: {
       limit: LIMIT,
       offset: (page - 1) * LIMIT,
       where: {
         _and: {
+          status: { _eq: productType },
           company: { id: { _eq: companyId } },
-          _or: search ? [
-            { product_variants: { sku: { _eq: search } } },
-            { name: { _ilike: `%${search}%` } },
-          ] : undefined,
-        }
+          _or: search
+            ? [{ product_variants: { sku: { _eq: search } } }, { name: { _ilike: `%${search}%` } }]
+            : undefined,
+        },
       },
-    }
-  })
+    },
+  });
 
-  useEffect(() => setPage(1), [search])
+  useEffect(() => setPage(1), [search, productType]);
 
   if (error) {
-    console.error(error)
+    console.error(error);
   }
 
   const handleDeleteProduct = (
@@ -87,54 +95,79 @@ export default function ListProduct(props: Props) {
   };
 
   const loadingData = !companyId || loading;
-  const totalPage = Math.ceil((data?.total.aggregate.count || 0) / LIMIT);
+  const totalPage = useMemo(() => Math.ceil((data?.total.aggregate.count || 0) / LIMIT), [data]);
+
+  const handleUpdateStatus = (id: string, status: string) => {
+    updateStatus({ variables: { id, status } })
+      .then(() => {
+        refetch();
+        showNotification({
+          title: 'Yeayy, Berhasil Mengubah Produk!! 😊',
+          message: 'Produk berhasil dihapus',
+          icon: <IconCheck />,
+          color: 'green',
+        });
+      })
+      .catch(() => {
+        showNotification({
+          title: 'Gagal Mengubah Produk 🤥',
+          message: 'Coba Lagi nanti',
+          icon: <IconExclamationMark />,
+          color: 'red',
+        });
+      });
+  };
 
   return (
     <>
-      <ScrollArea style={{ width: 'auto', height: 'auto' }}>
-        <Paper miw={1000} shadow="md" radius="md" p="md" mx="auto">
-          <Header />
-          <Box pos="relative" mih={120}>
-            {loadingData && <Loading height={120} />}
-            {!loadingData && data?.total.aggregate.count === 0 && (
-              <Empty
-                title="Tidak Ada Produk"
-                label="Anda belum menambahkan produk apapun. Mulai dengan menekan tombol Tambah Produk."
-                action={
-                  <Link href="/products/add">
-                    <Button leftIcon={<IconPlus size={16} />} mt="xl">
-                      Tambah Produk
-                    </Button>
-                  </Link>
-                }
-              />
-            )}
+      <Flex display="flex" justify="end" mb="sm">
+        <Button.Group>
+          <Button
+            onClick={() => setListViewType(LIST_VIEW_TYPES.GRID)}
+            size="xs"
+            variant={listViewType === LIST_VIEW_TYPES.GRID ? 'filled' : 'default'}
+          >
+            <IconLayoutGrid size={18} />
+          </Button>
+          <Button
+            onClick={() => setListViewType(LIST_VIEW_TYPES.TABLE)}
+            size="xs"
+            variant={listViewType === LIST_VIEW_TYPES.TABLE ? 'filled' : 'default'}
+          >
+            <IconList size={18} />
+          </Button>
+        </Button.Group>
+      </Flex>
 
-            {!loading && data?.products.map((product: any) => {
-              return (
-                <ProductItem
-                  key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  image={product.image}
-                  product_variants={product.product_variants}
-                  stock={product.product_variants_aggregate.aggregate.sum.stock}
-                  categories={[]}
-                  type={product.type}
-                  onDelete={(setLoading) => handleDeleteProduct(setLoading, product.id)}
-                  onCompleteUpdate={() => refetch()}
-                  onChangePrice={() => setChangePrice({ open: true, id: product.id })}
-                // onSwitchStock={(refetch: any) => setSwitchStock((prev: any) => ({ ...prev, opened: true, id: product.id, refetch }))}
-                />
-              );
-            })}
-          </Box>
+      <Tabs
+        value={productType}
+        onTabChange={(v) => setProductType(v || PRODUCT_STATUS.ACTIVE)}
+        mb="lg"
+      >
+        <Tabs.List>
+          <Tabs.Tab value={PRODUCT_STATUS.ACTIVE}>Produk Aktif</Tabs.Tab>
+          <Tabs.Tab value={PRODUCT_STATUS.OPNAME}>Produk Opname</Tabs.Tab>
+          <Tabs.Tab value={PRODUCT_STATUS.WAITING_FOR_APPROVAL}>Menunggu Persetujuan</Tabs.Tab>
+        </Tabs.List>
+      </Tabs>
 
-          <Group mt={24} mb={12}>
-            <Pagination m="auto" page={page} total={totalPage} onChange={setPage} />
-          </Group>
-        </Paper>
-      </ScrollArea>
+      {listViewType === LIST_VIEW_TYPES.TABLE && (
+        <ListProductTable
+          loading={loading}
+          loadingData={loadingData}
+          data={data}
+          productType={productType}
+          refetch={refetch}
+          handleDeleteProduct={handleDeleteProduct}
+          setChangePrice={setChangePrice}
+          handleUpdateStatus={handleUpdateStatus}
+          page={page}
+          totalPage={totalPage}
+          setPage={setPage}
+        />
+      )}
+
+      {listViewType === LIST_VIEW_TYPES.GRID && <ListProductCard data={data} />}
 
       <ChangeProductPrices
         opened={changePrice.open}
@@ -143,6 +176,5 @@ export default function ListProduct(props: Props) {
         onClose={() => setChangePrice({ open: false, id: undefined })}
       />
     </>
-
   );
 }

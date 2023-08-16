@@ -1,16 +1,5 @@
-import { ActionIcon, Box, Flex, Text, createStyles } from '@mantine/core';
+import { ActionIcon, Box, Flex, Text, MantineTheme } from '@mantine/core';
 import { IconChevronLeft } from '@tabler/icons';
-
-const useStyles = createStyles((theme, _params, getRef) => ({
-  wrapper: {
-    marginBottom: theme.fontSizes.xl,
-
-    [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
-      padding: theme.fontSizes.md,
-      flexDirection: 'column',
-    },
-  },
-}));
 
 type Props = {
   onBack?: () => void;
@@ -20,10 +9,18 @@ type Props = {
 };
 
 export default function HeaderSection({ title, label, action, onBack }: Props) {
-  const { classes } = useStyles();
-
   return (
-    <Flex align="center" justify="space-between" className={classes.wrapper}>
+    <Flex
+      align="center"
+      justify="space-between"
+      sx={(theme: MantineTheme) => ({
+        marginBottom: theme.fontSizes.xl,
+        [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+          padding: theme.fontSizes.md,
+          flexDirection: 'column',
+        },
+      })}
+    >
       <Box maw={700}>
         <Flex align="center" mb="md">
           {onBack && (
@@ -39,8 +36,18 @@ export default function HeaderSection({ title, label, action, onBack }: Props) {
           {label}
         </Text>
       </Box>
-
-      {action}
+      <Box
+        sx={(theme: MantineTheme) => ({
+          [theme.fn.smallerThan('sm')]: {
+            width: '100%',
+            marginTop: '22px',
+            display: 'flex',
+            justifyContent: 'flex-end',
+          },
+        })}
+      >
+        {action}
+      </Box>
     </Flex>
   );
 }

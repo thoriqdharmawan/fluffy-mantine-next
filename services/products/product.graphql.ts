@@ -17,10 +17,7 @@ export const GET_LIST_PRODUCTS = gql`
       name
       image
       type
-      # categories {
-      #   id
-      #   name
-      # }
+      status
       product_variants(limit: 1) {
         id
         coord
@@ -28,7 +25,6 @@ export const GET_LIST_PRODUCTS = gql`
         price
         price_wholesale
         sku
-        status
         stock
       }
       variants {
@@ -200,6 +196,7 @@ export const ADD_PRODUCT = gql`
     $companyId: uuid
     $description: String
     $type: String
+    $status: String
     $variants: [variants_insert_input!]!
     # $categories: [categories_insert_input!]!
     $product_variants: [product_variants_insert_input!]!
@@ -211,6 +208,7 @@ export const ADD_PRODUCT = gql`
         companyId: $companyId
         description: $description
         type: $type
+        status: $status
         # categories: { data: $categories }
         variants: { data: $variants }
         product_variants: { data: $product_variants }
@@ -219,6 +217,7 @@ export const ADD_PRODUCT = gql`
       affected_rows
       returning {
         id
+        status
       }
     }
   }
@@ -381,9 +380,21 @@ export const DELETE_PRODUCT = gql`
   }
 `;
 
-export const UPDATE_STATUS_PRODUCT = gql`
+export const UPDATE_STATUS_PRODUCT_VARIANT = gql`
   mutation UpdateStatusProduct($id: Int!, $status: String!) {
     update_product_variants(where: { id: { _eq: $id } }, _set: { status: $status }) {
+      affected_rows
+    }
+  }
+`;
+
+
+export const UPDATE_STATUS_PRODUCT = gql`
+  mutation UpdateStock($id: uuid!, $status: String!) {
+    update_products(
+      where: { id: { _eq: $id } }
+      _set: { status: $status }
+    ) {
       affected_rows
     }
   }
