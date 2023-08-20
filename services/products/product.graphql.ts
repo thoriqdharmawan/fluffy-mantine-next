@@ -40,48 +40,6 @@ export const GET_LIST_PRODUCTS = gql`
     }
   }
 `;
-// export const GET_LIST_PRODUCTS = gql`
-//   query GetListProduct($where: products_bool_exp!, $limit: Int, $offset: Int) {
-//     total: products_aggregate(where: $where) {
-//       aggregate {
-//         count
-//       }
-//     }
-//     products(
-//       where: $where
-//       limit: $limit
-//       offset: $offset
-//       order_by: { name: asc }
-//     ) {
-//       id
-//       name
-//       image
-//       type
-//       status
-//       product_variants(limit: 1) {
-//         id
-//         coord
-//         is_primary
-//         price
-//         price_wholesale
-//         sku
-//         stock
-//       }
-//       variants {
-//         id
-//         values
-//         name
-//       }
-//       product_variants_aggregate {
-//         aggregate {
-//           sum {
-//             stock
-//           }
-//         }
-//       }
-//     }
-//   }
-// `;
 
 export const GET_DETAIL_PRODUCT = gql`
   query GetDetailProduct($product_id: uuid!) {
@@ -107,7 +65,6 @@ export const GET_DETAIL_PRODUCT = gql`
         sku
         status
         stock
-        productId
       }
     }
   }
