@@ -167,7 +167,9 @@ export default function ListProduct(props: Props) {
         />
       )}
 
-      {listViewType === LIST_VIEW_TYPES.GRID && <ListProductCard data={data} />}
+      {listViewType === LIST_VIEW_TYPES.GRID && (
+        <ListProductCard data={data} loading={loading} handleUpdateStatus={handleUpdateStatus} />
+      )}
 
       <ChangeProductPrices
         opened={changePrice.open}
