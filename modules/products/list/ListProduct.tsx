@@ -59,6 +59,7 @@ export default function ListProduct(props: Props) {
     variables: {
       limit: LIMIT,
       offset: (page - 1) * LIMIT,
+      companyId: companyId,
       where: {
         _and: {
           status: { _eq: productType },
@@ -139,7 +140,7 @@ export default function ListProduct(props: Props) {
   return (
     <>
       <Flex display="flex" justify="end" mb="sm">
-        <Button.Group>
+        <Button.Group hidden>
           <Button
             onClick={() => setListViewType(LIST_VIEW_TYPES.GRID)}
             size="xs"

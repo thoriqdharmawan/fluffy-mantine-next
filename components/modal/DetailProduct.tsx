@@ -6,6 +6,7 @@ import { GET_DETAIL_PRODUCT } from '../../services/products';
 import client from '../../apollo-client';
 import { convertToRupiah } from '../../context/helpers';
 import { PRODUCT_STATUS } from '../../constant/global';
+import Loading from '../loading/Loading';
 
 interface Props {
   opened: boolean;
@@ -64,104 +65,114 @@ export default function DetailProduct(props: Props) {
         alt={product.name}
         withPlaceholder
       />
-      <Box mt="lg">
-        <Text ta="center" fw={700} fz="xl" mb="md">
-          {product.name}
-        </Text>
-        <Box mb="md">
-          <Text fw={700}>Deskripsi Produk</Text>
-          <Text>{product.description}</Text>
-        </Box>
+      {!loading && (
+        <Box mt="lg">
+          <Text ta="center" fw={700} fz="xl" mb="md">
+            {product.name}
+          </Text>
+          <Box mb="md">
+            <Text fw={700}>Deskripsi Produk</Text>
+            <Text>{product.description}</Text>
+          </Box>
 
-        <Box mb="md">
-          <Text fw={700}>Varian Produk</Text>
-          <Table mt="md" striped withBorder>
-            <tbody>
-              {product.product_variants?.map((productVariant: any) => {
-                const { variants } = product;
-                const { coord } = productVariant;
+          <Box mb="md">
+            <Text fw={700}>Varian Produk</Text>
+            <Table mt="md" striped withBorder>
+              <tbody>
+                {product.product_variants?.map((productVariant: any) => {
+                  const { variants } = product;
+                  const { coord } = productVariant;
 
-                const variant1 = variants?.[0]?.values[coord[0]] || null;
-                const variant2 = variants?.[1]?.values[coord[1]] || null;
+                  const variant1 = variants?.[0]?.values[coord[0]] || null;
+                  const variant2 = variants?.[1]?.values[coord[1]] || null;
 
-                return (
-                  <tr>
-                    <td>
-                      <Box p="sm">
-                        <Text fw={700} fz="md">
-                          {[variant1, variant2].filter((data) => data).join(' | ')}
-                        </Text>
-                        <Text mb="sm">SKU: {productVariant.sku || '-'}</Text>
-                        <Box>
-                          <ItemRow
-                            label="Harga"
-                            value={convertToRupiah(productVariant.price) || '-'}
-                          />
-                          {productVariant.price !== productVariant.price_wholesale && (
-                            <>
-                              <ItemRow
-                                label="Harga Grosir"
-                                value={convertToRupiah(productVariant.price_wholesale) || '-'}
-                              />
-                              <ItemRow
-                                label="Minimal Grosir"
-                                value={productVariant.min_wholesale || '-'}
-                              />
-                            </>
-                          )}
-                          <ItemRow label="Stok" value={productVariant.stock || '0'} />
+                  return (
+                    <tr>
+                      <td>
+                        <Box p="sm">
+                          <Text fw={700} fz="md">
+                            {[variant1, variant2].filter((data) => data).join(' | ')}
+                          </Text>
+                          <Text mb="sm">SKU: {productVariant.sku || '-'}</Text>
+                          <Box mb="md">
+                            <ItemRow
+                              label="Harga"
+                              value={convertToRupiah(productVariant.price) || '-'}
+                            />
+                            {productVariant.price !== productVariant.price_wholesale && (
+                              <>
+                                <ItemRow
+                                  label="Harga Grosir"
+                                  value={convertToRupiah(productVariant.price_wholesale) || '-'}
+                                />
+                                <ItemRow
+                                  label="Minimal Grosir"
+                                  value={productVariant.min_wholesale || '-'}
+                                />
+                              </>
+                            )}
+                            <ItemRow label="Stok" value={productVariant.stock || '0'} />
+                          </Box>
+                          <Box mb="md">
+                            <ItemRow label="Skala" value={productVariant.scale || '0'} />
+                          </Box>
                         </Box>
-                      </Box>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
-        </Box>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          </Box>
 
-        <Flex justify="end" gap="md">
-          {product.status === PRODUCT_STATUS.ACTIVE && (
-            <Button
-              mt="xl"
-              variant="default"
-              fullWidth={isMobile}
-              onClick={() => handleChangeStatus(PRODUCT_STATUS.OPNAME)}
-            >
-              Pindah ke Opname
-            </Button>
-          )}
-          {product.status === PRODUCT_STATUS.OPNAME && (
-            <Button
-              mt="xl"
-              fullWidth={isMobile}
-              onClick={() => handleChangeStatus(PRODUCT_STATUS.ACTIVE)}
-            >
-              Pindah ke Produk Aktif
-            </Button>
-          )}
-          {product.status === PRODUCT_STATUS.WAITING_FOR_APPROVAL && (
-            <>
+          <Flex justify="end" gap="md">
+            {product.status === PRODUCT_STATUS.ACTIVE && (
               <Button
                 mt="xl"
-                color="red"
                 variant="default"
                 fullWidth={isMobile}
-                onClick={() => handleChangeStatus(PRODUCT_STATUS.REJECT)}
+                onClick={() => handleChangeStatus(PRODUCT_STATUS.OPNAME)}
               >
-                Tolak
+                Pindah ke Opname
               </Button>
+            )}
+            {product.status === PRODUCT_STATUS.OPNAME && (
               <Button
                 mt="xl"
                 fullWidth={isMobile}
                 onClick={() => handleChangeStatus(PRODUCT_STATUS.ACTIVE)}
               >
-                Setujui Produk
+                Pindah ke Produk Aktif
               </Button>
-            </>
-          )}
-        </Flex>
-      </Box>
+            )}
+            {product.status === PRODUCT_STATUS.WAITING_FOR_APPROVAL && (
+              <>
+                <Button
+                  mt="xl"
+                  color="red"
+                  variant="default"
+                  fullWidth={isMobile}
+                  onClick={() => handleChangeStatus(PRODUCT_STATUS.REJECT)}
+                >
+                  Tolak
+                </Button>
+                <Button
+                  mt="xl"
+                  fullWidth={isMobile}
+                  onClick={() => handleChangeStatus(PRODUCT_STATUS.ACTIVE)}
+                >
+                  Setujui Produk
+                </Button>
+              </>
+            )}
+          </Flex>
+        </Box>
+      )}
+      {loading && (
+        <Box mt="lg">
+          <Loading />
+        </Box>
+      )}
     </Modal>
   );
 }
