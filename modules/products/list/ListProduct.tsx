@@ -43,8 +43,8 @@ export default function ListProduct(props: Props) {
 
   const { data, loading, error, refetch } = useQuery(GET_LIST_PRODUCTS, {
     client: client,
-    // skip: !companyId,
-    skip: true,
+    skip: !companyId,
+    // skip: true,
     fetchPolicy: 'cache-and-network',
     variables: {
       limit: LIMIT,
@@ -155,7 +155,7 @@ export default function ListProduct(props: Props) {
         <ListProductTable
           loading={loading}
           loadingData={loadingData}
-          data={DUMY}
+          data={data}
           productType={productType}
           refetch={refetch}
           handleDeleteProduct={handleDeleteProduct}
@@ -167,7 +167,9 @@ export default function ListProduct(props: Props) {
         />
       )}
 
-      {listViewType === LIST_VIEW_TYPES.GRID && <ListProductCard data={DUMY} />}
+      {listViewType === LIST_VIEW_TYPES.GRID && (
+        <ListProductCard data={data} loading={loading} handleUpdateStatus={handleUpdateStatus} />
+      )}
 
       <ChangeProductPrices
         opened={changePrice.open}
@@ -178,46 +180,3 @@ export default function ListProduct(props: Props) {
     </>
   );
 }
-
-const DUMY = {
-  total: {
-    aggregate: {
-      count: 2,
-    },
-  },
-  products: [
-    {
-      id: '169d06b6-6306-46a7-9af8-956e3b2a8008',
-      name: 'Makanan Enak',
-      image:
-        'https://firebasestorage.googleapis.com/v0/b/fluffy-d91c4.appspot.com/o/products%2F169d06b6-6306-46a7-9af8-956e3b2a8008?alt=media&token=d9d62efe-a738-45d6-b3a9-c0ac8b9917e2',
-      type: 'VARIANT',
-      status: 'ACTIVE',
-      product_variants: [
-        {
-          id: 687,
-          coord: [0],
-          is_primary: false,
-          price: 12000,
-          price_wholesale: 12000,
-          sku: '',
-          stock: 12,
-        },
-      ],
-      variants: [
-        {
-          id: 372,
-          values: ['Pcs'],
-          name: 'Satuan',
-        },
-      ],
-      product_variants_aggregate: {
-        aggregate: {
-          sum: {
-            stock: 12,
-          },
-        },
-      },
-    },
-  ],
-};

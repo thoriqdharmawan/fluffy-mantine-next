@@ -6,18 +6,24 @@ import Link from 'next/link';
 import CardItem from './CardItem';
 import Loading from '../../loading/Loading';
 
-import { Props } from '../interface';
+// import { Props } from '../interface';
 import { Empty } from '../../empty-state';
 import DetailProduct from '../../modal/DetailProduct';
 
 interface InitialDetail {
   open: boolean;
-  id: null | string;
+  id: string;
+}
+
+interface Props {
+  data: any;
+  loading: boolean;
+  handleUpdateStatus: (productId: string, status: string) => void;
 }
 
 const INITIAL_DETAIL = {
   open: false,
-  id: null,
+  id: '',
 };
 
 const Loader = () => (
@@ -28,9 +34,9 @@ const Loader = () => (
   </Box>
 );
 
-export default function ListProductCard(props: Partial<Props>) {
+export default function ListProductCard(props: Props) {
   const [detail, setDetail] = useState<InitialDetail>(INITIAL_DETAIL);
-  const { data, loading } = props;
+  const { data, loading, handleUpdateStatus } = props;
 
   return (
     <>
@@ -41,7 +47,7 @@ export default function ListProductCard(props: Partial<Props>) {
               <CardItem
                 name={product.name}
                 image={product.image}
-                onClickDetail={() => setDetail({ id: product.id, open: true })}
+                onClickDetail={() => setDetail((prev) => ({ ...prev, id: product.id, open: true }))}
               />
             </Grid.Col>
           ))}
@@ -61,7 +67,12 @@ export default function ListProductCard(props: Partial<Props>) {
         />
       )}
 
-      <DetailProduct opened={detail.open} onClose={() => setDetail(INITIAL_DETAIL)} />
+      <DetailProduct
+        id={detail.id}
+        opened={detail.open}
+        onClose={() => setDetail(INITIAL_DETAIL)}
+        onUpdateStatus={(status) => handleUpdateStatus(detail.id, status)}
+      />
     </>
   );
 }

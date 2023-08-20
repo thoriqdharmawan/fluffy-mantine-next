@@ -10,7 +10,7 @@ export default function CardItem(props: Props) {
   const { name, image, onClickDetail } = props;
 
   return (
-    <Card shadow="sm" p="lg" radius="md" withBorder>
+    <Card shadow="sm" p="xs" radius="md" withBorder>
       <Card.Section>
         <Image src={image} alt={name} withPlaceholder height={120} />
       </Card.Section>

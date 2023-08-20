@@ -7,37 +7,82 @@ export const GET_LIST_PRODUCTS = gql`
         count
       }
     }
-    products(
-      where: $where
-      limit: $limit
-      offset: $offset
-      order_by: { name: asc }
-    ) {
+    products(where: $where, limit: $limit, offset: $offset, order_by: { name: asc }) {
       id
       name
       image
-      type
+      description
+    }
+  }
+`;
+// export const GET_LIST_PRODUCTS = gql`
+//   query GetListProduct($where: products_bool_exp!, $limit: Int, $offset: Int) {
+//     total: products_aggregate(where: $where) {
+//       aggregate {
+//         count
+//       }
+//     }
+//     products(
+//       where: $where
+//       limit: $limit
+//       offset: $offset
+//       order_by: { name: asc }
+//     ) {
+//       id
+//       name
+//       image
+//       type
+//       status
+//       product_variants(limit: 1) {
+//         id
+//         coord
+//         is_primary
+//         price
+//         price_wholesale
+//         sku
+//         stock
+//       }
+//       variants {
+//         id
+//         values
+//         name
+//       }
+//       product_variants_aggregate {
+//         aggregate {
+//           sum {
+//             stock
+//           }
+//         }
+//       }
+//     }
+//   }
+// `;
+
+export const GET_DETAIL_PRODUCT = gql`
+  query GetDetailProduct($product_id: uuid!) {
+    products(where: { id: { _eq: $product_id } }) {
+      id
+      name
+      image
       status
-      product_variants(limit: 1) {
+      description
+      variants(order_by: { id: asc }) {
+        id
+        values
+        name
+      }
+      product_variants(order_by: { id: asc }) {
         id
         coord
         is_primary
         price
         price_wholesale
+        min_wholesale
+        scale
         sku
+        status
         stock
-      }
-      variants {
-        id
-        values
-        name
-      }
-      product_variants_aggregate {
-        aggregate {
-          sum {
-            stock
-          }
-        }
+        productId
       }
     }
   }
@@ -156,12 +201,12 @@ export const GET_LIST_PRODUCT_VARIANTS_STOCK = gql`
 `;
 
 export const SET_TRANSFER_STOCK = gql`
-  mutation TransferStock($id_from: Int!, $id_to:Int!, $stock_from: Int!, $stock_to: Int!) {
-    q1: update_product_variants(where: {id: {_eq: $id_from}}, _inc: {stock: $stock_from}) {
+  mutation TransferStock($id_from: Int!, $id_to: Int!, $stock_from: Int!, $stock_to: Int!) {
+    q1: update_product_variants(where: { id: { _eq: $id_from } }, _inc: { stock: $stock_from }) {
       affected_rows
     }
-    
-    q2: update_product_variants(where: {id: {_eq: $id_to}}, _inc: {stock: $stock_to}) {
+
+    q2: update_product_variants(where: { id: { _eq: $id_to } }, _inc: { stock: $stock_to }) {
       affected_rows
     }
   }
@@ -274,7 +319,17 @@ export const EDIT_PRODUCT = gql`
       objects: $product_variants
       on_conflict: {
         constraint: product_variants_pkey
-        update_columns: [coord, is_primary, price, price_purchase, price_wholesale, min_wholesale, sku, status, stock]
+        update_columns: [
+          coord
+          is_primary
+          price
+          price_purchase
+          price_wholesale
+          min_wholesale
+          sku
+          status
+          stock
+        ]
       }
     ) {
       affected_rows
@@ -283,10 +338,7 @@ export const EDIT_PRODUCT = gql`
 `;
 
 export const EDIT_PRODUCT_PRICES = gql`
-  mutation UpdateProductPrices(
-    $id: uuid!
-    $product_variants: [product_variants_insert_input!]!
-  ) {
+  mutation UpdateProductPrices($id: uuid!, $product_variants: [product_variants_insert_input!]!) {
     delete_product_variants(where: { productId: { _eq: $id } }) {
       affected_rows
     }
@@ -311,11 +363,7 @@ export const EDIT_PRODUCT_PRICE = gql`
   ) {
     update_product_variants(
       where: { id: { _eq: $id } }
-      _set: {
-        price: $price
-        price_wholesale: $price_wholesale
-        min_wholesale: $min_wholesale
-      }
+      _set: { price: $price, price_wholesale: $price_wholesale, min_wholesale: $min_wholesale }
     ) {
       affected_rows
     }
@@ -324,10 +372,7 @@ export const EDIT_PRODUCT_PRICE = gql`
 
 export const EDIT_PRODUCT_STOCK = gql`
   mutation UpdateStock($id: Int!, $stock: Int!) {
-    update_product_variants(
-      where: { id: { _eq: $id } }
-      _set: { stock: $stock }
-    ) {
+    update_product_variants(where: { id: { _eq: $id } }, _set: { stock: $stock }) {
       affected_rows
     }
   }
@@ -335,10 +380,7 @@ export const EDIT_PRODUCT_STOCK = gql`
 
 export const EDIT_PRODUCT_SCALE = gql`
   mutation UpdateStock($id: Int!, $scale: Int!) {
-    update_product_variants(
-      where: { id: { _eq: $id } }
-      _set: { scale: $scale }
-    ) {
+    update_product_variants(where: { id: { _eq: $id } }, _set: { scale: $scale }) {
       affected_rows
     }
   }
@@ -346,10 +388,7 @@ export const EDIT_PRODUCT_SCALE = gql`
 
 export const EDIT_SKU_STOCK = gql`
   mutation UpdateStock($id: Int!, $sku: String!) {
-    update_product_variants(
-      where: { id: { _eq: $id } }
-      _set: { sku: $sku }
-    ) {
+    update_product_variants(where: { id: { _eq: $id } }, _set: { sku: $sku }) {
       affected_rows
     }
   }
@@ -388,13 +427,9 @@ export const UPDATE_STATUS_PRODUCT_VARIANT = gql`
   }
 `;
 
-
 export const UPDATE_STATUS_PRODUCT = gql`
   mutation UpdateStock($id: uuid!, $status: String!) {
-    update_products(
-      where: { id: { _eq: $id } }
-      _set: { status: $status }
-    ) {
+    update_products(where: { id: { _eq: $id } }, _set: { status: $status }) {
       affected_rows
     }
   }

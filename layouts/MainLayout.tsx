@@ -33,7 +33,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       // footer={<FooterLayout data={MOCK_FOOTER.data} />}
       padding="md"
     >
-      <Box w="100%" component="div">
+      <Box w="100%" component="div" pb={220}>
         {children}
       </Box>
     </AppShell>
