@@ -7,6 +7,24 @@ export const GET_LIST_PRODUCTS = gql`
         count
       }
     }
+    total_active: products_aggregate(where: {status: {_eq: "ACTIVE"}}) {
+      aggregate {
+        count
+      }
+    }
+    
+    total_opname: products_aggregate(where: {status: {_eq: "OPNAME"}}) {
+      aggregate {
+        count
+      }
+    }
+
+    total_waiting: products_aggregate(where: {status: {_eq: "WAITING_FOR_APPROVAL"}}) {
+      aggregate {
+        count
+      }
+    }
+
     products(where: $where, limit: $limit, offset: $offset, order_by: { name: asc }) {
       id
       name
