@@ -27,7 +27,7 @@ const INITIAL_DETAIL = {
 };
 
 const Loader = () => (
-  <Box sx={{ display: 'flex', gap: '24px', flexDirection: 'column' }}>
+  <Box mt="lg" sx={{ display: 'flex', gap: '24px', flexDirection: 'column' }}>
     <Loading height={120} direction="row" count={2} />
     <Loading height={120} direction="row" count={2} />
     <Loading height={120} direction="row" count={2} />
