@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
-import { Button, Flex, Tabs } from '@mantine/core';
+import { Badge, Button, Flex, Tabs } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconCheck, IconExclamationMark, IconList, IconLayoutGrid } from '@tabler/icons';
 import { useMutation, useQuery } from '@apollo/client';
@@ -22,6 +22,12 @@ type Props = {
   search: string;
 };
 
+type TotalDatas = {
+  active: number;
+  opname: number;
+  waiting: number;
+};
+
 const LIMIT = 5;
 
 export default function ListProduct(props: Props) {
@@ -31,6 +37,11 @@ export default function ListProduct(props: Props) {
 
   const companyId = value.selectedCompany || user.companyId;
 
+  const [totalDatas, setTotalDatas] = useState<TotalDatas>({
+    active: 0,
+    opname: 0,
+    waiting: 0,
+  });
   const [listViewType, setListViewType] = useState<string>(LIST_VIEW_TYPES.GRID);
   const [productType, setProductType] = useState<string>(PRODUCT_STATUS.ACTIVE);
   const [page, setPage] = useState<number>(1);
@@ -44,7 +55,6 @@ export default function ListProduct(props: Props) {
   const { data, loading, error, refetch } = useQuery(GET_LIST_PRODUCTS, {
     client: client,
     skip: !companyId,
-    // skip: true,
     fetchPolicy: 'cache-and-network',
     variables: {
       limit: LIMIT,
@@ -58,6 +68,14 @@ export default function ListProduct(props: Props) {
             : undefined,
         },
       },
+    },
+    onCompleted: ({ total_active, total_opname, total_waiting }) => {
+      setTotalDatas((prev) => ({
+        ...prev,
+        active: total_active.aggregate.count,
+        opname: total_opname.aggregate.count,
+        waiting: total_waiting.aggregate.count,
+      }));
     },
   });
 
@@ -145,9 +163,15 @@ export default function ListProduct(props: Props) {
         mb="lg"
       >
         <Tabs.List>
-          <Tabs.Tab value={PRODUCT_STATUS.ACTIVE}>Produk Aktif</Tabs.Tab>
-          <Tabs.Tab value={PRODUCT_STATUS.OPNAME}>Produk Opname</Tabs.Tab>
-          <Tabs.Tab value={PRODUCT_STATUS.WAITING_FOR_APPROVAL}>Menunggu Persetujuan</Tabs.Tab>
+          <Tabs.Tab value={PRODUCT_STATUS.ACTIVE}>
+            Aktif <Badge>{totalDatas.active}</Badge>
+          </Tabs.Tab>
+          <Tabs.Tab value={PRODUCT_STATUS.OPNAME}>
+            Opname <Badge>{totalDatas.opname}</Badge>
+          </Tabs.Tab>
+          <Tabs.Tab value={PRODUCT_STATUS.WAITING_FOR_APPROVAL}>
+            Menunggu Persetujuan <Badge>{totalDatas.waiting}</Badge>
+          </Tabs.Tab>
         </Tabs.List>
       </Tabs>
 
