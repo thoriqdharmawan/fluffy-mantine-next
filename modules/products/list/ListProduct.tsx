@@ -171,7 +171,7 @@ export default function ListProduct(props: Props) {
             Opname <Badge>{totalDatas.opname}</Badge>
           </Tabs.Tab>
           <Tabs.Tab value={PRODUCT_STATUS.WAITING_FOR_APPROVAL}>
-            Menunggu Persetujuan <Badge>{totalDatas.waiting}</Badge>
+            Menunggu <Badge>{totalDatas.waiting}</Badge>
           </Tabs.Tab>
         </Tabs.List>
       </Tabs>
