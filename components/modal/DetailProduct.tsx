@@ -21,7 +21,7 @@ export default function DetailProduct(props: Props) {
   const { data, loading, refetch } = useQuery(GET_DETAIL_PRODUCT, {
     client: client,
     skip: !opened,
-    // fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'cache-and-network',
     variables: {
       product_id: id,
     },
@@ -74,6 +74,7 @@ export default function DetailProduct(props: Props) {
                     key={id}
                     product={product}
                     productVariant={productVariant}
+                    refetch={refetch}
                   />
                 );
               })}

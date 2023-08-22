@@ -416,3 +416,34 @@ export const UPDATE_STATUS_PRODUCT = gql`
     }
   }
 `;
+
+export const UPDATE_PRODUCT_VARIANT = gql`
+  mutation UpdateProductVariant(
+    $id: Int!
+    $price: numeric!
+    $min_wholesale: Int!
+    $price_wholesale: numeric!
+    $scale: Int!
+    $stock: Int!
+  ) {
+    update_product_variants(
+      where: { id: { _eq: $id } }
+      _set: {
+        price: $price
+        min_wholesale: $min_wholesale
+        price_wholesale: $price_wholesale
+        scale: $scale
+        stock: $stock
+      }
+    ) {
+      affected_rows
+      returning {
+        price
+        min_wholesale
+        price_wholesale
+        scale
+        stock
+      }
+    }
+  }
+`;
