@@ -27,6 +27,8 @@ export default function DetailProduct(props: Props) {
     },
   });
 
+  console.log('data : ', data);
+
   const product = useMemo(() => data?.products?.[0] || {}, [data]);
 
   const isMobile = useMediaQuery('(max-width: 50em)');
