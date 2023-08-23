@@ -27,8 +27,6 @@ export default function DetailProduct(props: Props) {
     },
   });
 
-  console.log('data : ', data);
-
   const product = useMemo(() => data?.products?.[0] || {}, [data]);
 
   const isMobile = useMediaQuery('(max-width: 50em)');
@@ -62,7 +60,7 @@ export default function DetailProduct(props: Props) {
           <Text ta="center" fw={700} fz="xl" mb="md">
             {product.name}
           </Text>
-          <Box mb="md">
+          <Box mb="lg">
             <Text fw={700}>Deskripsi Produk</Text>
             <Text>{product.description || '-'}</Text>
           </Box>
@@ -83,7 +81,7 @@ export default function DetailProduct(props: Props) {
             </Box>
           </Box>
 
-          <Flex justify="end" gap="md">
+          <Flex justify="end" gap="md" mb="lg">
             {product.status === PRODUCT_STATUS.ACTIVE && (
               <Button
                 mt="xl"

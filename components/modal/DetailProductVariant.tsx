@@ -256,8 +256,6 @@ export default function DetailProductVariant(props: Props) {
                 editing ? (
                   <NumberInput
                     ta="right"
-                    withAsterisk
-                    hideControls
                     min={1}
                     step={1}
                     placeholder="Tambahkan Skala"
