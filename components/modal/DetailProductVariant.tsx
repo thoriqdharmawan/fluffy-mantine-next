@@ -1,15 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  ActionIcon,
-  Flex,
-  Box,
-  Text,
-  Table,
-  NumberInput,
-  Switch,
-  Input,
-  TextInput,
-} from '@mantine/core';
+import { ActionIcon, Flex, Box, Text, Table, NumberInput, Switch, TextInput } from '@mantine/core';
 import { convertToRupiah } from '../../context/helpers';
 import { IconCheck, IconEdit, IconX } from '@tabler/icons';
 import { TableProductsVariants } from '../../mock/products';

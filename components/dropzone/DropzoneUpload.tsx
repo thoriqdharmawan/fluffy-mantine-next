@@ -1,5 +1,7 @@
+import { CSSProperties } from 'react';
 import { Button, Flex, Group, Text, useMantineTheme, Image } from '@mantine/core';
 import { Dropzone, DropzoneProps, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { SystemProp } from '@mantine/styles';
 import { showNotification } from '@mantine/notifications';
 import { type UseFormReturnType } from '@mantine/form';
 import { IconUpload, IconPhoto, IconX } from '@tabler/icons';
@@ -7,23 +9,24 @@ import { IconUpload, IconPhoto, IconX } from '@tabler/icons';
 import { FormValues } from '../../pages/products/add';
 
 interface DropzoneInterface extends Partial<DropzoneProps> {
-  form: UseFormReturnType<FormValues>;
+  form: UseFormReturnType<FormValues | any>;
   files: FileWithPath[];
   onDelete: () => void;
   dropzoneProps: any;
+  wrapperImageAlign?: SystemProp<CSSProperties['alignItems']>;
 }
 
 const IMG_PLACEHOLDER_SIZE = 300;
 
 export default function DropzoneUpload(props: DropzoneInterface) {
-  const { form, files, onDelete, dropzoneProps } = props;
+  const { form, files, onDelete, dropzoneProps, wrapperImageAlign } = props;
   const theme = useMantineTheme();
 
   if (form?.values.image || files[0]) {
     const imageUrl = form?.values.image || URL.createObjectURL(files?.[0]);
 
     return (
-      <Flex direction="column">
+      <Flex direction="column" align={wrapperImageAlign || 'inherit'}>
         <Image
           src={imageUrl}
           imageProps={{ onLoad: () => URL.revokeObjectURL(imageUrl) }}

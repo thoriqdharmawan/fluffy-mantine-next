@@ -450,3 +450,20 @@ export const UPDATE_PRODUCT_VARIANT = gql`
     }
   }
 `;
+
+export const UPDATE_PRODUCT_DETAIL = gql`
+  mutation UpdateProductDetail($id: uuid!, $name: String!, $description: String, $image: String) {
+    update_products(
+      where: { id: { _eq: $id } }
+      _set: { name: $name, image: $image, description: $description }
+    ) {
+      affected_rows
+      returning {
+        id
+        name
+        description
+        image
+      }
+    }
+  }
+`;

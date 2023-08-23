@@ -1,12 +1,20 @@
-import { useMemo } from 'react';
-import { useQuery } from '@apollo/client';
-import { Button, Box, Flex, Modal, Image, Text } from '@mantine/core';
+import { useMemo, useState } from 'react';
+import { useMutation, useQuery } from '@apollo/client';
+import { Button, Box, Flex, Modal, Image, Text, ActionIcon, TextInput } from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { FileWithPath } from '@mantine/dropzone';
 import { useMediaQuery } from '@mantine/hooks';
-import { GET_DETAIL_PRODUCT } from '../../services/products';
+import { IconCheck, IconX, IconEdit } from '@tabler/icons';
+
+import { GET_DETAIL_PRODUCT, UPDATE_PRODUCT_DETAIL } from '../../services/products';
 import { PRODUCT_STATUS } from '../../constant/global';
+
 import client from '../../apollo-client';
 import Loading from '../loading/Loading';
 import DetailProductVariant from './DetailProductVariant';
+import DropzoneUpload from '../dropzone/DropzoneUpload';
+import { handleUploadProductImage } from '../dropzone/UploadImage';
+import { showNotification } from '@mantine/notifications';
 
 interface Props {
   opened: boolean;
@@ -15,8 +23,30 @@ interface Props {
   onUpdateStatus: (status: string) => void;
 }
 
+interface FormValues {
+  image: string | undefined;
+  name: string | undefined;
+  description: string | undefined;
+}
+
 export default function DetailProduct(props: Props) {
   const { id, opened, onClose, onUpdateStatus } = props;
+  const [editing, setEditing] = useState<boolean>(false);
+  const [files, setFiles] = useState<FileWithPath[]>([]);
+  const [loadingUpdate, setLoadingUpdate] = useState<boolean>(false);
+  const [updateImage, setUpdateImage] = useState<boolean>(false);
+
+  const form = useForm<FormValues>({
+    initialValues: {
+      image: '',
+      name: '',
+      description: '',
+    },
+    validate: {
+      name: (value) => (!value ? 'Bagian ini diperlukan' : null),
+    },
+  });
+  const [updateDetailProduct] = useMutation(UPDATE_PRODUCT_DETAIL, { client });
 
   const { data, loading, refetch } = useQuery(GET_DETAIL_PRODUCT, {
     client: client,
@@ -24,6 +54,10 @@ export default function DetailProduct(props: Props) {
     fetchPolicy: 'cache-and-network',
     variables: {
       product_id: id,
+    },
+    onCompleted: ({ products }) => {
+      const { image, name, description } = products?.[0] || {};
+      form.setValues({ image, name, description });
     },
   });
 
@@ -37,6 +71,56 @@ export default function DetailProduct(props: Props) {
     onClose();
   };
 
+  const toggleEditing = () => {
+    setEditing((prev) => !prev);
+  };
+
+  const handleSubmitEdit = async () => {
+    const { hasErrors } = form.validate();
+
+    if (!hasErrors) {
+      setLoadingUpdate(true);
+      const { name, image, description } = form.values;
+
+      await updateDetailProduct({ variables: { id, name, image, description } })
+        .then(() => {
+          if (updateImage) {
+            handleUploadProductImage({
+              productId: id,
+              setLoading: (loading) => {
+                setLoadingUpdate(loading);
+                setUpdateImage(loading);
+              },
+              files,
+            });
+          } else {
+            setLoadingUpdate(false);
+            showNotification({
+              title: 'Yeayy, Sukses!! 😊',
+              message: 'Produk berhasil dibuat',
+              icon: <IconCheck />,
+              color: 'green',
+            });
+          }
+          refetch();
+        })
+        .catch(() => {
+          setLoadingUpdate(false);
+        });
+    }
+
+    toggleEditing();
+  };
+
+  const handleDeleteFiles = () => {
+    setUpdateImage(true);
+    if (form?.values.image) {
+      form.setValues({ image: '' });
+    } else {
+      setFiles([]);
+    }
+  };
+
   return (
     <Modal
       opened={opened}
@@ -46,24 +130,84 @@ export default function DetailProduct(props: Props) {
       fullScreen={isMobile}
       centered
     >
-      <Image
-        maw={240}
-        height={240}
-        mx="auto"
-        radius="md"
-        src={product.image}
-        alt={product.name}
-        withPlaceholder
-      />
+      {editing ? (
+        <DropzoneUpload
+          form={form}
+          files={files}
+          onDelete={handleDeleteFiles}
+          wrapperImageAlign="center"
+          dropzoneProps={{
+            onDrop: setFiles,
+            multiple: false,
+          }}
+        />
+      ) : (
+        <Image
+          maw={300}
+          height={300}
+          mx="auto"
+          radius="md"
+          src={product.image}
+          alt={product.name}
+          withPlaceholder
+        />
+      )}
+
       {!loading && (
         <Box mt="lg">
           <Text ta="center" fw={700} fz="xl" mb="md">
-            {product.name}
+            {editing ? (
+              <TextInput
+                mt="xs"
+                withAsterisk
+                placeholder="Tambahkan Nama Produk"
+                {...form.getInputProps('name')}
+              />
+            ) : (
+              product.name
+            )}
           </Text>
           <Box mb="lg">
             <Text fw={700}>Deskripsi Produk</Text>
-            <Text>{product.description || '-'}</Text>
+            <Box>
+              {editing ? (
+                <TextInput
+                  mt="xs"
+                  placeholder="Tambahkan Deskripsi Produk"
+                  {...form.getInputProps('description')}
+                />
+              ) : (
+                <Text>{product.description || '-'}</Text>
+              )}
+            </Box>
           </Box>
+
+          {editing ? (
+            <Flex mb="xl" justify="end" gap="xs">
+              <ActionIcon
+                disabled={loadingUpdate}
+                onClick={toggleEditing}
+                variant="default"
+                color="red"
+              >
+                <IconX size="1.125rem" />
+              </ActionIcon>
+              <ActionIcon
+                disabled={loadingUpdate}
+                onClick={handleSubmitEdit}
+                variant="filled"
+                color="blue"
+              >
+                <IconCheck size="1.125rem" />
+              </ActionIcon>
+            </Flex>
+          ) : (
+            <Flex mt="lb" justify="end">
+              <ActionIcon disabled={loading} onClick={toggleEditing} variant="filled" color="blue">
+                <IconEdit size="1.125rem" />
+              </ActionIcon>
+            </Flex>
+          )}
 
           <Box mb="md">
             <Text fw={700}>Varian Produk</Text>
