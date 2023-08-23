@@ -425,6 +425,7 @@ export const UPDATE_PRODUCT_VARIANT = gql`
     $price_wholesale: numeric!
     $scale: Int!
     $stock: Int!
+    $sku: String!
   ) {
     update_product_variants(
       where: { id: { _eq: $id } }
@@ -434,6 +435,7 @@ export const UPDATE_PRODUCT_VARIANT = gql`
         price_wholesale: $price_wholesale
         scale: $scale
         stock: $stock
+        sku: $sku
       }
     ) {
       affected_rows
@@ -443,6 +445,24 @@ export const UPDATE_PRODUCT_VARIANT = gql`
         price_wholesale
         scale
         stock
+        sku
+      }
+    }
+  }
+`;
+
+export const UPDATE_PRODUCT_DETAIL = gql`
+  mutation UpdateProductDetail($id: uuid!, $name: String!, $description: String, $image: String) {
+    update_products(
+      where: { id: { _eq: $id } }
+      _set: { name: $name, image: $image, description: $description }
+    ) {
+      affected_rows
+      returning {
+        id
+        name
+        description
+        image
       }
     }
   }

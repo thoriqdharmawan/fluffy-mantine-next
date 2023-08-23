@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ActionIcon, Flex, Box, Text, Table, NumberInput, Switch } from '@mantine/core';
+import { ActionIcon, Flex, Box, Text, Table, NumberInput, Switch, TextInput } from '@mantine/core';
 import { convertToRupiah } from '../../context/helpers';
 import { IconCheck, IconEdit, IconX } from '@tabler/icons';
 import { TableProductsVariants } from '../../mock/products';
@@ -48,8 +48,8 @@ export default function DetailProductVariant(props: Props) {
       stock: productVariant.stock,
       has_variant_scale: productVariant.has_variant_scale,
       variant_scale: productVariant.scale,
+      sku: productVariant.sku,
     },
-
     validate: {
       price: (value) => (!value ? 'Bagian ini diperlukan' : null),
       price_wholesale: (value, values) => {
@@ -78,8 +78,15 @@ export default function DetailProductVariant(props: Props) {
 
     if (!hasErrors) {
       setLoading(true);
-      const { price, price_wholesale, min_wholesale, has_price_wholesale, variant_scale, stock } =
-        form.values;
+      const {
+        price,
+        price_wholesale,
+        min_wholesale,
+        has_price_wholesale,
+        variant_scale,
+        stock,
+        sku,
+      } = form.values;
 
       const priceWholesale = has_price_wholesale ? price_wholesale : price;
 
@@ -89,22 +96,22 @@ export default function DetailProductVariant(props: Props) {
           price: price,
           min_wholesale: min_wholesale,
           price_wholesale: priceWholesale,
-          scale: variant_scale,
-          stock: stock,
+          scale: variant_scale || 1,
+          stock: stock || 0,
+          sku: sku,
         },
       })
         .then(({ data }) => {
-          const { min_wholesale, price, price_wholesale, scale, stock } =
+          const { min_wholesale, price, price_wholesale, scale, stock, sku } =
             data?.update_product_variants?.returning?.[0];
 
           form.setValues({
             price,
-            // has_price_wholesale,
             price_wholesale,
             min_wholesale,
             stock,
-            // has_variant_scale: productVariant.has_variant_scale,
             variant_scale: scale,
+            sku,
           });
           toggleEditing();
           refetch();
@@ -129,7 +136,18 @@ export default function DetailProductVariant(props: Props) {
       <Text fw={700} fz="md">
         {[variant1, variant2].filter((data) => data).join(' | ')}
       </Text>
-      <Text mb="sm">SKU: {productVariant.sku || '-'}</Text>
+      <Flex mb="sm" align="center">
+        <Text mr="xs">SKU: </Text>
+        {editing ? (
+          <TextInput
+            placeholder="Tambahkan SKU"
+            labelProps={{ mb: 8 }}
+            {...form.getInputProps(`sku`)}
+          />
+        ) : (
+          <Text>{productVariant.sku || '-'}</Text>
+        )}
+      </Flex>
 
       <Table mt="md" withBorder>
         <tbody>
@@ -157,7 +175,7 @@ export default function DetailProductVariant(props: Props) {
               )
             }
           />
-          {productVariant.price !== productVariant.price_wholesale && (
+          {(productVariant.price !== productVariant.price_wholesale || editing) && (
             <>
               {form.values.has_price_wholesale && (
                 <ItemRow
@@ -195,7 +213,6 @@ export default function DetailProductVariant(props: Props) {
                         min={1}
                         ta="right"
                         withAsterisk
-                        hideControls
                         placeholder="Tambahkan Minimal Pembelian Grosir"
                         {...form.getInputProps(`min_wholesale`)}
                       />
@@ -229,8 +246,6 @@ export default function DetailProductVariant(props: Props) {
                 editing ? (
                   <NumberInput
                     ta="right"
-                    withAsterisk
-                    hideControls
                     min={1}
                     step={1}
                     placeholder="Tambahkan Skala"
