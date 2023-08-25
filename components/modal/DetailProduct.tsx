@@ -35,6 +35,7 @@ export default function DetailProduct(props: Props) {
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const [loadingUpdate, setLoadingUpdate] = useState<boolean>(false);
   const [updateImage, setUpdateImage] = useState<boolean>(false);
+  const [adding, setAdding] = useState<boolean>(false);
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -51,7 +52,7 @@ export default function DetailProduct(props: Props) {
   const { data, loading, refetch } = useQuery(GET_DETAIL_PRODUCT, {
     client: client,
     skip: !opened,
-    fetchPolicy: 'cache-and-network',
+    // fetchPolicy: 'cache-and-network',
     variables: {
       product_id: id,
     },
@@ -225,6 +226,19 @@ export default function DetailProduct(props: Props) {
             </Box>
           </Box>
 
+          {adding && (
+            <DetailProductVariant
+              type="ADD"
+              refetch={refetch}
+              onClose={() => setAdding(false)}
+              product={product}
+            />
+          )}
+
+          <Button mt="md" mb="xl" variant="default" fullWidth onClick={() => setAdding(true)}>
+            Tambah Varian Baru
+          </Button>
+
           <Flex justify="end" gap="md" mb="lg">
             {product.status === PRODUCT_STATUS.ACTIVE && (
               <Button
@@ -237,20 +251,31 @@ export default function DetailProduct(props: Props) {
               </Button>
             )}
             {product.status === PRODUCT_STATUS.OPNAME && (
-              <Button
-                mt="xl"
-                fullWidth={isMobile}
-                onClick={() => handleChangeStatus(PRODUCT_STATUS.ACTIVE)}
-              >
-                Pindah ke Produk Aktif
-              </Button>
+              <>
+                <Button
+                  mt="xl"
+                  color="red"
+                  variant="light"
+                  fullWidth={isMobile}
+                  onClick={() => handleChangeStatus(PRODUCT_STATUS.DELETE)}
+                >
+                  Hapus Produk
+                </Button>
+                <Button
+                  mt="xl"
+                  fullWidth={isMobile}
+                  onClick={() => handleChangeStatus(PRODUCT_STATUS.ACTIVE)}
+                >
+                  Pindah ke Produk Aktif
+                </Button>
+              </>
             )}
             {product.status === PRODUCT_STATUS.WAITING_FOR_APPROVAL && (
               <>
                 <Button
                   mt="xl"
                   color="red"
-                  variant="default"
+                  variant="light"
                   fullWidth={isMobile}
                   onClick={() => handleChangeStatus(PRODUCT_STATUS.REJECT)}
                 >

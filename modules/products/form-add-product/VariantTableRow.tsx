@@ -1,30 +1,46 @@
 import { memo } from 'react';
-import { NumberInput, TextInput, Switch } from '@mantine/core';
+import { NumberInput, TextInput, Switch, Select, Button, Flex } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 
 import { FormValues } from '../../../pages/products/add';
+import { DEFAULT_VARIANTS_TYPE } from '../../../mock/product-varian-types';
 
 type Props = {
   coord?: number[];
   form: UseFormReturnType<FormValues>;
   index: number;
+  totalVariant: number;
 };
 
 const VariantTableRow = memo(function VariantTableRowMemo(props: Props) {
-  const { coord, form, index } = props;
+  const { coord, form, index, totalVariant } = props;
   const { variants, productVariants } = form.values;
 
-  const variant1 = variants?.[0]?.values?.[coord?.[0] || 0];
-  const variant2 = variants?.[1]?.values?.[coord?.[1] || 0];
+  // const variant1 = variants?.[0]?.values?.[coord?.[0] || 0];
+  // const variant2 = variants?.[1]?.values?.[coord?.[1] || 0];
 
-  const { has_price_wholesale, has_variant_scale } = productVariants?.[index] || {}
+  const { has_price_wholesale, has_variant_scale } = productVariants?.[index] || {};
+
+  const handleDeleteVariant = () => {
+    form.removeListItem('productVariants', index);
+  };
 
   return (
     <tr>
-      <td valign='top'>
-        {variant1} {variant2 && `- ${variant2}`}
+      <td valign="top">
+        <Select
+          placeholder="Pilih Varian"
+          data={DEFAULT_VARIANTS_TYPE?.map((v) => ({ label: v, value: v }))}
+          {...form.getInputProps(`productVariants.${index}.name`)}
+        />
+
+        {totalVariant !== 1 && (
+          <Button onClick={handleDeleteVariant} mt="xl" color="red" variant="light" compact>
+            Hapus Varian
+          </Button>
+        )}
       </td>
-      <td valign='top'>
+      <td valign="top">
         <NumberInput
           min={0}
           icon="Rp"
@@ -58,7 +74,9 @@ const VariantTableRow = memo(function VariantTableRowMemo(props: Props) {
             placeholder="Tambahkan Harga Jual Grosir"
             parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
             formatter={(value: any) =>
-              !Number.isNaN(parseFloat(value)) ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : ''
+              !Number.isNaN(parseFloat(value))
+                ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                : ''
             }
             {...form.getInputProps(`productVariants.${index}.price_wholesale`)}
           />
@@ -74,26 +92,26 @@ const VariantTableRow = memo(function VariantTableRowMemo(props: Props) {
             {...form.getInputProps(`productVariants.${index}.min_wholesale`)}
           />
         )}
-        <Switch
+        {/* <Switch
           label="Tambahkan Skala Varian?"
           mb="md"
           checked={has_variant_scale}
           {...form.getInputProps(`productVariants.${index}.has_variant_scale`)}
+        /> */}
+        {/* {has_variant_scale && ( */}
+        <NumberInput
+          label="Skala Varian"
+          placeholder="Tambahkan Skala Varian"
+          min={1}
+          step={1}
+          withAsterisk={has_variant_scale}
+          labelProps={{ mb: 8 }}
+          mb={24}
+          {...form.getInputProps(`productVariants.${index}.variant_scale`)}
         />
-        {has_variant_scale && (
-          <NumberInput
-            label="Skala Varian"
-            placeholder="Tambahkan Skala Varian"
-            min={1}
-            step={1}
-            withAsterisk={has_variant_scale}
-            labelProps={{ mb: 8 }}
-            mb={24}
-            {...form.getInputProps(`productVariants.${index}.variant_scale`)}
-          />
-        )}
+        {/* )} */}
       </td>
-      <td valign='top'>
+      <td valign="top">
         <TextInput
           // withAsterisk
           label="SKU Produk"
@@ -102,7 +120,7 @@ const VariantTableRow = memo(function VariantTableRowMemo(props: Props) {
           {...form.getInputProps(`productVariants.${index}.sku`)}
         />
       </td>
-      <td valign='top'>
+      <td valign="top">
         <NumberInput
           // withAsterisk
           label="Stock Produk"
@@ -111,7 +129,7 @@ const VariantTableRow = memo(function VariantTableRowMemo(props: Props) {
           {...form.getInputProps(`productVariants.${index}.stock`)}
         />
       </td>
-      <td valign='top'>
+      <td valign="top">
         <Switch
           onLabel="Ya"
           offLabel="Tidak"

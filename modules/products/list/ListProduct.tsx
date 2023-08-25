@@ -28,7 +28,7 @@ type TotalDatas = {
   waiting: number;
 };
 
-const LIMIT = 5;
+const LIMIT = 10;
 
 export default function ListProduct(props: Props) {
   const { value } = useGlobal();
@@ -52,13 +52,13 @@ export default function ListProduct(props: Props) {
 
   const [updateStatus] = useMutation(UPDATE_STATUS_PRODUCT, { client });
 
-  const { data, loading, error, refetch } = useQuery(GET_LIST_PRODUCTS, {
+  const { data, loading, error, refetch, fetchMore } = useQuery(GET_LIST_PRODUCTS, {
     client: client,
     skip: !companyId,
     fetchPolicy: 'cache-and-network',
     variables: {
       limit: LIMIT,
-      offset: (page - 1) * LIMIT,
+      offset: 0,
       companyId: companyId,
       where: {
         _and: {
@@ -137,6 +137,20 @@ export default function ListProduct(props: Props) {
       });
   };
 
+  const handleFetchMore = () => {
+    fetchMore({
+      variables: {
+        offset: data?.products?.length,
+      },
+      updateQuery: (previousResult, { fetchMoreResult }) => {
+        return {
+          ...previousResult,
+          products: [...previousResult.products, ...(fetchMoreResult?.products || [])],
+        };
+      },
+    });
+  };
+
   return (
     <>
       <Flex display="flex" justify="end" mb="sm">
@@ -195,6 +209,15 @@ export default function ListProduct(props: Props) {
       {listViewType === LIST_VIEW_TYPES.GRID && (
         <ListProductCard data={data} loading={loading} handleUpdateStatus={handleUpdateStatus} />
       )}
+
+      {data?.total.aggregate.count > LIMIT &&
+        data?.total.aggregate.count !== data?.products?.length && (
+          <Flex mt="xl" align="center" justify="center">
+            <Button fullWidth onClick={handleFetchMore}>
+              Lihat Lebih Banyak
+            </Button>
+          </Flex>
+        )}
 
       <ChangeProductPrices
         opened={changePrice.open}

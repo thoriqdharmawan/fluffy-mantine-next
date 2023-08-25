@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Group, Select, MultiSelect, Table, Title, SelectItem, Text } from '@mantine/core';
+import { Group, Select, MultiSelect, Table, Title, SelectItem, Button } from '@mantine/core';
 import {
   DEFAULT_VARIANTS_TYPE,
   DEFAULT_VARIANTS_TYPE_NAME,
@@ -36,10 +36,11 @@ const SelectVariant = (props: SelectVariantType) => {
         type: prev.type,
         productVariants: coords?.map((coord) => ({
           coord,
+          name: '',
           sku: '',
-          price: '',
-          price_purchase: '',
-          price_wholesale: '',
+          price: null,
+          price_purchase: null,
+          price_wholesale: null,
           min_wholesale: 1,
           has_price_purchase: false,
           has_price_wholesale: false,
@@ -102,16 +103,42 @@ export default function AddProductVariant({ form }: { form: UseFormReturnType<Fo
   };
 
   const rows = productVariants?.map((productVariant, idx) => {
-    return <VariantTableRow key={idx} coord={productVariant.coord} form={form} index={idx} />;
+    return (
+      <VariantTableRow
+        key={idx}
+        totalVariant={productVariants?.length}
+        coord={productVariant.coord}
+        form={form}
+        index={idx}
+      />
+    );
   });
 
-  const handleAddVariants = () => {
-    form.setValues((prev) => ({ ...prev, variants: [...(prev.variants || []), DEFAULT_VARIANT] }));
+  // const handleAddVariants = () => {
+  //   form.setValues((prev) => ({ ...prev, variants: [...(prev.variants || []), DEFAULT_VARIANT] }));
+  // };
+
+  const handleAddNewVariant = () => {
+    form.insertListItem('productVariants', {
+      name: '',
+      sku: '',
+      price: '',
+      price_purchase: '',
+      price_wholesale: '',
+      min_wholesale: 1,
+      has_price_purchase: false,
+      has_price_wholesale: false,
+      has_variant_scale: false,
+      variant_scale: 1,
+      stock: 0,
+      status: GLOABL_STATUS.ACTIVE,
+      isPrimary: false,
+    });
   };
 
   return (
     <>
-      <div>
+      <div hidden>
         {variants?.map((_, idx) => {
           return (
             <SelectVariant
@@ -125,18 +152,7 @@ export default function AddProductVariant({ form }: { form: UseFormReturnType<Fo
         })}
       </div>
 
-      {/* <Button
-        onClick={handleAddVariants}
-        leftIcon={<IconPlus size="16" />}
-        disabled={!!variants?.[1]}
-        variant="default"
-        size="xs"
-        mt="md"
-      >
-        Tambah Varian Baru
-      </Button> */}
-
-      <Title order={6} my="md">
+      <Title hidden order={6} my="md">
         Tabel Varian
       </Title>
 
@@ -164,6 +180,10 @@ export default function AddProductVariant({ form }: { form: UseFormReturnType<Fo
           </tr>
         </tbody>
       </Table>
+
+      <Button mt="xl" onClick={handleAddNewVariant}>
+        Tambah Varian Baru
+      </Button>
     </>
   );
 }

@@ -8,11 +8,12 @@ export interface VariantInterface {
 
 export interface TableProductsVariants {
   id?: number;
+  name?: string;
   coord?: number[];
   sku?: string;
-  price?: number | string;
-  price_purchase?: number | string;
-  price_wholesale?: number | string;
+  price?: number | null;
+  price_purchase?: number | null;
+  price_wholesale?: number | null;
   min_wholesale?: number;
   has_price_purchase?: boolean;
   has_price_wholesale?: boolean;

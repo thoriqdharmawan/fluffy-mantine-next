@@ -65,6 +65,7 @@ export const GET_DETAIL_PRODUCT = gql`
         sku
         status
         stock
+        name
       }
     }
   }
@@ -420,6 +421,7 @@ export const UPDATE_STATUS_PRODUCT = gql`
 export const UPDATE_PRODUCT_VARIANT = gql`
   mutation UpdateProductVariant(
     $id: Int!
+    $name: String!
     $price: numeric!
     $min_wholesale: Int!
     $price_wholesale: numeric!
@@ -427,9 +429,10 @@ export const UPDATE_PRODUCT_VARIANT = gql`
     $stock: Int!
     $sku: String!
   ) {
-    update_product_variants(
+    mutate: update_product_variants(
       where: { id: { _eq: $id } }
       _set: {
+        name: $name
         price: $price
         min_wholesale: $min_wholesale
         price_wholesale: $price_wholesale
@@ -440,6 +443,7 @@ export const UPDATE_PRODUCT_VARIANT = gql`
     ) {
       affected_rows
       returning {
+        name
         price
         min_wholesale
         price_wholesale
@@ -447,6 +451,30 @@ export const UPDATE_PRODUCT_VARIANT = gql`
         stock
         sku
       }
+    }
+  }
+`;
+
+export const ADD_PRODUCT_VARIANT = gql`
+  mutation InsertProductVariants($objects: [product_variants_insert_input!]! = {}) {
+    mutate: insert_product_variants(objects: $objects) {
+      affected_rows
+      returning {
+        name
+        price
+        min_wholesale
+        price_wholesale
+        scale
+        stock
+        sku
+      }
+    }
+  }
+`;
+export const DELETE_PRODUCT_VARIANT = gql`
+  mutation DeleteProduct($id: Int!) {
+    delete_product_variants(where: { id: { _eq: $id } }) {
+      affected_rows
     }
   }
 `;

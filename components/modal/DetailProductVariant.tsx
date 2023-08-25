@@ -1,11 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ActionIcon, Flex, Box, Text, Table, NumberInput, Switch, TextInput } from '@mantine/core';
 import { convertToRupiah } from '../../context/helpers';
-import { IconCheck, IconEdit, IconX } from '@tabler/icons';
+import { IconCheck, IconEdit, IconTrash, IconX } from '@tabler/icons';
 import { TableProductsVariants } from '../../mock/products';
 import { useForm } from '@mantine/form';
 import { useMutation } from '@apollo/client';
-import { UPDATE_PRODUCT_VARIANT } from '../../services/products';
+import {
+  ADD_PRODUCT_VARIANT,
+  DELETE_PRODUCT_VARIANT,
+  UPDATE_PRODUCT_VARIANT,
+} from '../../services/products';
 import client from '../../apollo-client';
 
 const ItemRow = (props: { label: string; value: any }) => {
@@ -22,35 +26,41 @@ const ItemRow = (props: { label: string; value: any }) => {
 };
 
 interface Props {
-  product: any;
-  productVariant: any;
+  product?: any;
+  productVariant?: any;
   refetch: () => void;
+  type?: string;
+  onClose?: () => void;
 }
 
 interface FormValues extends TableProductsVariants {}
 
 export default function DetailProductVariant(props: Props) {
-  const { product, productVariant, refetch } = props;
-  const { variants } = product;
-  const { coord } = productVariant;
+  const { product, productVariant, refetch, type = 'VIEW', onClose } = props;
 
-  const [editing, setEditing] = useState<boolean>(false);
+  const [editing, setEditing] = useState<boolean>(type === 'ADD');
   const [loading, setLoading] = useState<boolean>(false);
 
   const [updateProductVariant] = useMutation(UPDATE_PRODUCT_VARIANT, { client });
+  const [deleteProductVariant] = useMutation(DELETE_PRODUCT_VARIANT, { client });
+  const [addProductVariant] = useMutation(ADD_PRODUCT_VARIANT, { client });
+
+  const INITIAL_VALUE = {
+    name: productVariant?.name,
+    price: productVariant?.price,
+    has_price_wholesale: productVariant?.has_price_wholesale !== productVariant?.price,
+    price_wholesale: productVariant?.price_wholesale,
+    min_wholesale: productVariant?.min_wholesale,
+    stock: productVariant?.stock,
+    has_variant_scale: (productVariant?.has_variant_scale || 1) > 1,
+    variant_scale: productVariant?.scale,
+    sku: productVariant?.sku,
+  };
 
   const form = useForm<FormValues>({
-    initialValues: {
-      price: productVariant.price,
-      has_price_wholesale: productVariant.has_price_wholesale,
-      price_wholesale: productVariant.price_wholesale,
-      min_wholesale: productVariant.min_wholesale,
-      stock: productVariant.stock,
-      has_variant_scale: productVariant.has_variant_scale,
-      variant_scale: productVariant.scale,
-      sku: productVariant.sku,
-    },
+    initialValues: INITIAL_VALUE,
     validate: {
+      name: (value) => (!value ? 'Bagian ini diperlukan' : null),
       price: (value) => (!value ? 'Bagian ini diperlukan' : null),
       price_wholesale: (value, values) => {
         const isRequired = values.has_price_wholesale;
@@ -64,12 +74,12 @@ export default function DetailProductVariant(props: Props) {
   });
 
   useEffect(() => {
-    const { price, price_wholesale, scale } = productVariant;
+    const { price, price_wholesale, scale } = productVariant || {};
     form.setValues({
       has_price_wholesale: (price_wholesale && price) !== price_wholesale,
       has_variant_scale: (scale || 0) > 1,
     });
-  }, [productVariant]);
+  }, [productVariant, editing]);
 
   const toggleEditing = () => setEditing((prev) => !prev);
 
@@ -79,6 +89,7 @@ export default function DetailProductVariant(props: Props) {
     if (!hasErrors) {
       setLoading(true);
       const {
+        name,
         price,
         price_wholesale,
         min_wholesale,
@@ -90,22 +101,46 @@ export default function DetailProductVariant(props: Props) {
 
       const priceWholesale = has_price_wholesale ? price_wholesale : price;
 
-      updateProductVariant({
-        variables: {
-          id: productVariant.id,
-          price: price,
-          min_wholesale: min_wholesale,
-          price_wholesale: priceWholesale,
-          scale: variant_scale || 1,
-          stock: stock || 0,
-          sku: sku,
-        },
-      })
+      const mutate =
+        type === 'ADD'
+          ? addProductVariant({
+              variables: {
+                objects: [
+                  {
+                    productId: product?.id,
+                    name: name,
+                    price: price,
+                    min_wholesale: min_wholesale,
+                    price_wholesale: priceWholesale,
+                    scale: variant_scale || 1,
+                    stock: stock || 0,
+                    sku: sku,
+                    status: 'ACTIVE',
+                    is_primary: false,
+                  },
+                ],
+              },
+            })
+          : updateProductVariant({
+              variables: {
+                id: productVariant?.id,
+                name: name,
+                price: price,
+                min_wholesale: min_wholesale,
+                price_wholesale: priceWholesale,
+                scale: variant_scale || 1,
+                stock: stock || 0,
+                sku: sku,
+              },
+            });
+
+      mutate
         .then(({ data }) => {
-          const { min_wholesale, price, price_wholesale, scale, stock, sku } =
-            data?.update_product_variants?.returning?.[0];
+          const { min_wholesale, name, price, price_wholesale, scale, stock, sku } =
+            data?.mutate?.returning?.[0];
 
           form.setValues({
+            name,
             price,
             price_wholesale,
             min_wholesale,
@@ -113,8 +148,8 @@ export default function DetailProductVariant(props: Props) {
             variant_scale: scale,
             sku,
           });
-          toggleEditing();
           refetch();
+          setEditing(false);
         })
         .finally(() => {
           setLoading(false);
@@ -122,8 +157,25 @@ export default function DetailProductVariant(props: Props) {
     }
   };
 
-  const variant1 = variants?.[0]?.values[coord[0]] || null;
-  const variant2 = variants?.[1]?.values[coord[1]] || null;
+  const handleCloseEditing = () => {
+    if (onClose) {
+      onClose();
+      return;
+    }
+
+    form.setValues(INITIAL_VALUE);
+    toggleEditing();
+  };
+
+  const handleDeleteVariant = () => {
+    deleteProductVariant({
+      variables: {
+        id: productVariant?.id,
+      },
+    }).then(() => {
+      refetch();
+    });
+  };
 
   return (
     <Box
@@ -133,9 +185,13 @@ export default function DetailProductVariant(props: Props) {
         backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[1],
       })}
     >
-      <Text fw={700} fz="md">
-        {[variant1, variant2].filter((data) => data).join(' | ')}
-      </Text>
+      {editing ? (
+        <TextInput placeholder="Tambahkan Nama Varian" mb="md" {...form.getInputProps(`name`)} />
+      ) : (
+        <Text fw={700} fz="md">
+          {form?.values?.name || '-'}
+        </Text>
+      )}
       <Flex mb="sm" align="center">
         <Text mr="xs">SKU: </Text>
         {editing ? (
@@ -145,7 +201,7 @@ export default function DetailProductVariant(props: Props) {
             {...form.getInputProps(`sku`)}
           />
         ) : (
-          <Text>{productVariant.sku || '-'}</Text>
+          <Text>{form?.values?.sku || '-'}</Text>
         )}
       </Flex>
 
@@ -171,11 +227,11 @@ export default function DetailProductVariant(props: Props) {
                   {...form.getInputProps(`price`)}
                 />
               ) : (
-                convertToRupiah(productVariant.price) || '-'
+                convertToRupiah(form?.values?.price || 0) || '-'
               )
             }
           />
-          {(productVariant.price !== productVariant.price_wholesale || editing) && (
+          {(form?.values?.price !== form?.values?.price_wholesale || editing) && (
             <>
               {form.values.has_price_wholesale && (
                 <ItemRow
@@ -198,7 +254,7 @@ export default function DetailProductVariant(props: Props) {
                         {...form.getInputProps(`price_wholesale`)}
                       />
                     ) : (
-                      convertToRupiah(productVariant.price_wholesale) || '-'
+                      convertToRupiah(form?.values?.price_wholesale || 0) || '-'
                     )
                   }
                 />
@@ -217,7 +273,7 @@ export default function DetailProductVariant(props: Props) {
                         {...form.getInputProps(`min_wholesale`)}
                       />
                     ) : (
-                      productVariant.min_wholesale || '-'
+                      form?.values?.min_wholesale || '-'
                     )
                   }
                 />
@@ -235,28 +291,26 @@ export default function DetailProductVariant(props: Props) {
                   {...form.getInputProps(`stock`)}
                 />
               ) : (
-                productVariant.stock || '0'
+                form?.values?.stock || '0'
               )
             }
           />
-          {form.values.has_variant_scale && (
-            <ItemRow
-              label="Skala"
-              value={
-                editing ? (
-                  <NumberInput
-                    ta="right"
-                    min={1}
-                    step={1}
-                    placeholder="Tambahkan Skala"
-                    {...form.getInputProps(`variant_scale`)}
-                  />
-                ) : (
-                  productVariant.scale || '1'
-                )
-              }
-            />
-          )}
+          <ItemRow
+            label="Skala"
+            value={
+              editing ? (
+                <NumberInput
+                  ta="right"
+                  min={1}
+                  step={1}
+                  placeholder="Tambahkan Skala"
+                  {...form.getInputProps(`variant_scale`)}
+                />
+              ) : (
+                form?.values?.variant_scale || '1'
+              )
+            }
+          />
         </tbody>
       </Table>
 
@@ -268,17 +322,17 @@ export default function DetailProductVariant(props: Props) {
             {...form.getInputProps(`has_price_wholesale`)}
           />
 
-          <Switch
+          {/* <Switch
             label="Tambahkan Skala Varian?"
             checked={form.values.has_variant_scale}
             {...form.getInputProps(`has_variant_scale`)}
-          />
+          /> */}
         </Flex>
       )}
 
       {editing ? (
         <Flex mt="lg" justify="end" gap="xs">
-          <ActionIcon disabled={loading} onClick={toggleEditing} variant="default" color="red">
+          <ActionIcon disabled={loading} onClick={handleCloseEditing} variant="default" color="red">
             <IconX size="1.125rem" />
           </ActionIcon>
           <ActionIcon disabled={loading} onClick={handleSubmit} variant="filled" color="blue">
@@ -286,7 +340,10 @@ export default function DetailProductVariant(props: Props) {
           </ActionIcon>
         </Flex>
       ) : (
-        <Flex mt="lg" justify="end">
+        <Flex mt="lg" justify="space-between">
+          <ActionIcon onClick={handleDeleteVariant} variant="light" color="red">
+            <IconTrash size="1.125rem" />
+          </ActionIcon>
           <ActionIcon onClick={toggleEditing} variant="filled" color="blue">
             <IconEdit size="1.125rem" />
           </ActionIcon>
