@@ -197,7 +197,7 @@ export default function DetailProductVariant(props: Props) {
         <TextInput placeholder="Tambahkan Nama Varian" mb="md" {...form.getInputProps(`name`)} />
       ) : (
         <Text fw={700} fz="md">
-          {form?.values?.name || variant_old || '-'}
+          {form?.values?.name || '-'}
         </Text>
       )}
       <Flex mb="sm" align="center">
