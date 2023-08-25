@@ -37,8 +37,6 @@ interface FormValues extends TableProductsVariants {}
 
 export default function DetailProductVariant(props: Props) {
   const { product, productVariant, refetch, type = 'VIEW', onClose } = props;
-  const { variants } = product || {};
-  const { coord } = productVariant || {};
 
   const [editing, setEditing] = useState<boolean>(type === 'ADD');
   const [loading, setLoading] = useState<boolean>(false);
@@ -158,12 +156,6 @@ export default function DetailProductVariant(props: Props) {
         });
     }
   };
-
-  const variant_old = useMemo(() => {
-    const variant1 = variants?.[0]?.values[coord?.[0]] || null;
-    const variant2 = variants?.[1]?.values[coord?.[1]] || null;
-    return [variant1, variant2].filter((data) => data).join(' | ');
-  }, [variants, coord]);
 
   const handleCloseEditing = () => {
     if (onClose) {
