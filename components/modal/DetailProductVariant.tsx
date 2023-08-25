@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ActionIcon, Flex, Box, Text, Table, NumberInput, Switch, TextInput } from '@mantine/core';
 import { convertToRupiah } from '../../context/helpers';
 import { IconCheck, IconEdit, IconX } from '@tabler/icons';
@@ -122,8 +122,11 @@ export default function DetailProductVariant(props: Props) {
     }
   };
 
-  const variant1 = variants?.[0]?.values[coord[0]] || null;
-  const variant2 = variants?.[1]?.values[coord[1]] || null;
+  const variant_old = useMemo(() => {
+    const variant1 = variants?.[0]?.values[coord[0]] || null;
+    const variant2 = variants?.[1]?.values[coord[1]] || null;
+    return [variant1, variant2].filter((data) => data).join(' | ');
+  }, [variants, coord]);
 
   return (
     <Box
@@ -134,7 +137,7 @@ export default function DetailProductVariant(props: Props) {
       })}
     >
       <Text fw={700} fz="md">
-        {[variant1, variant2].filter((data) => data).join(' | ')}
+        {productVariant?.name || variant_old || '-'}
       </Text>
       <Flex mb="sm" align="center">
         <Text mr="xs">SKU: </Text>

@@ -46,15 +46,15 @@ import { addProduct, UPDATE_IMAGE_PRODUCT } from '../../../services/products';
 import { useGlobal } from '../../../context/global';
 import { PRODUCT_STATUS } from '../../../constant/global';
 
-export interface FormValues extends ProductsCardProps { }
+export interface FormValues extends ProductsCardProps {}
 
 export default function AddProducts() {
   const theme = useMantineTheme();
-  const {value} = useGlobal()
+  const { value } = useGlobal();
   const router = useRouter();
   const user: any = useUser();
 
-  const companyId = value.selectedCompany || user.companyId
+  const companyId = value.selectedCompany || user.companyId;
 
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -68,7 +68,23 @@ export default function AddProducts() {
       type: 'VARIANT',
       // variants: [],
       variants: [DEFAULT_VARIANT],
-      productVariants: [],
+      productVariants: [
+        {
+          name: '',
+          sku: '',
+          price: '',
+          price_purchase: '',
+          price_wholesale: '',
+          min_wholesale: 1,
+          has_price_purchase: false,
+          has_price_wholesale: false,
+          has_variant_scale: false,
+          variant_scale: 1,
+          stock: 0,
+          status: GLOABL_STATUS.ACTIVE,
+          isPrimary: false,
+        },
+      ],
       // productVariants: [
       //   {
       //     coord: [0],
@@ -93,32 +109,33 @@ export default function AddProducts() {
       // categories: (values: string[] | undefined) => {
       //   return !values || values?.length === 0 ? 'Bagian ini diperlukan' : null;
       // },
-      variants: {
-        label: (value) => (!value ? 'Bagian ini diperlukan' : null),
-        values: (values) => (values.length === 0 ? 'Bagian ini diperlukan' : null),
-      },
+      // variants: {
+      //   label: (value) => (!value ? 'Bagian ini diperlukan' : null),
+      //   values: (values) => (values.length === 0 ? 'Bagian ini diperlukan' : null),
+      // },
       productVariants: {
+        name: (value) => (!value ? 'Bagian ini diperlukan' : null),
         price: (value) => (!value ? 'Bagian ini diperlukan' : null),
         price_purchase: (value, values, path) => {
-          const index: number = Number(path.split('.')[1] || 0)
-          const isRequired = values.productVariants?.[index]?.has_price_purchase
-          return (isRequired && !value) ? 'Bagian ini diperlukan' : null
+          const index: number = Number(path.split('.')[1] || 0);
+          const isRequired = values.productVariants?.[index]?.has_price_purchase;
+          return isRequired && !value ? 'Bagian ini diperlukan' : null;
         },
         price_wholesale: (value, values, path) => {
-          const index: number = Number(path.split('.')[1] || 0)
-          const isRequired = values.productVariants?.[index]?.has_price_wholesale
-          return (isRequired && !value) ? 'Bagian ini diperlukan' : null
+          const index: number = Number(path.split('.')[1] || 0);
+          const isRequired = values.productVariants?.[index]?.has_price_wholesale;
+          return isRequired && !value ? 'Bagian ini diperlukan' : null;
         },
         min_wholesale: (value, values, path) => {
-          const index: number = Number(path.split('.')[1] || 0)
-          const isRequired = values.productVariants?.[index]?.has_price_wholesale
-          return (isRequired && !value) ? 'Bagian ini diperlukan' : null
+          const index: number = Number(path.split('.')[1] || 0);
+          const isRequired = values.productVariants?.[index]?.has_price_wholesale;
+          return isRequired && !value ? 'Bagian ini diperlukan' : null;
         },
         variant_scale: (value, values, path) => {
-          const index: number = Number(path.split('.')[1] || 0)
-          const isRequired = values.productVariants?.[index]?.has_variant_scale
-          return (isRequired && !value) ? 'Bagian ini diperlukan' : null
-        }
+          const index: number = Number(path.split('.')[1] || 0);
+          const isRequired = values.productVariants?.[index]?.has_variant_scale;
+          return isRequired && !value ? 'Bagian ini diperlukan' : null;
+        },
         // sku: (value) => (!value ? 'Bagian ini diperlukan' : null),
         // stock: (value) => (!value ? 'Bagian ini diperlukan' : null),
       },
@@ -176,7 +193,7 @@ export default function AddProducts() {
             .finally(() => {
               form.reset();
               setLoading(false);
-              handleDeleteFiles()
+              handleDeleteFiles();
               if (goToList) {
                 handleBack();
               }
@@ -213,13 +230,21 @@ export default function AddProducts() {
         })),
         status: PRODUCT_STATUS.WAITING_FOR_APPROVAL,
         product_variants: values.productVariants?.map((product_variant) => {
-          const { has_price_purchase, has_price_wholesale, price_purchase, price_wholesale, price, variant_scale } = product_variant
+          const {
+            has_price_purchase,
+            has_price_wholesale,
+            price_purchase,
+            price_wholesale,
+            price,
+            variant_scale,
+          } = product_variant;
 
-          const pricePurchase = has_price_purchase ? price_purchase : price
-          const priceWholesale = has_price_wholesale ? price_wholesale : price
+          const pricePurchase = has_price_purchase ? price_purchase : price;
+          const priceWholesale = has_price_wholesale ? price_wholesale : price;
 
           return {
             coord: product_variant.coord,
+            name: product_variant.name,
             is_primary: product_variant.isPrimary,
             price: product_variant.price,
             price_purchase: pricePurchase,
@@ -229,7 +254,7 @@ export default function AddProducts() {
             sku: product_variant.sku,
             status: product_variant.status,
             stock: product_variant.stock || 0,
-          }
+          };
         }),
       };
 

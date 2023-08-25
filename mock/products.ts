@@ -8,6 +8,7 @@ export interface VariantInterface {
 
 export interface TableProductsVariants {
   id?: number;
+  name?: string;
   coord?: number[];
   sku?: string;
   price?: number | string;

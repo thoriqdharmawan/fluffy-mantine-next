@@ -27,4 +27,19 @@ export const DEFAULT_VARIANTS_TYPE_NAME: VARIANTS_TYPE[] = [
   },
 ];
 
-export const DEFAULT_VARIANTS_TYPE: string[] = ['Pcs', 'Dus', 'Renceng', 'S', 'M', 'L', 'Manis', 'Pahit'];
+export const DEFAULT_VARIANTS_TYPE: string[] = [
+  'Pcs',
+  'Renceng',
+  'Dus',
+  'Box',
+  'Pak',
+  'Ball',
+  'Kg',
+  'Liter',
+  'Gram',
+  'Kodi',
+  'Dozen',
+  'Roll',
+  'Set',
+  'Karat',
+];

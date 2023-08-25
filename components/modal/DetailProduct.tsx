@@ -237,20 +237,31 @@ export default function DetailProduct(props: Props) {
               </Button>
             )}
             {product.status === PRODUCT_STATUS.OPNAME && (
-              <Button
-                mt="xl"
-                fullWidth={isMobile}
-                onClick={() => handleChangeStatus(PRODUCT_STATUS.ACTIVE)}
-              >
-                Pindah ke Produk Aktif
-              </Button>
+              <>
+                <Button
+                  mt="xl"
+                  color="red"
+                  variant="light"
+                  fullWidth={isMobile}
+                  onClick={() => handleChangeStatus(PRODUCT_STATUS.DELETE)}
+                >
+                  Hapus Produk
+                </Button>
+                <Button
+                  mt="xl"
+                  fullWidth={isMobile}
+                  onClick={() => handleChangeStatus(PRODUCT_STATUS.ACTIVE)}
+                >
+                  Pindah ke Produk Aktif
+                </Button>
+              </>
             )}
             {product.status === PRODUCT_STATUS.WAITING_FOR_APPROVAL && (
               <>
                 <Button
                   mt="xl"
                   color="red"
-                  variant="default"
+                  variant="light"
                   fullWidth={isMobile}
                   onClick={() => handleChangeStatus(PRODUCT_STATUS.REJECT)}
                 >

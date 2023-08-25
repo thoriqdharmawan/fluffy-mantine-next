@@ -65,6 +65,7 @@ export const GET_DETAIL_PRODUCT = gql`
         sku
         status
         stock
+        name
       }
     }
   }
