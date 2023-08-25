@@ -92,24 +92,24 @@ const VariantTableRow = memo(function VariantTableRowMemo(props: Props) {
             {...form.getInputProps(`productVariants.${index}.min_wholesale`)}
           />
         )}
-        <Switch
+        {/* <Switch
           label="Tambahkan Skala Varian?"
           mb="md"
           checked={has_variant_scale}
           {...form.getInputProps(`productVariants.${index}.has_variant_scale`)}
+        /> */}
+        {/* {has_variant_scale && ( */}
+        <NumberInput
+          label="Skala Varian"
+          placeholder="Tambahkan Skala Varian"
+          min={1}
+          step={1}
+          withAsterisk={has_variant_scale}
+          labelProps={{ mb: 8 }}
+          mb={24}
+          {...form.getInputProps(`productVariants.${index}.variant_scale`)}
         />
-        {has_variant_scale && (
-          <NumberInput
-            label="Skala Varian"
-            placeholder="Tambahkan Skala Varian"
-            min={1}
-            step={1}
-            withAsterisk={has_variant_scale}
-            labelProps={{ mb: 8 }}
-            mb={24}
-            {...form.getInputProps(`productVariants.${index}.variant_scale`)}
-          />
-        )}
+        {/* )} */}
       </td>
       <td valign="top">
         <TextInput

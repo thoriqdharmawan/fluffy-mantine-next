@@ -72,9 +72,9 @@ export default function AddProducts() {
         {
           name: '',
           sku: '',
-          price: '',
-          price_purchase: '',
-          price_wholesale: '',
+          price: null,
+          price_purchase: null,
+          price_wholesale: null,
           min_wholesale: 1,
           has_price_purchase: false,
           has_price_wholesale: false,
