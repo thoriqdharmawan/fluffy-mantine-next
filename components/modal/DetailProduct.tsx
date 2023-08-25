@@ -35,6 +35,7 @@ export default function DetailProduct(props: Props) {
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const [loadingUpdate, setLoadingUpdate] = useState<boolean>(false);
   const [updateImage, setUpdateImage] = useState<boolean>(false);
+  const [adding, setAdding] = useState<boolean>(false);
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -51,7 +52,7 @@ export default function DetailProduct(props: Props) {
   const { data, loading, refetch } = useQuery(GET_DETAIL_PRODUCT, {
     client: client,
     skip: !opened,
-    fetchPolicy: 'cache-and-network',
+    // fetchPolicy: 'cache-and-network',
     variables: {
       product_id: id,
     },
@@ -224,6 +225,19 @@ export default function DetailProduct(props: Props) {
               })}
             </Box>
           </Box>
+
+          {adding && (
+            <DetailProductVariant
+              type="ADD"
+              refetch={refetch}
+              onClose={() => setAdding(false)}
+              product={product}
+            />
+          )}
+
+          <Button mt="md" mb="xl" variant="default" fullWidth onClick={() => setAdding(true)}>
+            Tambah Varian Baru
+          </Button>
 
           <Flex justify="end" gap="md" mb="lg">
             {product.status === PRODUCT_STATUS.ACTIVE && (

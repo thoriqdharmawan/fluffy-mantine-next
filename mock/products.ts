@@ -11,9 +11,9 @@ export interface TableProductsVariants {
   name?: string;
   coord?: number[];
   sku?: string;
-  price?: number | string;
-  price_purchase?: number | string;
-  price_wholesale?: number | string;
+  price?: number;
+  price_purchase?: number;
+  price_wholesale?: number;
   min_wholesale?: number;
   has_price_purchase?: boolean;
   has_price_wholesale?: boolean;
