@@ -42,4 +42,5 @@ export const DEFAULT_VARIANTS_TYPE: string[] = [
   'Roll',
   'Set',
   'Karat',
+  'Slop',
 ];
