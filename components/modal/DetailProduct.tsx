@@ -31,10 +31,10 @@ interface FormValues {
 
 export default function DetailProduct(props: Props) {
   const { id, opened, onClose, onUpdateStatus } = props;
-  const [editing, setEditing] = useState<boolean>(false);
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const [loadingUpdate, setLoadingUpdate] = useState<boolean>(false);
   const [updateImage, setUpdateImage] = useState<boolean>(false);
+  const [editing, setEditing] = useState<boolean>(false);
   const [adding, setAdding] = useState<boolean>(false);
 
   const form = useForm<FormValues>({
@@ -76,6 +76,11 @@ export default function DetailProduct(props: Props) {
     setEditing((prev) => !prev);
   };
 
+  const resetState = () => {
+    setEditing(false);
+    setAdding(false);
+  };
+
   const handleSubmitEdit = async () => {
     const { hasErrors } = form.validate();
 
@@ -103,10 +108,12 @@ export default function DetailProduct(props: Props) {
               color: 'green',
             });
           }
+          resetState();
           refetch();
         })
         .catch(() => {
           setLoadingUpdate(false);
+          resetState();
         });
     }
 
@@ -122,10 +129,15 @@ export default function DetailProduct(props: Props) {
     }
   };
 
+  const handleCloseModal = () => {
+    onClose();
+    resetState();
+  };
+
   return (
     <Modal
       opened={opened}
-      onClose={onClose}
+      onClose={handleCloseModal}
       title="Detail Produk"
       size="md"
       fullScreen={isMobile}
@@ -230,7 +242,7 @@ export default function DetailProduct(props: Props) {
             <DetailProductVariant
               type="ADD"
               refetch={refetch}
-              onClose={() => setAdding(false)}
+              onClose={resetState}
               product={product}
             />
           )}
