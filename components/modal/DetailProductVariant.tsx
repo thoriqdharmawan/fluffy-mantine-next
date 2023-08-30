@@ -150,6 +150,10 @@ export default function DetailProductVariant(props: Props) {
           });
           refetch();
           setEditing(false);
+
+          if (onClose) {
+            onClose();
+          }
         })
         .finally(() => {
           setLoading(false);
