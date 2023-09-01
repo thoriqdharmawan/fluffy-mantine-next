@@ -32,7 +32,7 @@ export const GET_LIST_PRODUCTS = gql`
       }
     }
 
-    products(where: $where, limit: $limit, offset: $offset, order_by: { name: asc }) {
+    products(where: $where, limit: $limit, offset: $offset, order_by: { created_at: desc }) {
       id
       name
       image

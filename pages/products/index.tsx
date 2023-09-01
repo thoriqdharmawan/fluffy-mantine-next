@@ -13,7 +13,7 @@ import HeaderSection from '../../components/header/HeaderSection';
 
 export default function Products() {
   const [search, setSearch] = useState('');
-  const [debounce] = useDebouncedValue(search, 200);
+  const [debounce] = useDebouncedValue(search, 1000);
 
   return (
     <MainLayout>
