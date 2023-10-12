@@ -13,39 +13,40 @@ import RecentTransactions from '../modules/homepage/recent-transaction';
 
 import { useGlobal } from '../context/global';
 import { useUser } from '../context/user';
-// import DatePicker from '../components/date/DatePicker';
-
 
 export default function HomePage() {
-  const { value } = useGlobal()
-  const user = useUser()
+  const { value } = useGlobal();
+  const user = useUser();
 
-  const companyId = value.selectedCompany || user.companyId
+  const companyId = value.selectedCompany || user.companyId;
 
-  const [filter, setFilter] = useState<string>('NOW')
+  const [filter, setFilter] = useState<string>('NOW');
 
-  const chips = useMemo(() => [
-    {
-      label: 'Hari ini',
-      value: 'NOW',
-      checked: filter === 'NOW',
-    },
-    {
-      label: 'Kemarin',
-      value: 'YESTERDAY',
-      checked: filter === 'YESTERDAY',
-    },
-    {
-      label: 'Bulan ini',
-      value: 'THISMONTH',
-      checked: filter === 'THISMONTH',
-    },
-    {
-      label: '30 Hari kebelakang',
-      value: 'LAST30DAYS',
-      checked: filter === 'LAST30DAYS',
-    },
-  ], [filter])
+  const chips = useMemo(
+    () => [
+      {
+        label: 'Hari ini',
+        value: 'NOW',
+        checked: filter === 'NOW',
+      },
+      {
+        label: 'Kemarin',
+        value: 'YESTERDAY',
+        checked: filter === 'YESTERDAY',
+      },
+      {
+        label: 'Bulan ini',
+        value: 'THISMONTH',
+        checked: filter === 'THISMONTH',
+      },
+      {
+        label: '30 Hari kebelakang',
+        value: 'LAST30DAYS',
+        checked: filter === 'LAST30DAYS',
+      },
+    ],
+    [filter]
+  );
 
   const { data, loading, error } = useQuery(GET_INCOMES, {
     client,
@@ -53,31 +54,30 @@ export default function HomePage() {
     fetchPolicy: 'network-only',
     variables: {
       ...getVariableDate(filter),
-      companyId: companyId
-    }
-  })
+      companyId: companyId,
+    },
+  });
 
   if (error) {
-    console.error(error)
+    console.error(error);
   }
 
   const incomesData = useMemo(() => {
-    const { count, sum } = data?.transactions_aggregate?.aggregate || {}
+    const { count, sum } = data?.transactions_aggregate?.aggregate || {};
 
     return [
       {
-        title: "Pendapatan",
+        title: 'Pendapatan',
         value: convertToRupiah(sum?.total_amount || 0),
-        description: 'Total uang yang didapatkan'
+        description: 'Total uang yang didapatkan',
       },
       {
-        title: "Total Transaksi",
+        title: 'Total Transaksi',
         value: count || 0,
-        description: 'Total transaksi yang telah terjadi'
+        description: 'Total transaksi yang telah terjadi',
       },
-    ]
-  }, [data])
-
+    ];
+  }, [data]);
 
   return (
     <MainLayout>
@@ -90,12 +90,10 @@ export default function HomePage() {
           },
         })}
       >
-
         <Chips data={chips} onChange={setFilter} />
         <Incomes data={incomesData} loading={loading || !companyId} />
 
         <RecentTransactions companyId={companyId} filter={filter} />
-
       </Box>
     </MainLayout>
   );
