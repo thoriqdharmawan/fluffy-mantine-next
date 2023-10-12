@@ -34,24 +34,24 @@ export default function index() {
   };
 
   return (
-    <Box sx={{ maxWidth: 300 }} mx="auto">
+    <Box sx={{ maxWidth: 300 }} mt="xl" mx="auto">
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <TextInput
           withAsterisk
           label="Email"
-          placeholder="your@email.com"
+          placeholder="Masukan Email"
           {...form.getInputProps('email')}
         />
         <TextInput
           withAsterisk
           label="Password"
           type="password"
-          placeholder="Input your password"
+          placeholder="Masukan Password"
           {...form.getInputProps('password')}
         />
 
         <Group position="right" mt="md">
-          <Button type="submit">Submit</Button>
+          <Button type="submit">Login</Button>
         </Group>
       </form>
     </Box>
