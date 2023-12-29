@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useForm } from '@mantine/form';
 import { SignIn } from '../../services/authentication';
 import { ColorSchemeToggle } from '../../components/color-scheme-toggle';
+import { Fullscreen } from '../../components/fullscreen';
 
 type formLoginType = {
   email: string;
@@ -69,6 +70,7 @@ export default function index() {
       </Paper>
       <Box sx={styles.fab as any}>
         <ColorSchemeToggle />
+        <Fullscreen />
       </Box>
     </Box>
   );
@@ -97,7 +99,13 @@ const styles = {
   },
   fab: {
     position: 'absolute',
+    display: 'flex',
+    flexDirection: 'row',
     top: 22,
     right: 22,
+    gap: 12,
+    '@media (max-width: 768px)': {
+      display: 'none',
+    },
   },
 };
