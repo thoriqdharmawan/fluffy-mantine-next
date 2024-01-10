@@ -79,7 +79,7 @@ export default function index() {
 const styles = {
   wrapper: {
     minHeight: '550px',
-    height: '100vh',
+    height: '100dvh',
     backgroundSize: 'cover',
     position: 'relative',
     backgroundImage:
@@ -89,7 +89,7 @@ const styles = {
     minHeight: '550px',
     maxWidth: '450px',
     paddingTop: '80px',
-    height: '100vh',
+    height: '100dvh',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
