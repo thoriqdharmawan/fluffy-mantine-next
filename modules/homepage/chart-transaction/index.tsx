@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import ReactEcharts from 'echarts-for-react';
+import Chips from '../../../components/chips/Chips';
 
 import { createStyles, Title } from '@mantine/core';
-
-import Chips from '../../../components/chips/Chips';
+import { getPreviousDays } from '../../../context/helpers';
 
 const useStyles = createStyles((theme) => ({
   root: {
@@ -22,16 +22,43 @@ const ChartTransaction = () => {
   const [filter, setFilter] = useState<string>('THIS_WEEK');
 
   const option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow',
+      },
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true,
+      show: true,
+      borderWidth: 1,
+    },
     xAxis: {
       type: 'category',
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      data: getPreviousDays(),
     },
     yAxis: {
       type: 'value',
     },
     series: [
       {
-        data: [120, 200, 150, 80, 70, 110, 130],
+        data: [
+          371,
+          451.2,
+          271.23,
+          534,
+          673,
+          513,
+          {
+            value: 499,
+            itemStyle: {
+              color: '#0ca678',
+            },
+          },
+        ],
         type: 'bar',
       },
     ],

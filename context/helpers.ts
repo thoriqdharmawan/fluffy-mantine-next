@@ -83,6 +83,21 @@ const simplifyFraction = (numerator: number = 0, denominator: number = 0) => {
   return [simplifiedNumerator, simplifiedDenominator];
 };
 
+const getPreviousDays = (): string[] => {
+  const daysOfWeek = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', "Jum", 'Sab'];
+  const today = new Date();
+  const previousDays: string[] = [];
+
+  for (let i = 6; i >= 0; i--) {
+    const previousDay = new Date(today);
+    previousDay.setDate(today.getDate() - i);
+    const dayOfWeekIndex = previousDay.getDay();
+    previousDays.push(daysOfWeek[dayOfWeekIndex]);
+  }
+
+  return previousDays;
+};
+
 export {
   getInitials,
   convertToRupiah,
@@ -91,4 +106,5 @@ export {
   getPrices,
   getVariableDate,
   simplifyFraction,
+  getPreviousDays,
 };
