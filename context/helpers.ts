@@ -1,4 +1,4 @@
-import { VARIABLES_DATE } from '../mock/global';
+import { FormatDate, NowEnd, NowStart, VARIABLES_DATE } from '../mock/global';
 
 const getInitials = (name: string) => {
   let nameArray = name.split(' ');
@@ -23,6 +23,25 @@ function convertToRupiah(nominal: number) {
 
 const getVariableDate = (variant: string = 'NOW') => {
   return VARIABLES_DATE[variant];
+};
+
+const getVariableChartTransction = () => {
+  return {
+    one_start: NowStart.subtract(6, 'day').format(FormatDate),
+    one_end: NowEnd.subtract(6, 'day').format(FormatDate),
+    two_start: NowStart.subtract(5, 'day').format(FormatDate),
+    two_end: NowEnd.subtract(5, 'day').format(FormatDate),
+    three_start: NowStart.subtract(4, 'day').format(FormatDate),
+    three_end: NowEnd.subtract(4, 'day').format(FormatDate),
+    four_start: NowStart.subtract(3, 'day').format(FormatDate),
+    four_end: NowEnd.subtract(3, 'day').format(FormatDate),
+    five_start: NowStart.subtract(2, 'day').format(FormatDate),
+    five_end: NowEnd.subtract(2, 'day').format(FormatDate),
+    six_start: NowStart.subtract(1, 'day').format(FormatDate),
+    six_end: NowEnd.subtract(1, 'day').format(FormatDate),
+    seven_start: NowStart.format(FormatDate),
+    seven_end: NowEnd.format(FormatDate),
+  };
 };
 
 interface Variants {
@@ -83,6 +102,21 @@ const simplifyFraction = (numerator: number = 0, denominator: number = 0) => {
   return [simplifiedNumerator, simplifiedDenominator];
 };
 
+const getPreviousDays = (): string[] => {
+  const daysOfWeek = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+  const today = new Date();
+  const previousDays: string[] = [];
+
+  for (let i = 6; i >= 0; i--) {
+    const previousDay = new Date(today);
+    previousDay.setDate(today.getDate() - i);
+    const dayOfWeekIndex = previousDay.getDay();
+    previousDays.push(daysOfWeek[dayOfWeekIndex]);
+  }
+
+  return previousDays;
+};
+
 export {
   getInitials,
   convertToRupiah,
@@ -91,4 +125,6 @@ export {
   getPrices,
   getVariableDate,
   simplifyFraction,
+  getPreviousDays,
+  getVariableChartTransction,
 };
