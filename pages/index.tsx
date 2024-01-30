@@ -10,6 +10,7 @@ import Chips from '../components/chips/Chips';
 import client from '../apollo-client';
 import Incomes from '../modules/homepage/incomes';
 import RecentTransactions from '../modules/homepage/recent-transaction';
+import ChartTransaction from '../modules/homepage/chart-transaction';
 
 import { useGlobal } from '../context/global';
 import { useUser } from '../context/user';
@@ -94,6 +95,8 @@ export default function HomePage() {
         <Incomes data={incomesData} loading={loading || !companyId} />
 
         <RecentTransactions companyId={companyId} filter={filter} />
+
+        <ChartTransaction />
       </Box>
     </MainLayout>
   );
