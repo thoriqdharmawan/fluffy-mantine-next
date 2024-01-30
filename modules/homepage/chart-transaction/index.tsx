@@ -4,6 +4,7 @@ import Chips from '../../../components/chips/Chips';
 
 import { createStyles, Title } from '@mantine/core';
 import { getPreviousDays } from '../../../context/helpers';
+import { DEFAULT_CHART_OPTIONS } from '../../../constant/global';
 
 const useStyles = createStyles((theme) => ({
   root: {
@@ -22,26 +23,10 @@ const ChartTransaction = () => {
   const [filter, setFilter] = useState<string>('THIS_WEEK');
 
   const option = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow',
-      },
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true,
-      show: true,
-      borderWidth: 1,
-    },
+    ...DEFAULT_CHART_OPTIONS,
     xAxis: {
       type: 'category',
       data: getPreviousDays(),
-    },
-    yAxis: {
-      type: 'value',
     },
     series: [
       {
