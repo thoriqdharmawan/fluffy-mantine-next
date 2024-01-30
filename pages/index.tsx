@@ -91,12 +91,12 @@ export default function HomePage() {
           },
         })}
       >
+        <ChartTransaction companyId={companyId} />
+
         <Chips data={chips} onChange={setFilter} />
         <Incomes data={incomesData} loading={loading || !companyId} />
 
         <RecentTransactions companyId={companyId} filter={filter} />
-
-        <ChartTransaction />
       </Box>
     </MainLayout>
   );

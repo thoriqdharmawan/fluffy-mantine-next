@@ -27,7 +27,6 @@ export const DEFAULT_CATEGORY = [
   },
 ];
 
-
 interface VariablesDate {
   [key: string]: {
     startdate: string,
@@ -35,9 +34,9 @@ interface VariablesDate {
   }
 }
 
-const NowStart = dayjs(new Date().setHours(0, 0, 0)).subtract(7, 'hours')
-const NowEnd = dayjs(new Date().setHours(23, 59, 59)).subtract(7, 'hours')
-const FormatDate = 'YYYY-MM-DDTHH:mm:ss'
+export const NowStart = dayjs(new Date().setHours(0, 0, 0)).subtract(7, 'hours')
+export const NowEnd = dayjs(new Date().setHours(23, 59, 59)).subtract(7, 'hours')
+export const FormatDate = 'YYYY-MM-DDTHH:mm:ss'
 
 export const VARIABLES_DATE: VariablesDate = {
   'NOW': {

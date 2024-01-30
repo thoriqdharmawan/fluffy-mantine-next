@@ -22,11 +22,13 @@ export const DEFAULT_CHART_OPTIONS = {
     left: '3%',
     right: '4%',
     bottom: '3%',
-    containLabel: true,
-    show: true,
-    borderWidth: 1,
+    containLabel: false,
+    show: false,
   },
   yAxis: {
     type: 'value',
+    show: false
   },
 };
+
+export const MAPPING_NUMBER = ['one', 'two', 'three', 'four', 'five', 'six', 'seven']

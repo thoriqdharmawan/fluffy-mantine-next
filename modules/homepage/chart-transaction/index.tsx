@@ -1,84 +1,82 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import ReactEcharts from 'echarts-for-react';
-import Chips from '../../../components/chips/Chips';
 
 import { createStyles, Title } from '@mantine/core';
-import { getPreviousDays } from '../../../context/helpers';
-import { DEFAULT_CHART_OPTIONS } from '../../../constant/global';
+import { getPreviousDays, getVariableChartTransction } from '../../../context/helpers';
+import { DEFAULT_CHART_OPTIONS, MAPPING_NUMBER } from '../../../constant/global';
+import { useQuery } from '@apollo/client';
+import { GET_CHART_TRANSACTION } from '../../../services/homepage/Homepage.graphql';
+
+import client from '../../../apollo-client';
+
+interface Props {
+  companyId: String;
+}
 
 const useStyles = createStyles((theme) => ({
   root: {
     padding: `calc(${theme.spacing.xl} * 1.5)`,
-    marginTop: 24,
+    marginBottom: 24,
   },
-
   label: {
     fontFamily: `Greycliff CF, ${theme.fontFamily}`,
   },
+  chartContainer: {
+    marginTop: -53,
+  },
 }));
 
-const ChartTransaction = () => {
+const ChartTransaction = (props: Props) => {
+  const { companyId } = props;
   const { classes } = useStyles();
 
-  const [filter, setFilter] = useState<string>('THIS_WEEK');
-
-  const option = {
-    ...DEFAULT_CHART_OPTIONS,
-    xAxis: {
-      type: 'category',
-      data: getPreviousDays(),
+  const { data, loading, error } = useQuery(GET_CHART_TRANSACTION, {
+    client,
+    skip: !companyId,
+    fetchPolicy: 'cache-first',
+    variables: {
+      ...getVariableChartTransction(),
+      companyId: companyId,
     },
-    series: [
-      {
-        data: [
-          371,
-          451.2,
-          271.23,
-          534,
-          673,
-          513,
-          {
-            value: 499,
-            itemStyle: {
-              color: '#0ca678',
-            },
-          },
-        ],
-        type: 'bar',
-      },
-    ],
-  };
+  });
 
-  const chips = useMemo(
-    () => [
-      {
-        label: 'Minggu ini',
-        value: 'THIS_WEEK',
-        checked: filter === 'THIS_WEEK',
+  if (error) {
+    console.error(error);
+  }
+
+  const option = useMemo(() => {
+    const dataSeries: number[] = MAPPING_NUMBER.map(
+      (number: string) => data?.[number]?.aggregate.sum.total_amount || 0
+    );
+    return {
+      ...DEFAULT_CHART_OPTIONS,
+      xAxis: {
+        type: 'category',
+        data: getPreviousDays(),
+        show: true,
       },
-      {
-        label: 'Bulan ini',
-        value: 'THIS_MONTH',
-        checked: filter === 'THIS_MONTH',
+      yAxis: {
+        ...DEFAULT_CHART_OPTIONS.yAxis,
+        max: Math.max(...dataSeries),
       },
-      {
-        label: 'Tahun Ini',
-        value: 'THIS_YEAR',
-        checked: filter === 'THIS_YEAR',
-      },
-    ],
-    [filter]
-  );
+      series: [
+        {
+          data: dataSeries,
+          type: 'bar',
+        },
+      ],
+    };
+  }, [data]);
 
   return (
     <div className={classes.root}>
       <Title order={6} mb="md">
-        Grafik Penjualan
+        Grafik Penjualan 7 Hari Kebelakang
       </Title>
 
-      <Chips data={chips} onChange={setFilter} />
-
-      <ReactEcharts option={option} theme="light" />
+      <div className={classes.chartContainer}>
+        <ReactEcharts showLoading={loading || !data} option={option} theme="light" />
+      </div>
     </div>
   );
 };
