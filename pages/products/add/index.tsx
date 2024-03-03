@@ -228,7 +228,7 @@ export default function AddProducts() {
           name: variant.label,
           values: variant.values,
         })),
-        status: PRODUCT_STATUS.WAITING_FOR_APPROVAL,
+        status: PRODUCT_STATUS.ACTIVE,
         product_variants: values.productVariants?.map((product_variant) => {
           const {
             has_price_purchase,
